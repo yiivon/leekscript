@@ -32,6 +32,7 @@
 #include "Never_type.hpp"
 #include "Compound_type.hpp"
 #include "Meta_mul_type.hpp"
+#include "Meta_baseof_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
@@ -504,6 +505,10 @@ const Type* Type::compound(std::initializer_list<const Type*> types) {
 const Type* Type::meta_mul(const Type* t1, const Type* t2) {
 	return new Meta_mul_type(t1, t2);
 }
+const Type* Type::meta_base_of(const Type* type, const Type* base) {
+	return new Meta_baseof_type(type, base);
+}
+
 std::ostream& operator << (std::ostream& os, const Type* type) {
 	if (type->constant) {
 		os << BLUE_BOLD << "const:" << END_COLOR;

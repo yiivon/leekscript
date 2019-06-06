@@ -2,6 +2,7 @@
 #include "../../type/Template_type.hpp"
 #include "../../type/Function_type.hpp"
 #include "../../type/Meta_mul_type.hpp"
+#include "../../type/Meta_baseof_type.hpp"
 #include "../../vm/Module.hpp"
 #include "../../colors.h"
 #include "../value/ObjectAccess.hpp"
@@ -21,6 +22,16 @@ const Type* build(const Type* type) {
 	}
 	if (auto mul = dynamic_cast<const Meta_mul_type*>(type)) {
 		return build(mul->t1)->operator * (build(mul->t2));
+	}
+	if (auto baseof = dynamic_cast<const Meta_baseof_type*>(type)) {
+		if (baseof->result) return baseof->result;
+		auto t = build(baseof->type);
+		auto d = t->distance(baseof->base);
+		if (d < 100) {
+			return ((Meta_baseof_type*) baseof)->result = t;
+		} else {
+			return ((Meta_baseof_type*) baseof)->result = Type::real;
+		}
 	}
 	return type;
 }
@@ -90,6 +101,9 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 	// std::cout << "Solve " << t1 << " ||| " << t2 << std::endl;
 	if (t1->is_template()) {
 		t1->implement(t2);
+	}
+	else if (auto baseof = dynamic_cast<const Meta_baseof_type*>(t1)) {
+		solve(analyzer, baseof->type, t2);
 	}
 	else if (t1->is_array() and t2->is_array()) {
 		solve(analyzer, t1->element(), t2->element());
