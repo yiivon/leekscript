@@ -13,6 +13,7 @@ class Placeholder_type : public Any_type {
 public:
 	Placeholder_type(const std::string name) : _name(name) {}
 	void implement(const Type* type) const;
+	virtual const Type* element() const override { return this; }
 	virtual bool operator == (const Type*) const override;
 	virtual int distance(const Type* type) const override;
 	virtual std::ostream& print(std::ostream& os) const override;

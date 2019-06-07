@@ -367,6 +367,7 @@ const Type* Type::generate_new_placeholder_type() {
 }
 
 const Type* Type::array(const Type* element) {
+	if (element->is_placeholder()) return element;
 	auto i = array_types.find(element);
 	if (i != array_types.end()) return i->second;
 	auto type = new Array_type(element);
@@ -374,6 +375,7 @@ const Type* Type::array(const Type* element) {
 	return type;
 }
 const Type* Type::const_array(const Type* element) {
+	if (element->is_placeholder()) return element;
 	auto i = const_array_types.find(element);
 	if (i != const_array_types.end()) return i->second;
 	auto type = array(element)->add_constant();
@@ -381,6 +383,7 @@ const Type* Type::const_array(const Type* element) {
 	return type;
 }
 const Type* Type::tmp_array(const Type* element) {
+	if (element->is_placeholder()) return element;
 	auto i = tmp_array_types.find(element);
 	if (i != tmp_array_types.end()) return i->second;
 	auto type = array(element)->add_temporary();

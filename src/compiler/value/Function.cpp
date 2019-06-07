@@ -563,7 +563,13 @@ void Function::Version::compile(Compiler& c, bool create_value, bool compile_bod
 				if (type->is_mpz_ptr()) {
 					c.insn_store(var, c.insn_load({&arg, type}));
 				} else {
-					c.insn_store(var, {&arg, type});
+					if (this->type->arguments().at(offset + index)->temporary) {
+						Compiler::value a = {&arg, type};
+						c.insn_inc_refs(a);
+						c.insn_store(var, a);
+					} else {
+						c.insn_store(var, {&arg, type});
+					}
 				}
 				c.arguments.top()[name] = var;
 				// c.arguments.top()[name] = {&arg, type};
@@ -645,6 +651,8 @@ void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_
 		const auto& arg = ((Compiler&) c).arguments.top().at(name);
 		if (current_version->type->argument(i) == Type::tmp_mpz_ptr) {
 			c.insn_delete_mpz(arg);
+		} else if (current_version->type->argument(i)->temporary) {
+			c.insn_delete(c.insn_load(arg));
 		}
 	}
 	// Delete function variables if needed
