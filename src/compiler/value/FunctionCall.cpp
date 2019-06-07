@@ -178,6 +178,14 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				object = oa->object;
 			}
 		}
+	} else if (call.callable and call.callable->versions.size() and not call.callable->versions[0]->user_fun) {
+		std::ostringstream args_string;
+		for (unsigned i = 0; i < arguments_types.size(); ++i) {
+			if (i > 0) args_string << ", ";
+			args_string << arguments_types[i];
+		}
+		analyzer->add_error({Error::Type::METHOD_NOT_FOUND, location(), function->location(), {function->to_string() + "(" + args_string.str() + ")"}});
+		return;
 	}
 
 	// Check arguments count

@@ -593,6 +593,7 @@ void Test::test_numbers() {
 	code("max(5l, 10.5)").equals("10.5");
 	code("max(5l, 10)").equals("10");
 	code("max(true, 10l)").equals("10");
+	code("max('string', 12)").error(ls::Error::METHOD_NOT_FOUND, {"max(" + ls::Type::tmp_string->to_string() + ", " + ls::Type::integer->to_string() + ")"});
 
 	section("Number.min()");
 	code("Number.min(5, 12)").equals("5");
@@ -610,6 +611,7 @@ void Test::test_numbers() {
 	code("min(5l, 10.5)").equals("5");
 	code("min(5l, 10)").equals("5");
 	code("min(true, 10l)").equals("1");
+	code("min('string', 12)").error(ls::Error::METHOD_NOT_FOUND, {"min(" + ls::Type::tmp_string->to_string() + ", " + ls::Type::integer->to_string() + ")"});
 
 	section("Number.cos()");
 	code("Number.cos(0)").equals("1");
