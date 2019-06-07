@@ -253,8 +253,7 @@ void Test::test_functions() {
 	code("(x -> x)()").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
 	code("let f = x, y -> x + y f(5)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
 	code("let add = +; add(5, 12, 13)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
-	// TODO not the expected error
-	DISABLED_code("Number.abs(12, 12)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
+	code("Number.abs(12, 12)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "1", "2"});
 	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");

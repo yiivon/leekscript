@@ -40,8 +40,8 @@ void ObjectAccess::print(std::ostream& os, int indent, bool debug, bool condense
 	os << "." << field->content;
 	if (debug) {
 		os << " " << type;
+		os << " " << version;
 	}
-	os << " " << version;
 }
 
 Location ObjectAccess::location() const {
@@ -101,12 +101,24 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 		object_class = (LSClass*) analyzer->vm->internal_vars[object_class_name]->lsvalue;
 	}
 
+	// <object>.<method>
+	if (object_class) {
+		auto i = object_class->methods.find(field->content);
+		if (i != object_class->methods.end()) {
+			return { &i->second, object };
+		}
+	}
+	// <object : Value>.<method>
+	auto i = value_class->methods.find(field->content);
+	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
+		return { &i->second, object };
+	}
 	// <class>.<field>
 	if (object->type->is_class() and vv != nullptr) {
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
 		// <class>.<method>
 		auto i = std_class->methods.find(field->content);
-		if (i != std_class->methods.end() and i->second.is_compatible(argument_count)) {
+		if (i != std_class->methods.end()) {
 			return { &i->second };
 		}
 		// Value.<method>
@@ -115,24 +127,13 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 			return { &i->second };
 		}
 	}
-	// <object>.<method>
-	if (object_class) {
-		auto i = object_class->methods.find(field->content);
-		if (i != object_class->methods.end()) {
-			return { &i->second, object };
-		}
-	}
-	auto i = value_class->methods.find(field->content);
-	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
-		return { &i->second, object };
-	}
 	if (not object->type->is_class()) {
 		std::ostringstream oss;
 		oss << object << "." << field->content;
 		auto type = Type::fun(Type::any, {Type::any, Type::any});
 		return { new Callable { new CallableVersion { oss.str(), type, this, {}, {}, true, true } }, object };
 	}
-	return {};
+	return { (Callable*) nullptr };
 }
 
 void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {

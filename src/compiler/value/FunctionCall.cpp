@@ -91,13 +91,14 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
-	// Retrieve the callable version
-	call = function->get_callable(analyzer, arguments_types.size());
 	if (not function->type->can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
+
+	// Retrieve the callable version
+	call = function->get_callable(analyzer, arguments_types.size());
 	if (call.callable) {
-		// std::cout << "Callable: " << call.callable << std::endl;
+		// std::cout << "Callable: " << (void*) call.callable << std::endl;
 		callable_version = call.resolve(analyzer, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;
@@ -151,31 +152,34 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// Detect standard library functions
 	auto oa = dynamic_cast<ObjectAccess*>(function);
 	if (oa != nullptr) {
-		auto field_name = oa->field->content;
-		auto object_type = oa->object->type;
-		std::vector<const Type*> arg_types;
-		for (auto arg : arguments) {
-			arg_types.push_back(arg->type->fold());
-		}
-		std::string args_string = "";
-		for (unsigned i = 0; i < arg_types.size(); ++i) {
-			std::ostringstream oss;
-			oss << arg_types[i];
-			if (i > 0) args_string += ", ";
-			args_string += oss.str();
-		}
-		if (object_type->is_class()) { // String.size("salut")
-			std::string clazz = ((VariableValue*) oa->object)->name;
-			analyzer->add_error({Error::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string + ")"}});
-		} else {  // "salut".size()
-			bool has_unknown_argument = false;
-			if (!object_type->fold()->is_any() && !has_unknown_argument) {
-				std::ostringstream obj_type_ss;
-				obj_type_ss << object_type;
-				analyzer->add_error({Error::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string + ")"}});
-			} else {
-				is_unknown_method = true;
-				object = oa->object;
+		auto arguments_count = arguments_types.size() + (call.object ? 1 : 0);
+		if (not call.callable or (not callable_version and call.callable->versions[0]->type->arguments().size() == arguments_count)) {
+			auto field_name = oa->field->content;
+			auto object_type = oa->object->type;
+			std::vector<const Type*> arg_types;
+			for (auto arg : arguments) {
+				arg_types.push_back(arg->type->fold());
+			}
+			std::ostringstream args_string;
+			for (unsigned i = 0; i < arg_types.size(); ++i) {
+				if (i > 0) args_string << ", ";
+				args_string << arg_types[i];
+			}
+			if (object_type->is_class()) { // String.size("salut")
+				std::string clazz = ((VariableValue*) oa->object)->name;
+				analyzer->add_error({Error::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string.str() + ")"}});
+				return;
+			} else {  // "salut".size()
+				bool has_unknown_argument = false;
+				if (!object_type->fold()->is_any() && !has_unknown_argument) {
+					std::ostringstream obj_type_ss;
+					obj_type_ss << object_type;
+					analyzer->add_error({Error::Type::METHOD_NOT_FOUND, location(), oa->field->location, {obj_type_ss.str() + "." + oa->field->content + "(" + args_string.str() + ")"}});
+					return;
+				} else {
+					is_unknown_method = true;
+					object = oa->object;
+				}
 			}
 		}
 	} else if (call.callable and call.callable->versions.size() and not call.callable->versions[0]->user_fun) {
