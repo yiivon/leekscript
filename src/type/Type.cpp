@@ -355,9 +355,6 @@ bool Type::strictCastable(const Type* type) const {
 	auto d = distance(type);
 	return d >= 0 and d < 100;
 }
-const Type* Type::without_placeholders() const {
-	return this;
-}
 
 const Type* Type::generate_new_placeholder_type() {
 	u_int32_t character = 0x03B1 + placeholder_counter;

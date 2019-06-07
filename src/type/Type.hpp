@@ -60,7 +60,6 @@ public:
 	bool castable(const Type* type, bool strictCast = false) const;
 	bool strictCastable(const Type* type) const;
 	virtual int distance(const Type* type) const = 0;
-	const Type* without_placeholders() const;
 
 	const Type* operator + (const Type* type) const;
 	void operator += (const Type* type);

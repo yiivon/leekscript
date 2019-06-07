@@ -11,6 +11,7 @@
 #include <fstream>
 #include "../../vm/LSValue.hpp"
 #include "../../type/Placeholder_type.hpp"
+#include "../../type/Compound_type.hpp"
 #include "../semantic/Callable.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../colors.h"
@@ -315,14 +316,27 @@ void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<const Type*>
 	auto return_type = Type::void_;
 	// std::cout << "version->body->type " << version->body->type << std::endl;
 	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
-	auto v_type = version->body->type->without_placeholders();
-	return_type = return_type->operator + (v_type);
+	if (auto c = dynamic_cast<const Compound_type*>(version->body->type)) {
+		for (const auto& t : c->types) {
+			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+				return_type = return_type->operator + (t);
+			}
+		}
+	} else {
+		return_type = version->body->type;
+	}
+	if (auto c = dynamic_cast<const Compound_type*>(version->body->return_type)) {
+		for (const auto& t : c->types) {
+			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+				return_type = return_type->operator + (t);
+			}
+		}
+	} else {
+		return_type = return_type->operator + (version->body->return_type);
+	}
+	if (version->body->type->temporary or version->body->return_type->temporary) return_type = return_type->add_temporary();
+	// std::cout << "return type = " << return_type << std::endl;
 
-	// if (version->body->type->temporary) return_type = return_type->add_temporary();
-	auto v_rtype = version->body->return_type->without_placeholders();
-	return_type = return_type->operator + (v_rtype);
-
-	if (version->body->return_type->temporary) return_type = return_type->add_temporary();
 	// Default version of the function, the return type must be any
 	if (not return_type->is_void() and not is_main_function and version == default_version and generate_default_version) {
 		return_type = Type::any;
