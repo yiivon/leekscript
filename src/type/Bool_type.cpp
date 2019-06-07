@@ -17,11 +17,11 @@ bool Bool_type::operator == (const Type* type) const {
 int Bool_type::distance(const Type* type) const {
 	if (not temporary and type->temporary) return -1;
 	if (dynamic_cast<const Bool_type*>(type->folded)) { return 0; }
-	if (dynamic_cast<const Integer_type*>(type->folded)) { return 1; }
-	if (dynamic_cast<const Long_type*>(type->folded)) { return 2; }
-	if (dynamic_cast<const Real_type*>(type->folded)) { return 3; }
-	if (dynamic_cast<const Mpz_type*>(type->folded)) { return 4; }
-	if (dynamic_cast<const Number_type*>(type->folded)) { return 5; }
+	if (dynamic_cast<const Integer_type*>(type->folded)) { return 101; }
+	if (dynamic_cast<const Long_type*>(type->folded)) { return 102; }
+	if (dynamic_cast<const Real_type*>(type->folded)) { return 103; }
+	if (dynamic_cast<const Mpz_type*>(type->folded)) { return 104; }
+	if (dynamic_cast<const Number_type*>(type->folded)) { return 105; }
 	if (dynamic_cast<const Any_type*>(type->folded)) { return 6; }
 	return -1;
 }
