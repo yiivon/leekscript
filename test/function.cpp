@@ -112,7 +112,7 @@ void Test::test_functions() {
 	code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
 	code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
 	code("let fact = (x, a) -> { if x == 0 then return a end return fact(x - 1, x * a) } fact(10, 1)").equals("3628800");
-	DISABLED_code("let fact = (x, a) -> { if x == 0m then return a end return fact(x - 1, x * a) } fact(10m, 1m)").equals("3628800");
+	code("let fact = (x, a) -> { if x == 0m then return a end return fact(x - 1, x * a) } fact(10m, 1m)").equals("3628800");
 
 	section("Functions in array");
 	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
