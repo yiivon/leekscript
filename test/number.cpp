@@ -590,6 +590,9 @@ void Test::test_numbers() {
 	code("2.max([7.5, ''][0])").equals("7.5");
 	code("[2, ''][0].max([7.5, ''][0])").equals("7.5");
 	code("2.max([7.5, ''][1])").exception(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	code("max(5l, 10.5)").equals("10.5");
+	code("max(5l, 10)").equals("10");
+	code("max(true, 10l)").equals("10");
 
 	section("Number.min()");
 	code("Number.min(5, 12)").equals("5");
@@ -604,6 +607,9 @@ void Test::test_numbers() {
 	code("Number.min(15.7, 12.8)").equals("12.8");
 	code("Number.min([15.7, ''][0], 12.8)").equals("12.8");
 	code("Number.min(5.5, [12.8, ''][0])").equals("5.5");
+	code("min(5l, 10.5)").equals("5");
+	code("min(5l, 10)").equals("5");
+	code("min(true, 10l)").equals("1");
 
 	section("Number.cos()");
 	code("Number.cos(0)").equals("1");
