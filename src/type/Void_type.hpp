@@ -12,6 +12,7 @@ public:
 	virtual const std::string getJsonName() const { return "void"; }
 	virtual const Type* element() const override { return Type::void_; }
 	virtual const Type* key() const override { return Type::void_; }
+	virtual const Type* return_type() const override { return Type::void_; }
 	virtual bool operator == (const Type*) const override;
 	virtual int distance(const Type* type) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;
