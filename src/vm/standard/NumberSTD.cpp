@@ -204,11 +204,17 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, {Type::any}, (void*) atan_ptr},
 		{Type::real, {Type::real}, atan_real},
 	});
+
+	// template<T1 : number, T2 : number>
+	// T1 × T2 atan2(T1 x, T2 y)
+	auto atan2T1 = Type::meta_base_of(Type::template_("T1"), Type::number);
+	auto atan2T2 = Type::meta_base_of(Type::template_("T2"), Type::number);
+	template_(atan2T1, atan2T2).
 	method("atan2", {
-		{Type::any, {Type::any, Type::any}, (void*) atan2_ptr_ptr},
-		{Type::real, {Type::real, Type::any}, atan2},
-		{Type::real, {Type::real, Type::real}, atan2},
+		{Type::any, {Type::any, Type::any}, (void*) atan2_ptr_ptr, DEFAULT},
+		{Type::real, {atan2T1, atan2T2}, atan2},
 	});
+
 	double (*cbrtreal)(double) = std::cbrt;
 	double (*cbrtint)(int) = std::cbrt;
 	method("cbrt", {
