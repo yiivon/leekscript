@@ -133,8 +133,7 @@ void Test::test_loops() {
 	code("for (v in [1, 2, 3, 4]) do end").equals("(void)");
 	code("var s = 0 for v in [1, 2, 3, 4] { s += v } s").equals("10");
 	code("var s = 0.0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
-	// TODO issue #243
-	DISABLED_code("var s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97);
+	DISABLED_code("var s = 0 for v in [1.2, 2, 3.76, 4.01] { s += v } s").almost(10.97); // TODO issue #243
 	code("var s = '' for v in ['salut ', 'ça ', 'va ?'] { s += v } s").equals("'salut ça va ?'");
 	code("var a = 0 let x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] for i in x { if i < 5 { continue } a++ } a").equals("5");
 	code("var s = 0 for k : v in [1, 2, 3, 4] { s += k * v } s").equals("20");
@@ -148,10 +147,8 @@ void Test::test_loops() {
 	code("var y = 'test' for x in 'salut' { y = x } y").equals("'t'");
 	code("var x = 'test' for x in [1] {} x").equals("'test'");
 	code("var y = '' for k, x in { var x = <> x.insert(4) x } { y += k + ':' + x } y").equals("'0:4'");
-	// TODO issue #243
-	DISABLED_code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3");
-	// TODO issue #243
-	DISABLED_code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]");
+	DISABLED_code("var fs = [] fs.push(s -> {var sum = 0 for v in s {sum += v} sum}) fs[0](<1, 2>)").equals("3"); // TODO issue #243
+	DISABLED_code("var fs = [] fs.push(s -> {[for v in s {v}]}) fs[0](<2,1>)").equals("[1, 2]"); // TODO issue #243
 	code("var s = 0l for i in [0..1000] { s += i ** 2 } s").equals("333833500");
 
 	header("Foreach - unknown container");
