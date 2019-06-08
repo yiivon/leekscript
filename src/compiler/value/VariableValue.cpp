@@ -33,6 +33,7 @@ void VariableValue::print(std::ostream& os, int, bool debug, bool condensed) con
 			os << var->value->version_type(version);
 		else
 			os << type;
+		if (has_version) os << " " << version;
 	}
 }
 
