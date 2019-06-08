@@ -6,13 +6,13 @@
 
 namespace ls {
 
-Object_type::Object_type() : Pointer_type(Type::structure("object", {
+Object_type::Object_type(bool native) : Pointer_type(Type::structure("object", {
 	Type::integer, // ?
 	Type::integer, // ?
 	Type::integer, // ?
 	Type::integer, // refs
 	Type::boolean // native
-})) {}
+}), native) {}
 
 bool Object_type::operator == (const Type* type) const {
 	return dynamic_cast<const Object_type*>(type);
