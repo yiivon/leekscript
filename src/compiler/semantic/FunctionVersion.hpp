@@ -22,7 +22,11 @@ public:
 	Compiler::value value;
 
 	FunctionVersion();
+
 	bool is_compiled() const;
+
+	void print(std::ostream& os, int indent, bool debug, bool condensed) const;
+
 	void create_function(Compiler& c);
 	void compile(Compiler& c, bool create_value = false, bool compile_body = true);
 };

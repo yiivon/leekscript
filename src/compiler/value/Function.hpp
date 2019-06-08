@@ -47,7 +47,6 @@ public:
 	int capture(std::shared_ptr<SemanticVar> var);
 	const Type* getReturnType();
 
-	void print_version(std::ostream& os, int indent, bool debug, bool condensed, const FunctionVersion* version) const;
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 

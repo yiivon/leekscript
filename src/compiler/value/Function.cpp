@@ -63,66 +63,13 @@ const Type* Function::getReturnType() {
 	}
 }
 
-void Function::print_version(std::ostream& os, int indent, bool debug, bool condensed, const FunctionVersion* version) const {
-	if (version == nullptr) {
-		os << "nullptr!!";
-		return;
-	}
-	if (captures.size() > 0) {
-		os << "[";
-		for (unsigned c = 0; c < captures.size(); ++c) {
-			if (c > 0) os << ", ";
-			os << captures[c]->name << " " << captures[c]->type;
-		}
-		os << "] ";
-	}
-	if (arguments.size() != 1) {
-		os << "(";
-	}
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		if (i > 0) os << ", ";
-		os << arguments.at(i)->content;
-		if (debug)
-			os << " " << version->type->arguments().at(i);
-
-		if (defaultValues.at(i) != nullptr) {
-			os << " = ";
-			defaultValues.at(i)->print(os);
-		}
-	}
-	if (arguments.size() != 1) {
-		os << ")";
-	}
-	if (version->body->throws) {
-		os << BLUE_BOLD << " throws" << END_COLOR;
-	}
-	os << " => ";
-	version->body->print(os, indent, debug, condensed);
-
-	if (debug) {
-		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
-		os << "<";
-		int i = 0;
-		for (const auto& v : versions) {
-			if (i > 0) os << ", ";
-			if (v.second == version) os << "$";
-			os << v.first << " => " << v.second->type->return_type();
-			i++;
-		}
-		os << ">";
-	}
-	if (debug) {
-		//os << " " << type;
-	}
-}
-
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (has_version && versions.size() == 1) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
-		print_version(os, indent, debug, condensed, versions.begin()->second);
+		versions.begin()->second->print(os, indent, debug, condensed);
 	} else {
 		// std::cout << "print default version" << std::endl;
-		print_version(os, indent, debug, condensed, default_version);
+		default_version->print(os, indent, debug, condensed);
 	}
 }
 

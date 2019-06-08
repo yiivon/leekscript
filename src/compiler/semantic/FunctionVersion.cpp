@@ -7,6 +7,7 @@
 #include "../resolver/File.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../../vm/Program.hpp"
+#include "../../colors.h"
 
 namespace ls {
 
@@ -14,6 +15,55 @@ FunctionVersion::FunctionVersion() : type(Type::void_) {}
 
 bool FunctionVersion::is_compiled() const {
 	return f != nullptr;
+}
+
+void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool condensed) const {
+	if (parent->captures.size() > 0) {
+		os << "[";
+		for (unsigned c = 0; c < parent->captures.size(); ++c) {
+			if (c > 0) os << ", ";
+			os << parent->captures[c]->name << " " << parent->captures[c]->type;
+		}
+		os << "] ";
+	}
+	if (parent->arguments.size() != 1) {
+		os << "(";
+	}
+	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
+		if (i > 0) os << ", ";
+		os << parent->arguments.at(i)->content;
+		if (debug)
+			os << " " << this->type->arguments().at(i);
+
+		if (parent->defaultValues.at(i) != nullptr) {
+			os << " = ";
+			parent->defaultValues.at(i)->print(os);
+		}
+	}
+	if (parent->arguments.size() != 1) {
+		os << ")";
+	}
+	if (this->body->throws) {
+		os << BLUE_BOLD << " throws" << END_COLOR;
+	}
+	os << " => ";
+	body->print(os, indent, debug, condensed);
+
+	if (debug) {
+		os << " [" << parent->versions.size() << " versions, " << std::boolalpha << parent->has_version << "]";
+		os << "<";
+		int i = 0;
+		for (const auto& v : parent->versions) {
+			if (i > 0) os << ", ";
+			if (v.second == this) os << "$";
+			os << v.first << " => " << v.second->type->return_type();
+			i++;
+		}
+		os << ">";
+	}
+	if (debug) {
+		//os << " " << type;
+	}
 }
 
 void FunctionVersion::create_function(Compiler& c) {
@@ -27,7 +77,6 @@ void FunctionVersion::create_function(Compiler& c) {
 		args.push_back(t->llvm(c));
 	}
 
-	// const int id = id_counter++;
 	auto llvm_return_type = this->type->return_type()->llvm(c);
 	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
@@ -40,7 +89,6 @@ void FunctionVersion::create_function(Compiler& c) {
 		}
 		f->setPersonalityFn(personalityfn);
 	}
-
 	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
 }
 
