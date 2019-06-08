@@ -510,7 +510,7 @@ const Type* Type::meta_base_of(const Type* type, const Type* base) {
 }
 
 std::ostream& operator << (std::ostream& os, const Type* type) {
-	if (type->constant) {
+	if (type->constant and not type->is_function()) {
 		os << BLUE_BOLD << "const:" << END_COLOR;
 	}
 	type->print(os);
