@@ -8,6 +8,8 @@
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../../vm/Program.hpp"
 #include "../../colors.h"
+#include "../../type/Placeholder_type.hpp"
+#include "../../type/Compound_type.hpp"
 
 namespace ls {
 
@@ -64,6 +66,80 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	if (debug) {
 		//os << " " << type;
 	}
+}
+
+void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
+
+	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
+
+	parent->captures.clear();
+	analyzer->enter_function(parent);
+	parent->current_version = this;
+
+	// Prepare the placeholder return type for recursive functions
+	if (parent->captures.size()) {
+		type = Type::closure(parent->getReturnType(), args, parent);
+	} else {
+		type = Type::fun(parent->getReturnType(), args, parent);
+	}
+
+	std::vector<const Type*> arg_types;
+	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
+		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
+		analyzer->add_parameter(parent->arguments.at(i).get(), type);
+		arg_types.push_back(type);
+	}
+
+	body->analyze(analyzer);
+	if (parent->captures.size()) {
+		type = Type::closure(body->type, arg_types, parent);
+	} else {
+		type = Type::fun(body->type, arg_types, parent);
+	}
+	auto return_type = Type::void_;
+	// std::cout << "version->body->type " << version->body->type << std::endl;
+	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
+	if (auto c = dynamic_cast<const Compound_type*>(body->type)) {
+		for (const auto& t : c->types) {
+			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+				return_type = return_type->operator + (t);
+			}
+		}
+	} else {
+		return_type = body->type;
+	}
+	if (auto c = dynamic_cast<const Compound_type*>(body->return_type)) {
+		for (const auto& t : c->types) {
+			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+				return_type = return_type->operator + (t);
+			}
+		}
+	} else {
+		return_type = return_type->operator + (body->return_type);
+	}
+	if (body->type->temporary or body->return_type->temporary) return_type = return_type->add_temporary();
+	// std::cout << "return type = " << return_type << std::endl;
+
+	// Default version of the function, the return type must be any
+	if (not return_type->is_void() and not parent->is_main_function and this == parent->default_version and parent->generate_default_version) {
+		return_type = Type::any;
+	}
+	// std::cout << "return_type " << return_type << std::endl;
+	body->type = return_type;
+	if (parent->captures.size()) {
+		type = Type::closure(return_type, arg_types, parent);
+	} else {
+		type = Type::fun(return_type, arg_types, parent);
+	}
+	// Re-analyse the recursive function to clean the placeholder types
+	if (parent->recursive) {
+		body->analyze(analyzer);
+	}
+
+	parent->vars = analyzer->get_local_vars();
+	analyzer->leave_function();
+
+	// std::cout << "function analysed body : " << version->type << std::endl;
 }
 
 void FunctionVersion::create_function(Compiler& c) {

@@ -10,8 +10,6 @@
 #include <string>
 #include <fstream>
 #include "../../vm/LSValue.hpp"
-#include "../../type/Placeholder_type.hpp"
-#include "../../type/Compound_type.hpp"
 #include "../semantic/Callable.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../../colors.h"
@@ -136,11 +134,11 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 	}
 	analyzed = true;
 
-	analyze_body(analyzer, type->arguments(), default_version);
+	default_version->analyze(analyzer, type->arguments());
 
 	// Re-analyze each version
 	for (auto v : versions) {
-		analyze_body(analyzer, v.first, v.second);
+		v.second->analyze(analyzer, v.first);
 	}
 
 	type = default_version->type;
@@ -157,7 +155,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type
 	version->body = (Block*) body->clone();
 	versions.insert({args, version});
 
-	analyze_body(analyzer, args, version);
+	version->analyze(analyzer, args);
 }
 
 bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
@@ -227,80 +225,6 @@ void Function::set_version(const std::vector<const Type*>& args, int level) {
 			}
 		}
 	}
-}
-
-void Function::analyze_body(SemanticAnalyzer* analyzer, std::vector<const Type*> args, FunctionVersion* version) {
-
-	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
-
-	captures.clear();
-	analyzer->enter_function(this);
-	current_version = version;
-
-	// Prepare the placeholder return type for recursive functions
-	if (captures.size()) {
-		version->type = Type::closure(getReturnType(), args, this);
-	} else {
-		version->type = Type::fun(getReturnType(), args, this);
-	}
-
-	std::vector<const Type*> arg_types;
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		auto type = i < args.size() ? args.at(i) : (i < defaultValues.size() && defaultValues.at(i) != nullptr ? defaultValues.at(i)->type : Type::any);
-		analyzer->add_parameter(arguments.at(i).get(), type);
-		arg_types.push_back(type);
-	}
-
-	version->body->analyze(analyzer);
-	if (captures.size()) {
-		version->type = Type::closure(version->body->type, arg_types, this);
-	} else {
-		version->type = Type::fun(version->body->type, arg_types, this);
-	}
-	auto return_type = Type::void_;
-	// std::cout << "version->body->type " << version->body->type << std::endl;
-	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
-	if (auto c = dynamic_cast<const Compound_type*>(version->body->type)) {
-		for (const auto& t : c->types) {
-			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
-				return_type = return_type->operator + (t);
-			}
-		}
-	} else {
-		return_type = version->body->type;
-	}
-	if (auto c = dynamic_cast<const Compound_type*>(version->body->return_type)) {
-		for (const auto& t : c->types) {
-			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
-				return_type = return_type->operator + (t);
-			}
-		}
-	} else {
-		return_type = return_type->operator + (version->body->return_type);
-	}
-	if (version->body->type->temporary or version->body->return_type->temporary) return_type = return_type->add_temporary();
-	// std::cout << "return type = " << return_type << std::endl;
-
-	// Default version of the function, the return type must be any
-	if (not return_type->is_void() and not is_main_function and version == default_version and generate_default_version) {
-		return_type = Type::any;
-	}
-	// std::cout << "return_type " << return_type << std::endl;
-	version->body->type = return_type;
-	if (captures.size()) {
-		version->type = Type::closure(return_type, arg_types, this);
-	} else {
-		version->type = Type::fun(return_type, arg_types, this);
-	}
-	// Re-analyse the recursive function to clean the placeholder types
-	if (recursive) {
-		version->body->analyze(analyzer);
-	}
-
-	vars = analyzer->get_local_vars();
-	analyzer->leave_function();
-
-	// std::cout << "function analysed body : " << version->type << std::endl;
 }
 
 int Function::capture(std::shared_ptr<SemanticVar> var) {
