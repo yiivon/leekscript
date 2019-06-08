@@ -9,6 +9,27 @@
 
 namespace ls {
 
+CallableVersion::CallableVersion(std::string name, const Type* type, std::vector<TypeMutator*> mutators, std::vector<const Type*> templates, bool object, bool unknown, bool v1_addr, bool v2_addr, int flags)
+	: name(name), type(type), object(object), symbol(true), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {
+		assert(name.find(".") != std::string::npos);
+	}
+CallableVersion::CallableVersion(std::string name, const Type* type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, std::vector<TypeMutator*> mutators, std::vector<const Type*> templates, bool object, bool unknown, bool v1_addr, bool v2_addr, int flags)
+	: name(name), type(type), object(object), func(func), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+CallableVersion::CallableVersion(std::string name, const Type* type, const Value* value, std::vector<TypeMutator*> mutators, std::vector<const Type*> templates, bool object, bool unknown, bool v1_addr, bool v2_addr, int flags)
+	: name(name), type(type), object(object), value(value), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+CallableVersion::CallableVersion(std::string name, const Type* type, FunctionVersion* f, std::vector<TypeMutator*> mutators, std::vector<const Type*> templates, bool object, bool unknown, bool v1_addr, bool v2_addr, int flags)
+	: name(name), type(type), object(object), user_fun(f), mutators(mutators), templates(templates), unknown(unknown), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+
+CallableVersion::CallableVersion(const Type* return_type, std::initializer_list<const Type*> arguments, void* addr, int flags, std::vector<TypeMutator*> mutators)
+	: type(Type::fun(return_type, arguments)), symbol(true), mutators(mutators), flags(flags), addr(addr) {}
+CallableVersion::CallableVersion(const Type* return_type, std::initializer_list<const Type*> arguments, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags, std::vector<TypeMutator*> mutators)
+	: type(Type::fun(return_type, arguments)), func(func), mutators(mutators), flags(flags) {}
+
+CallableVersion::CallableVersion(const Type* v1_type, const Type* v2_type, const Type* return_type, void* addr, int flags, std::vector<TypeMutator*> mutators, bool v1_addr, bool v2_addr)
+	: type(Type::fun(return_type, {v1_type, v2_type})), symbol(true), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags), addr(addr) {}
+CallableVersion::CallableVersion(const Type* v1_type, const Type* v2_type, const Type* return_type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func, int flags, std::vector<TypeMutator*> mutators, bool v1_addr, bool v2_addr)
+	: type(Type::fun(return_type, {v1_type, v2_type})), func(func), mutators(mutators), v1_addr(v1_addr), v2_addr(v2_addr), flags(flags) {}
+
 const Type* build(const Type* type) {
 	if (type->is_template()) return ((Template_type*) type)->_implementation;
 	if (type->is_array()) return Type::array(build(type->element()));
