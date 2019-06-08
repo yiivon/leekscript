@@ -32,11 +32,11 @@ public:
 
 	virtual int id() const { return 0; }
 	virtual const Type* return_type() const { return Type::any; }
-	virtual const Type* argument(size_t index) const { return Type::any; }
+	virtual const Type* argument(size_t) const { return Type::any; }
 	virtual const std::vector<const Type*>& arguments() const { return Type::empty_types; }
 	virtual const Type* element() const { return Type::any; }
 	virtual const Type* key() const { return Type::any; }
-	virtual const Type* member(int i) const { return Type::any; }
+	virtual const Type* member(int) const { return Type::any; }
 
 	void toJson(std::ostream&) const;
 	virtual const std::string getJsonName() const = 0;
@@ -101,7 +101,7 @@ public:
 	bool is_void() const;
 	bool is_template() const;
 
-	virtual void implement(const Type* type) const {}
+	virtual void implement(const Type*) const {}
 	virtual void reset() const {}
 
 	virtual Type* clone() const = 0;
