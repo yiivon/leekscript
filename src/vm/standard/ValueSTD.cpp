@@ -6,6 +6,7 @@
 #include "../LSValue.hpp"
 #include "../VM.hpp"
 #include "../Context.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

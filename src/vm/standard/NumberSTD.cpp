@@ -7,6 +7,7 @@
 #include "../../../lib/utf8.h"
 #include "../../compiler/Compiler.hpp"
 #include "../VM.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

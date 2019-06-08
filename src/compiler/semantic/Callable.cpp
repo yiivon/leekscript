@@ -2,6 +2,7 @@
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../../vm/Module.hpp"
 #include "CallableVersion.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

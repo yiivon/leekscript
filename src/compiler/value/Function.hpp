@@ -10,27 +10,12 @@ namespace ls {
 
 class SemanticVar;
 class SemanticAnalyzer;
+class FunctionVersion;
 
 class Function : public Value {
 public:
 
 	static int id_counter;
-
-	struct Version {
-		Function* parent;
-		Block* body;
-		const Type* type = Type::void_;
-		llvm::BasicBlock* landing_pad = nullptr;
-		llvm::BasicBlock* catch_block = nullptr;
-		llvm::AllocaInst* exception_slot = nullptr;
-		llvm::AllocaInst* exception_line_slot = nullptr;
-		llvm::BasicBlock* block = nullptr;
-		llvm::Function* f = nullptr;
-		Compiler::value value;
-		bool is_compiled() const;
-		void create_function(Compiler& c);
-		void compile(Compiler& c, bool create_value = false, bool compile_body = true);
-	};
 
 	std::string name;
 	std::string internal_name;
@@ -46,10 +31,10 @@ public:
 	Function* parent;
 	const Type* placeholder_type = nullptr;
 	bool is_main_function = false;
-	Version* default_version = nullptr;
-	std::map<std::vector<const Type*>, Version*> versions;
+	FunctionVersion* default_version = nullptr;
+	std::map<std::vector<const Type*>, FunctionVersion*> versions;
 	bool generate_default_version = false;
-	Version* current_version = nullptr;
+	FunctionVersion* current_version = nullptr;
 	bool analyzed = false;
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
@@ -62,13 +47,13 @@ public:
 	int capture(std::shared_ptr<SemanticVar> var);
 	const Type* getReturnType();
 
-	void print_version(std::ostream& os, int indent, bool debug, bool condensed, const Version* version) const;
+	void print_version(std::ostream& os, int indent, bool debug, bool condensed, const FunctionVersion* version) const;
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
 	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
 	void set_version(const std::vector<const Type*>& args, int level) override;
-	void analyze_body(SemanticAnalyzer* analyzer, std::vector<const Type*> args, Version* version);
+	void analyze_body(SemanticAnalyzer* analyzer, std::vector<const Type*> args, FunctionVersion* version);
 	virtual const Type* version_type(std::vector<const Type*>) const override;
 	virtual void must_return_any(SemanticAnalyzer*) override;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
@@ -78,7 +63,7 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const override;
 	Compiler::value compile_default_version(Compiler&) const;
-	void compile_version_internal(Compiler& c, std::vector<const Type*> args, Version* version) const;
+	void compile_version_internal(Compiler& c, std::vector<const Type*> args, FunctionVersion* version) const;
 	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
 	void export_context(const Compiler& c) const;

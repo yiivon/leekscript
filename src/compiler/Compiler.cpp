@@ -24,6 +24,7 @@
 #include "../vm/Program.hpp"
 #include "llvm/Bitcode/BitcodeWriter.h"
 #include "resolver/File.hpp"
+#include "semantic/FunctionVersion.hpp"
 
 namespace ls {
 

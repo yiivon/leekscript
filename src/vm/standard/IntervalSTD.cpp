@@ -2,6 +2,7 @@
 #include "ValueSTD.hpp"
 #include "../value/LSInterval.hpp"
 #include "../value/LSClosure.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

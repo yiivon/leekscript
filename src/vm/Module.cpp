@@ -9,6 +9,7 @@
 #include "../compiler/semantic/Callable.hpp"
 #include "../compiler/semantic/CallableVersion.hpp"
 #include "VM.hpp"
+#include "../type/Type.hpp"
 
 namespace ls {
 

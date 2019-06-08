@@ -6,6 +6,8 @@
 #include "../../vm/Module.hpp"
 #include "../../colors.h"
 #include "../value/ObjectAccess.hpp"
+#include "FunctionVersion.hpp"
+#include "../value/Function.hpp"
 
 namespace ls {
 

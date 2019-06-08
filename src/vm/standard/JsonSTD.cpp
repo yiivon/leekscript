@@ -4,6 +4,7 @@
 #include "../value/LSString.hpp"
 #include "../value/LSNumber.hpp"
 #include <chrono>
+#include "../../type/Type.hpp"
 
 namespace ls {
 

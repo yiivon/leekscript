@@ -1,5 +1,6 @@
 #include "ClassSTD.hpp"
 #include "../value/LSClass.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

@@ -8,6 +8,7 @@
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
 #include "../VM.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

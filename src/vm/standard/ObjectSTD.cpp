@@ -2,6 +2,7 @@
 #include "ValueSTD.hpp"
 #include "../value/LSObject.hpp"
 #include "../value/LSNumber.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

@@ -1,9 +1,9 @@
 #include "SystemSTD.hpp"
-
 #include <chrono>
 #include "../LSValue.hpp"
 #include "../../constants.h"
 #include "../VM.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "../Compiler.hpp"
-#include "../value/Function.hpp"
 
 namespace ls {
 
@@ -12,16 +11,18 @@ class SemanticAnalyzer;
 class CallableVersion;
 class Callable;
 class Type;
+class FunctionVersion;
+class Value;
 
 class CallableVersion {
 public:
 	std::string name;
-	const Type* type = Type::void_;
+	const Type* type;
 	bool object = false;
 	bool symbol = false;
 	const Value* value = nullptr;
 	std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, bool)> func = nullptr;
-	Function::Version* user_fun = nullptr;
+	FunctionVersion* user_fun = nullptr;
 	std::vector<TypeMutator*> mutators;
 	std::vector<const Type*> templates;
 	bool unknown = false;

@@ -4,6 +4,7 @@
 #include "../value/LSArray.hpp"
 #include "ValueSTD.hpp"
 #include "../TypeMutator.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
