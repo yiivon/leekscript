@@ -284,7 +284,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 	// Check arguments
 	c.insn_check_args(args, types);
-	auto r = call.compile_call(c, callable_version, args, false);
+	auto r = call.compile_call(c, callable_version, args, is_void);
 	c.inc_ops(1);
 	if (r.t->is_mpz()) {
 		auto r2 = c.create_entry("m", r.t);
