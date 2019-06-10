@@ -3,6 +3,7 @@
 #include "../value/LSInterval.hpp"
 #include "../value/LSClosure.hpp"
 #include "../../type/Type.hpp"
+#include "ArraySTD.hpp"
 
 namespace ls {
 
@@ -20,11 +21,11 @@ IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 	operator_("in", {
 		{Type::interval, Type::integer, Type::boolean, (void*) &LSInterval::in_i}
 	});
+
+	auto ttR = Type::template_("R");
+	template_(ttR).
 	operator_("~~", {
-		{Type::const_interval, Type::fun(Type::any, {Type::integer}), Type::array(Type::any), map},
-		{Type::const_interval, Type::fun(Type::real, {Type::integer}), Type::array(Type::real), map},
-		{Type::const_interval, Type::fun(Type::integer, {Type::integer}), Type::array(Type::integer), map},
-		{Type::const_interval, Type::fun(Type::boolean, {Type::integer}), Type::array(Type::boolean), map}
+		{Type::tmp_array(ttR), {Type::const_interval, Type::fun(ttR, {Type::integer})}, ArraySTD::map},
 	});
 
 	/*
@@ -41,12 +42,13 @@ IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 		{Type::array(Type::integer), {Type::interval, pred_fun_type_int}, (void*) filter_fun},
 		{Type::array(Type::integer), {Type::interval, pred_clo_type_int}, (void*) filter_clo}
 	});
+
+	auto mapR = Type::template_("R");
+	template_(mapR).
 	method("map", {
-		{Type::array(Type::any), {Type::const_interval, Type::fun(Type::any, {Type::integer})}, map},
-		{Type::array(Type::real), {Type::const_interval, Type::fun(Type::real, {Type::integer})}, map},
-		{Type::array(Type::integer), {Type::const_interval, Type::fun(Type::integer, {Type::integer})}, map},
-		{Type::array(Type::boolean), {Type::const_interval, Type::fun(Type::boolean, {Type::integer})}, map}
+		{Type::tmp_array(mapR), {Type::const_interval, Type::fun(mapR, {Type::integer})}, ArraySTD::map},
 	});
+
 	method("sum", {
 		{Type::long_, {Type::interval}, (void*) &LSInterval::ls_sum},
 	});
@@ -61,18 +63,5 @@ IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 }
 
 IntervalSTD::~IntervalSTD() {}
-
-Compiler::value IntervalSTD::map(Compiler& c, std::vector<Compiler::value> args, bool) {
-	auto result = c.new_array(args[1].t->return_type(), {});
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value value, Compiler::value key) -> Compiler::value {
-		auto r = c.insn_call(args[1].t->return_type(), {value}, args[1]);
-		if (r.t->is_bool()) {
-			r = c.insn_convert(r, Type::any);
-		}
-		c.insn_push_array(result, r);
-		return {};
-	});
-	return result;
-}
 
 }

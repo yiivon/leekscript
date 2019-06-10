@@ -138,7 +138,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto fiT = Type::template_("T");
 	template_(fiT).
 	method("filter", {
-		{Type::tmp_array(fiT), {Type::const_array(fiT), Type::fun(Type::boolean, {fiT})}, filter },
+		{Type::tmp_array(fiT), {Type::const_array(fiT), Type::fun(Type::boolean, {fiT})}, filter},
 	});
 
 	method("isEmpty", {
@@ -519,7 +519,7 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bo
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function.t->return_type(), {x}, function);
 		if (no_return) {
-			c.insn_delete_temporary(r);
+			if (not r.t->is_void()) c.insn_delete_temporary(r);
 		} else {
 			c.insn_push_array(result, r.t->is_void() ? c.new_null() : r);
 		}
