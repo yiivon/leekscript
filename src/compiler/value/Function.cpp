@@ -58,7 +58,7 @@ void Function::print(std::ostream& os, int indent, bool debug, bool condensed) c
 			if (i++ > 0) os << std::endl << tabs(indent);
 			v.second->print(os, indent, debug, condensed);
 		}
-	} else {
+	} else if (default_version) {
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
 	}
@@ -128,20 +128,21 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		analyzer->add_function(this);
 		function_added = true;
 	}
-	
 	create_default_version(analyzer);
+	// if (is_main_function) {
+		analyse_default_method(analyzer);
+	// }
+	// std::cout << "Function type: " << type << std::endl;
+}
+
+void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
 	analyzed = true;
-
 	default_version->analyze(analyzer, type->arguments());
-
 	// Re-analyze each version
 	for (auto v : versions) {
 		v.second->analyze(analyzer, v.first);
 	}
-
 	type = default_version->type;
-
-	// std::cout << "Function type: " << type << std::endl;
 }
 
 void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
@@ -159,7 +160,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type
 bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (!analyzed) {
-		analyze(analyzer);
+		analyse_default_method(analyzer);
 	}
 	if (level == 1) {
 		auto version = args;
