@@ -45,7 +45,7 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	if (parent->arguments.size() != 1) {
 		os << ")";
 	}
-	if (placeholder_type) {
+	if (debug and placeholder_type) {
 		os << " " << placeholder_type;
 	}
 	if (recursive) {
