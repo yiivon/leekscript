@@ -45,6 +45,9 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	if (parent->arguments.size() != 1) {
 		os << ")";
 	}
+	if (placeholder_type) {
+		os << " " << placeholder_type;
+	}
 	if (recursive) {
 		os << BLUE_BOLD << " recursive" << END_COLOR;
 	}
@@ -55,19 +58,19 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	body->print(os, indent, debug, condensed);
 
 	if (debug) {
-		os << " [" << parent->versions.size() << " versions, " << std::boolalpha << parent->has_version << "]";
-		os << "<";
-		int i = 0;
-		for (const auto& v : parent->versions) {
-			if (i > 0) os << ", ";
-			if (v.second == this) os << "$";
-			os << v.first << " => " << v.second->type->return_type();
-			i++;
-		}
-		os << ">";
+		// os << " [" << parent->versions.size() << " versions, " << std::boolalpha << parent->has_version << "]";
+		// os << "<";
+		// int i = 0;
+		// for (const auto& v : parent->versions) {
+		// 	if (i > 0) os << ", ";
+		// 	if (v.second == this) os << "$";
+		// 	os << v.first << " => " << v.second->type->return_type();
+		// 	i++;
+		// }
+		// os << ">";
 	}
 	if (debug) {
-		//os << " " << type;
+		os << " : " << type->return_type();
 	}
 }
 
