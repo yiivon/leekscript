@@ -47,6 +47,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
+	void create_default_version(SemanticAnalyzer* analyzer);
 	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
 	void set_version(SemanticAnalyzer* analyser, const std::vector<const Type*>& args, int level) override;
 	virtual const Type* version_type(std::vector<const Type*>) const override;
@@ -58,7 +59,6 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const override;
 	Compiler::value compile_default_version(Compiler&) const;
-	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
 	void export_context(const Compiler& c) const;
 
 	virtual Value* clone() const override;

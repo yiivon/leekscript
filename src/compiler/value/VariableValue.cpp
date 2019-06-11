@@ -153,7 +153,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 					var = analyzer->convert_var_to_any(var);
 					type = var->type;
 				}
-				capture_index = analyzer->current_function()->capture(var);
+				capture_index = analyzer->current_function()->parent->capture(var);
 				var->index = capture_index;
 				scope = VarScope::CAPTURE;
 			}

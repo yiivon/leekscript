@@ -12,6 +12,7 @@
 #include "../../vm/standard/BooleanSTD.hpp"
 #include "../../vm/Exception.hpp"
 #include "../semantic/Callable.hpp"
+#include "../semantic/FunctionVersion.hpp"
 
 namespace ls {
 

@@ -122,8 +122,8 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				type = function_type->return_type();
 				auto vv = dynamic_cast<VariableValue*>(function);
 				if (vv and vv->var) {
-					if (callable_version->user_fun == analyzer->current_function()->current_version) {
-						analyzer->current_function()->current_version->recursive = true;
+					if (callable_version->user_fun == analyzer->current_function()) {
+						analyzer->current_function()->recursive = true;
 						type = analyzer->current_function()->getReturnType();
 					}
 				}

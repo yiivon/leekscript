@@ -64,6 +64,32 @@ Location Function::location() const {
 	return body->location();
 }
 
+void Function::create_default_version(SemanticAnalyzer* analyzer) {
+	if (default_version) return;
+
+	default_version = new FunctionVersion();
+	default_version->parent = this;
+	default_version->body = body;
+
+	std::vector<const Type*> args;
+	for (unsigned int i = 0; i < arguments.size(); ++i) {
+		if (defaultValues[i] != nullptr) {
+			defaultValues[i]->analyze(analyzer);
+		}
+		if (!default_version->placeholder_type) {
+			default_version->placeholder_type = Type::generate_new_placeholder_type();
+		}
+		args.push_back(default_version->placeholder_type);
+	}
+	type = Type::fun(Type::void_, args, this);
+
+	if (captures.size()) {
+		default_version->type = Type::closure(default_version->getReturnType(), args, this);
+	} else {
+		default_version->type = Type::fun(default_version->getReturnType(), args, this);
+	}
+}
+
 /*
  * When returing a function, compile a default version with all parameters
  * as pointers, when the function will be in the nature, there will be no
@@ -92,36 +118,14 @@ r2('hello')
  */
 void Function::analyze(SemanticAnalyzer* analyzer) {
 
-	parent = analyzer->current_function();
+	parent = analyzer->current_function()->parent;
 
 	if (!function_added) {
 		analyzer->add_function(this);
 		function_added = true;
 	}
-	if (!default_version) {
-		default_version = new FunctionVersion();
-		default_version->parent = this;
-		current_version = default_version;
-		default_version->body = body;
-
-		std::vector<const Type*> args;
-		for (unsigned int i = 0; i < arguments.size(); ++i) {
-			if (defaultValues[i] != nullptr) {
-				defaultValues[i]->analyze(analyzer);
-			}
-			if (!default_version->placeholder_type) {
-				default_version->placeholder_type = Type::generate_new_placeholder_type();
-			}
-			args.push_back(default_version->placeholder_type);
-		}
-		type = Type::fun(Type::void_, args, this);
-
-		if (captures.size()) {
-			default_version->type = Type::closure(getReturnType(), args, this);
-		} else {
-			default_version->type = Type::fun(getReturnType(), args, this);
-		}
-	}
+	
+	create_default_version(analyzer);
 	analyzed = true;
 
 	default_version->analyze(analyzer, type->arguments());
@@ -174,7 +178,7 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
 			if (auto f = dynamic_cast<Function*>(ei->value)) {
 
-				analyzer->enter_function(this);
+				analyzer->enter_function(this->default_version);
 				for (unsigned i = 0; i < arguments.size(); ++i) {
 					analyzer->add_parameter(arguments[i].get(), v->type->argument(i));
 				}
@@ -234,7 +238,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 	var = std::make_shared<SemanticVar>(*var);
 	captures.push_back(var);
 
-	if (var->function != parent) {
+	if (var->function->parent != parent) {
 		auto new_var = std::make_shared<SemanticVar>(*var);
 		new_var->index = parent->capture(new_var);
 		var->scope = VarScope::CAPTURE;
@@ -322,40 +326,6 @@ Compiler::value Function::compile_default_version(Compiler& c) const {
 	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
 	default_version->compile(c, true, false);
 	return default_version->value;
-}
-
-void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
-	c.assert_value_ok(v);
-	// Delete temporary mpz arguments
-	for (size_t i = 0; i < current_version->type->arguments().size(); ++i) {
-		const auto& name = arguments.at(i)->content;
-		const auto& arg = ((Compiler&) c).arguments.top().at(name);
-		if (current_version->type->argument(i) == Type::tmp_mpz_ptr) {
-			c.insn_delete_mpz(arg);
-		} else if (current_version->type->argument(i)->temporary) {
-			c.insn_delete(c.insn_load(arg));
-		}
-	}
-	// Delete function variables if needed
-	if (delete_variables) {
-		c.delete_function_variables();
-	}
-	// Return the value
-	if (current_version->type->return_type()->is_void()) {
-		c.insn_return_void();
-	} else {
-		auto return_type = c.fun->getReturnType()->fold();
-		if (v.t->is_void()) {
-			if (return_type->is_bool()) v = c.new_bool(false);
-			else if (return_type->is_real()) v = c.new_real(0);
-			else v = c.new_integer(0);
-		}
-		if (return_type->is_any()) {
-			v = c.insn_convert(v, return_type);
-		}
-		c.assert_value_ok(v);
-		c.insn_return(v);
-	}
 }
 
 void Function::export_context(const Compiler& c) const {

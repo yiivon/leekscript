@@ -90,14 +90,14 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
 	parent->captures.clear();
-	analyzer->enter_function(parent);
 	parent->current_version = this;
+	analyzer->enter_function((FunctionVersion*) this);
 
 	// Prepare the placeholder return type for recursive functions
 	if (parent->captures.size()) {
-		type = Type::closure(parent->getReturnType(), args, parent);
+		type = Type::closure(getReturnType(), args, parent);
 	} else {
-		type = Type::fun(parent->getReturnType(), args, parent);
+		type = Type::fun(getReturnType(), args, parent);
 	}
 
 	std::vector<const Type*> arg_types;
@@ -189,8 +189,6 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ", create_value=" << create_value << ")" << std::endl;
 
 	if (not is_compiled()) {
-		
-		parent->current_version = this;
 
 		std::vector<llvm::Type*> args;
 		if (parent->captures.size()) {
@@ -202,7 +200,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		// Create the llvm function
 		create_function(c);
 
-		c.enter_function(f, parent->captures.size() > 0, parent);
+		c.enter_function(f, parent->captures.size() > 0, this);
 
 		c.builder.SetInsertPoint(block);
 
@@ -244,7 +242,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		if (compile_body) {
 			body->compile(c);
 		} else {
-			parent->compile_return(c, {});
+			compile_return(c, {});
 		}
 
 		if (!parent->is_main_function) {
@@ -291,6 +289,41 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		}
 	}
 	// std::cout << "Function '" << parent->name << "' compiled: " << value.v << std::endl;
+}
+
+void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
+	c.assert_value_ok(v);
+	// Delete temporary mpz arguments
+	for (size_t i = 0; i < type->arguments().size(); ++i) {
+		const auto& name = parent->arguments.at(i)->content;
+		const auto& arg = ((Compiler&) c).arguments.top().at(name);
+		if (type->argument(i) == Type::tmp_mpz_ptr) {
+			// std::cout << "delete tmp arg " << name << " " << type->argument(i) << std::endl;
+			c.insn_delete_mpz(arg);
+		} else if (type->argument(i)->temporary) {
+			c.insn_delete(c.insn_load(arg));
+		}
+	}
+	// Delete function variables if needed
+	if (delete_variables) {
+		c.delete_function_variables();
+	}
+	// Return the value
+	if (type->return_type()->is_void()) {
+		c.insn_return_void();
+	} else {
+		auto return_type = ((FunctionVersion*) this)->getReturnType()->fold();
+		if (v.t->is_void()) {
+			if (return_type->is_bool()) v = c.new_bool(false);
+			else if (return_type->is_real()) v = c.new_real(0);
+			else v = c.new_integer(0);
+		}
+		if (return_type->is_any()) {
+			v = c.insn_convert(v, return_type);
+		}
+		c.assert_value_ok(v);
+		c.insn_return(v);
+	}
 }
 
 llvm::BasicBlock* FunctionVersion::get_landing_pad(const Compiler& c) {

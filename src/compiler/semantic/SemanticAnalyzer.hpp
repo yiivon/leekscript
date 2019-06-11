@@ -36,14 +36,14 @@ public:
 	int parent_index;
 	Value* value;
 	VariableDeclaration* vd;
-	Function* function; // In which function the variable is declared
+	FunctionVersion* function; // In which function the variable is declared
 	const Type* type;
 	std::vector<const Type*> version;
 	bool has_version = false;
 	LSValue* lsvalue = nullptr;
 	Call call;
 
-	SemanticVar(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, Function* function, LSValue* lsvalue, Call call = {}) :
+	SemanticVar(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
 		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
 
 	// TODO remove ?
@@ -62,7 +62,7 @@ public:
 	std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> parameters;
 
 	std::vector<Function*> functions;
-	std::stack<Function*> functions_stack;
+	std::stack<FunctionVersion*> functions_stack;
 	std::stack<int> loops;
 
 	std::vector<Error> errors;
@@ -72,12 +72,12 @@ public:
 
 	void analyze(Program*, Context*);
 
-	void enter_function(Function*);
+	void enter_function(FunctionVersion*);
 	void leave_function();
 	void enter_block();
 	void leave_block();
 	void add_function(Function*);
-	Function* current_function() const;
+	FunctionVersion* current_function() const;
 
 	void enter_loop();
 	void leave_loop();

@@ -1,6 +1,7 @@
 #include "Return.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../value/Function.hpp"
+#include "../semantic/FunctionVersion.hpp"
 
 namespace ls {
 

@@ -195,7 +195,7 @@ void VM::add_internal_var(std::string name, const Type* type, LSValue* value, Ca
 
 void VM::add_internal_var(std::string name, const Type* type, Function* function) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
-	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, function, nullptr, function, nullptr) });
+	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, function, nullptr, nullptr, nullptr) });
 }
 
 void* VM::resolve_symbol(std::string name) {

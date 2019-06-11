@@ -5,6 +5,7 @@
 #include "../instruction/Throw.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "Function.hpp"
+#include "../semantic/FunctionVersion.hpp"
 
 namespace ls {
 
@@ -137,7 +138,7 @@ Compiler::value Block::compile(Compiler& c) const {
 				}
 			}();
 			if (is_function_block and c.vm->context) {
-				c.fun->export_context(c);
+				c.fun->parent->export_context(c);
 			}
 			c.leave_block();
 			if (is_function_block) {

@@ -32,7 +32,8 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 
 	this->program = program;
 
-	enter_function(program->main);
+	program->main->create_default_version(this);
+	enter_function(program->main->default_version);
 
 	// Add context variables
 	if (context) {
@@ -45,7 +46,7 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 	program->functions = functions;
 }
 
-void SemanticAnalyzer::enter_function(Function* f) {
+void SemanticAnalyzer::enter_function(FunctionVersion* f) {
 
 	// Create function scope
 	variables.push_back(std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> {});
@@ -73,7 +74,7 @@ void SemanticAnalyzer::leave_block() {
 	variables.back().pop_back();
 }
 
-Function* SemanticAnalyzer::current_function() const {
+FunctionVersion* SemanticAnalyzer::current_function() const {
 	return functions_stack.top();
 }
 

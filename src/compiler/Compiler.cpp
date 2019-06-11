@@ -1651,8 +1651,8 @@ void Compiler::insn_throw(Compiler::value v) const {
 	} else {
 		delete_function_variables();
 		auto line = new_long(exception_line.top());
-		auto file = new_const_string(fun->token->location.file->path);
-		auto function_name = new_const_string(fun->name);
+		auto file = new_const_string(fun->parent->token->location.file->path);
+		auto function_name = new_const_string(fun->parent->name);
 		insn_call(Type::void_, {v, file, function_name, line}, "System.throw");
 	}
 }
@@ -1907,7 +1907,7 @@ void Compiler::delete_variables_block(int deepness) {
 	}
 }
 
-void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun) {
+void Compiler::enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun) {
 	variables.push_back(std::map<std::string, value> {});
 	functions.push(F);
 	functions2.push(fun);
@@ -1915,14 +1915,14 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, Function* fun)
 	catchers.push_back({});
 	function_is_closure.push(is_closure);
 	auto block = builder.GetInsertBlock();
-	if (!block) block = fun->current_version->block;
+	if (!block) block = fun->block;
 	function_llvm_blocks.push(block);
 	exception_line.push(-1);
 	this->F = F;
 	this->fun = fun;
 	std::vector<std::string> args;
-	for (unsigned i = 0; i < fun->arguments.size(); ++i) {
-		args.push_back(fun->arguments.at(i)->content);
+	for (unsigned i = 0; i < fun->parent->arguments.size(); ++i) {
+		args.push_back(fun->parent->arguments.at(i)->content);
 	}
 	arguments.push({});
 }

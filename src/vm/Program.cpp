@@ -204,7 +204,7 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 	f->body->instructions.push_back(new ExpressionInstruction(ex));
 	auto type = Type::fun(Type::any, {Type::any, Type::any});
 
-	auto var = std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, f, nullptr, f, nullptr);
+	auto var = std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
 	operators.insert({name, var});
 	return var;
 }

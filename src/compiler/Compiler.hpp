@@ -48,6 +48,7 @@ class Program;
 class VM;
 class Function;
 class Type;
+class FunctionVersion;
 
 class Compiler {
 public:
@@ -78,9 +79,9 @@ public:
 	static llvm::IRBuilder<> builder;
 
 	llvm::Function* F;
-	Function* fun;
+	FunctionVersion* fun;
 	std::stack<llvm::Function*> functions;
-	std::stack<Function*> functions2;
+	std::stack<FunctionVersion*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
 	std::stack<std::map<std::string, value>> arguments;
@@ -290,7 +291,7 @@ public:
 	void enter_block();
 	void leave_block(bool delete_vars = true);
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
-	void enter_function(llvm::Function* F, bool is_closure, Function* fun);
+	void enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun);
 	void leave_function();
 	int get_current_function_blocks() const;
 	void delete_function_variables() const;
