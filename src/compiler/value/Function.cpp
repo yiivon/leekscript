@@ -53,7 +53,11 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (versions.size() > 0) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
-		versions.begin()->second->print(os, indent, debug, condensed);
+		int i = 0;
+		for (const auto& v : versions) {
+			if (i++ > 0) os << std::endl << tabs(indent);
+			v.second->print(os, indent, debug, condensed);
+		}
 	} else {
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
