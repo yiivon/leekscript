@@ -62,7 +62,7 @@ const Type* Function::getReturnType() {
 }
 
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	if (has_version && versions.size() == 1) {
+	if (versions.size() > 0) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
 		versions.begin()->second->print(os, indent, debug, condensed);
 	} else {
