@@ -204,7 +204,7 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 	return false;
 }
 
-void Function::set_version(const std::vector<const Type*>& args, int level) {
+void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
 		for (const auto& t : args) {
@@ -222,7 +222,7 @@ void Function::set_version(const std::vector<const Type*>& args, int level) {
 		auto v = current_version ? current_version : default_version;
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
 			if (auto f = dynamic_cast<Function*>(ei->value)) {
-				f->set_version(args, level - 1);
+				f->set_version(analyzer, args, level - 1);
 			}
 		}
 	}

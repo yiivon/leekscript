@@ -88,7 +88,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		arguments_types.push_back(argument->type);
 	}
 	function->will_take(analyzer, arguments_types, 1);
-	function->set_version(arguments_types, 1);
+	function->set_version(analyzer, arguments_types, 1);
 
 	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
 
@@ -112,12 +112,12 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				auto argument_type = callable_version->type->argument(a + offset);
 				if (argument_type->is_function()) {
 					arguments.at(a)->will_take(analyzer, argument_type->arguments(), 1);
-					arguments.at(a)->set_version(argument_type->arguments(), 1);
+					arguments.at(a)->set_version(analyzer, argument_type->arguments(), 1);
 				}
 			}
 			if (callable_version->value) {
 				function->will_take(analyzer, arguments_types, 1);
-				function->set_version(arguments_types, 1);
+				function->set_version(analyzer, arguments_types, 1);
 				function_type = function->version_type(arguments_types);
 				type = function_type->return_type();
 				auto vv = dynamic_cast<VariableValue*>(function);
@@ -235,8 +235,8 @@ bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const
 	return false;
 }
 
-void FunctionCall::set_version(const std::vector<const Type*>& args, int level) {
-	function->set_version(args, level + 1);
+void FunctionCall::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+	function->set_version(analyzer, args, level + 1);
 }
 
 const Type* FunctionCall::version_type(std::vector<const Type*> version) const {

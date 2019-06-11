@@ -16,8 +16,8 @@ Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
 
 void Value::analyze(SemanticAnalyzer*) {}
 
-bool Value::will_take(SemanticAnalyzer*, const std::vector<const Type*>& args, int) {
-	set_version(args, 1);
+bool Value::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
+	set_version(analyzer, args, 1);
 	return false;
 }
 
@@ -39,7 +39,7 @@ bool Value::must_be_any(SemanticAnalyzer*) {
 
 void Value::must_return_any(SemanticAnalyzer*) {}
 
-void Value::set_version(const std::vector<const Type*>& args, int) {
+void Value::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
 	version = args;
 	has_version = true;
 }

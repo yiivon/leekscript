@@ -49,7 +49,7 @@ public:
 	virtual Location location() const override;
 
 	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
-	void set_version(const std::vector<const Type*>& args, int level) override;
+	void set_version(SemanticAnalyzer* analyser, const std::vector<const Type*>& args, int level) override;
 	virtual const Type* version_type(std::vector<const Type*>) const override;
 	virtual void must_return_any(SemanticAnalyzer*) override;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;

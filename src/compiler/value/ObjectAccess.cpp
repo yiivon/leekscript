@@ -48,7 +48,7 @@ Location ObjectAccess::location() const {
 	return {field->location.file, object->location().start, field->location.end};
 }
 
-void ObjectAccess::set_version(const std::vector<const Type*>& args, int level) {
+void ObjectAccess::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "ObjectAccess::set_version(" << args << ", " << level << ")" << std::endl;
 	has_version = true;
 	if (call) {
@@ -85,7 +85,7 @@ const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
 
 bool ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "OA will take " << args << std::endl;
-	set_version(args, 1);
+	set_version(analyzer, args, 1);
 	return false;
 }
 

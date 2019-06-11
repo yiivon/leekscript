@@ -210,14 +210,14 @@ bool VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<cons
 		}
 		type = var->type;
 	}
-	set_version(args, level);
+	set_version(analyzer, args, level);
 	return false;
 }
 
-void VariableValue::set_version(const std::vector<const Type*>& args, int level) {
+void VariableValue::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "VariableValue::set_version " << args << " " << level << std::endl;
 	if (var != nullptr and var->value != nullptr) {
-		var->value->set_version(args, level);
+		var->value->set_version(analyzer, args, level);
 	}
 	if (level == 1) {
 		version = args;
