@@ -1,15 +1,15 @@
 #ifndef META_ELEMENT_TYPE_HPP
 #define META_ELEMENT_TYPE_HPP
 
-#include "Type.hpp"
+#include "Any_type.hpp"
 
 namespace ls {
 
-class Meta_element_type : public Type {
+class Meta_element_type : public Any_type {
 public:
 	const Type* type;
 	Meta_element_type(const Type* type) : type(type) {
-		placeholder = type->placeholder;
+		placeholder = true;
 	}
 	virtual int id() const { return 0; }
 	virtual const std::string getName() const override { return "meta_element"; }

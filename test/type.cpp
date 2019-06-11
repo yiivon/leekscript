@@ -97,6 +97,17 @@ void Test::test_types() {
 	test("integer | real <=> integer | real", ls::Type::compound({ ls::Type::integer, ls::Type::real })->distance(ls::Type::compound({ ls::Type::integer, ls::Type::real })), 0);
 	test("const:string <=> string&&", ls::Type::const_string->distance(ls::Type::tmp_string), -1);
 	test("string <=> number", ls::Type::string->distance(ls::Type::number), -1);
+	test("p.element <=> any", p1->element()->distance(ls::Type::any), 0);
+	test("any <=> p.element", ls::Type::any->element()->distance(p1->element()), 0);
+
+	section("element()");
+	test("array<int>.element", ls::Type::array(ls::Type::integer)->element(), ls::Type::integer);
+	test("array<p>.element", ls::Type::array(p1)->element(), p1);
+	test("array<int | p>.element", ls::Type::array(ls::Type::compound({ ls::Type::integer, p1 }))->element(), ls::Type::compound({ ls::Type::integer, p1 }));
+	// test("(array<int> | array<real>).element", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) })->element(), ls::Type::compound({ ls::Type::integer, ls::Type::real }));
+
+	section("placeholder");
+	test("array<p.element>", ls::Type::array(p1->element()), p1);
 
 	section("is_number");
 	test("number", ls::Type::number->is_number(), true);

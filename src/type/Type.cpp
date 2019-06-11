@@ -33,6 +33,7 @@
 #include "Compound_type.hpp"
 #include "Meta_mul_type.hpp"
 #include "Meta_baseof_type.hpp"
+#include "Meta_element_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
@@ -161,6 +162,7 @@ std::string Type::to_string() const {
 }
 
 const Type* Type::add_temporary() const {
+	if (placeholder) return this;
 	if (temporary) return this;
 	if (constant) return not_constant()->add_temporary();
 	auto i = temporary_types.find(this);
@@ -177,6 +179,7 @@ const Type* Type::add_temporary() const {
 	return type;
 }
 const Type* Type::not_temporary() const {
+	if (placeholder) return this;
 	if (not temporary) return this;
 	auto i = not_temporary_types.find(this);
 	if (i != not_temporary_types.end()) return i->second;
@@ -192,6 +195,7 @@ const Type* Type::not_temporary() const {
 	return type;
 }
 const Type* Type::add_constant() const {
+	if (placeholder) return this;
 	if (constant) return this;
 	if (temporary) return not_temporary()->add_constant();
 	auto i = const_types.find(this);
@@ -208,6 +212,7 @@ const Type* Type::add_constant() const {
 	return type;
 }
 const Type* Type::not_constant() const {
+	if (placeholder) return this;
 	if (not constant) return this;
 	auto i = not_const_types.find(this);
 	if (i != not_const_types.end()) return i->second;
@@ -366,13 +371,16 @@ const Type* Type::generate_new_placeholder_type() {
 }
 
 const Type* Type::array(const Type* element) {
+	if (auto e = dynamic_cast<const Meta_element_type*>(element)) return e->type;
 	auto i = array_types.find(element);
 	if (i != array_types.end()) return i->second;
 	auto type = new Array_type(element);
+	type->placeholder = element->placeholder;
 	array_types.insert({element, type});
 	return type;
 }
 const Type* Type::const_array(const Type* element) {
+	if (auto e = dynamic_cast<const Meta_element_type*>(element)) return e->type;
 	auto i = const_array_types.find(element);
 	if (i != const_array_types.end()) return i->second;
 	auto type = array(element)->add_constant();
@@ -380,6 +388,7 @@ const Type* Type::const_array(const Type* element) {
 	return type;
 }
 const Type* Type::tmp_array(const Type* element) {
+	if (auto e = dynamic_cast<const Meta_element_type*>(element)) return e->type;
 	auto i = tmp_array_types.find(element);
 	if (i != tmp_array_types.end()) return i->second;
 	auto type = array(element)->add_temporary();

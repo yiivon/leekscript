@@ -199,12 +199,13 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// Don't use old stuff for boolean, /, and bit operators
 	if ((v1->type->is_bool() and op->type != TokenType::EQUAL) 
 		or op->type == TokenType::TRIPLE_EQUAL
-		or op->type == TokenType::PLUS or op->type == TokenType::MINUS 
+		or op->type == TokenType::PLUS or op->type == TokenType::MINUS
 		or op->type == TokenType::TIMES or op->type == TokenType::DIVIDE 
 		or op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
 		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
 		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
+		if (v1->type->placeholder or v2->type->placeholder) return;
 		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type->to_string(), op->character, v2->type->to_string()}});
 		return;
 	}
