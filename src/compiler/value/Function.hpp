@@ -29,7 +29,6 @@ public:
 	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
 	bool function_added;
 	Function* parent;
-	const Type* placeholder_type = nullptr;
 	bool is_main_function = false;
 	FunctionVersion* default_version = nullptr;
 	std::map<std::vector<const Type*>, FunctionVersion*> versions;

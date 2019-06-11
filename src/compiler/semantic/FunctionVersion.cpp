@@ -97,11 +97,11 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type
 		type = Type::fun(body->type, arg_types, parent);
 	}
 	auto return_type = Type::void_;
-	// std::cout << "version->body->type " << version->body->type << std::endl;
-	// std::cout << "version->body->return_type " << version->body->return_type << std::endl;
+	// std::cout << "version->body->type " << body->type << std::endl;
+	// std::cout << "version->body->return_type " << body->return_type << std::endl;
 	if (auto c = dynamic_cast<const Compound_type*>(body->type)) {
 		for (const auto& t : c->types) {
-			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+			if (t != placeholder_type) {
 				return_type = return_type->operator + (t);
 			}
 		}
@@ -110,7 +110,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type
 	}
 	if (auto c = dynamic_cast<const Compound_type*>(body->return_type)) {
 		for (const auto& t : c->types) {
-			if (dynamic_cast<const Placeholder_type*>(t) == nullptr) {
+			if (t != placeholder_type) {
 				return_type = return_type->operator + (t);
 			}
 		}

@@ -17,6 +17,7 @@ public:
 	llvm::BasicBlock* block = nullptr;
 	llvm::Function* f = nullptr;
 	Compiler::value value;
+	const Type* placeholder_type = nullptr;
 
 	FunctionVersion();
 

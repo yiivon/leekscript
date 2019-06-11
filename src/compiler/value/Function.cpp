@@ -52,10 +52,10 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 
 const Type* Function::getReturnType() {
 	if (current_version->type->return_type()->is_void()) {
-		if (!placeholder_type) {
-			placeholder_type = Type::generate_new_placeholder_type();
+		if (!current_version->placeholder_type) {
+			current_version->placeholder_type = Type::generate_new_placeholder_type();
 		}
-		return placeholder_type;
+		return current_version->placeholder_type;
 	} else {
 		return current_version->type->return_type();
 	}
@@ -109,23 +109,24 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		analyzer->add_function(this);
 		function_added = true;
 	}
-	std::vector<const Type*> args;
-	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		if (defaultValues[i] != nullptr) {
-			defaultValues[i]->analyze(analyzer);
-		}
-		if (!placeholder_type) {
-			placeholder_type = Type::generate_new_placeholder_type();
-		}
-		args.push_back(placeholder_type);
-	}
-	type = Type::fun(Type::void_, args, this);
-
 	if (!default_version) {
 		default_version = new FunctionVersion();
 		default_version->parent = this;
 		current_version = default_version;
 		default_version->body = body;
+
+		std::vector<const Type*> args;
+		for (unsigned int i = 0; i < arguments.size(); ++i) {
+			if (defaultValues[i] != nullptr) {
+				defaultValues[i]->analyze(analyzer);
+			}
+			if (!default_version->placeholder_type) {
+				default_version->placeholder_type = Type::generate_new_placeholder_type();
+			}
+			args.push_back(default_version->placeholder_type);
+		}
+		type = Type::fun(Type::void_, args, this);
+
 		if (captures.size()) {
 			default_version->type = Type::closure(getReturnType(), args, this);
 		} else {
