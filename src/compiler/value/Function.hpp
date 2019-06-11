@@ -43,7 +43,6 @@ public:
 
 	void addArgument(Token* token, Value* defaultValue);
 	int capture(std::shared_ptr<SemanticVar> var);
-	const Type* getReturnType();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

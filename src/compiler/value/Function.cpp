@@ -50,17 +50,6 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 	if (defaultValue) default_values_count++;
 }
 
-const Type* Function::getReturnType() {
-	if (current_version->type->return_type()->is_void()) {
-		if (!current_version->placeholder_type) {
-			current_version->placeholder_type = Type::generate_new_placeholder_type();
-		}
-		return current_version->placeholder_type;
-	} else {
-		return current_version->type->return_type();
-	}
-}
-
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (versions.size() > 0) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;

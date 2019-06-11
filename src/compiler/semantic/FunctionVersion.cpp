@@ -74,6 +74,17 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	}
 }
 
+const Type* FunctionVersion::getReturnType() {
+	if (type->return_type()->is_void()) {
+		if (!placeholder_type) {
+			placeholder_type = Type::generate_new_placeholder_type();
+		}
+		return placeholder_type;
+	} else {
+		return type->return_type();
+	}
+}
+
 void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
 
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;

@@ -26,6 +26,7 @@ public:
 
 	void print(std::ostream& os, int indent, bool debug, bool condensed) const;
 
+	const Type* getReturnType();
 	void analyze(SemanticAnalyzer* analyzer, std::vector<const Type*> args);
 
 	void create_function(Compiler& c);
