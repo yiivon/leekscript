@@ -335,30 +335,38 @@ Compiler::value Function::compile_default_version(Compiler& c) const {
 }
 
 llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
-	// std::cout << "get_landing_pad " << current_version->type << " " << current_version->landing_pad << std::endl;
-	if (current_version->landing_pad == nullptr) {
-		current_version->catch_block = llvm::BasicBlock::Create(c.getContext(), "catch", c.F);
-		auto savedIP = c.builder.saveAndClearIP();
-		current_version->landing_pad = llvm::BasicBlock::Create(c.getContext(), "lpad", c.F);
-		c.builder.SetInsertPoint(current_version->landing_pad);
-		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(c.getContext()));
-		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt64Ty(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
-		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
-		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
-		current_version->exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
-		c.builder.CreateStore(LPadExn, current_version->exception_slot);
-		c.builder.CreateStore(c.new_long(c.exception_line.top()).v, current_version->exception_line_slot);
-		landingPadInst->addClause(catchAllSelector);
-		auto catcher = c.find_catcher();
-		if (catcher) {
-			c.builder.CreateBr(catcher->handler);
-		} else {
-			c.builder.CreateBr(current_version->catch_block);
-		}
-		c.builder.restoreIP(savedIP);
-		// std::cout << "Landing pad of " << current_version->type << " created! " << current_version->landing_pad << std::endl;
+	auto catch_block = llvm::BasicBlock::Create(c.getContext(), "catch", c.F);
+	auto savedIP = c.builder.saveAndClearIP();
+	auto landing_pad = llvm::BasicBlock::Create(c.getContext(), "lpad", c.F);
+	c.builder.SetInsertPoint(landing_pad);
+	auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(c.getContext()));
+	auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt64Ty(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
+	auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
+	auto exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
+	auto exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
+	c.builder.CreateStore(LPadExn, exception_slot);
+	c.builder.CreateStore(c.new_long(c.exception_line.top()).v, exception_line_slot);
+	landingPadInst->addClause(catchAllSelector);
+	auto catcher = c.find_catcher();
+	if (catcher) {
+		c.builder.CreateBr(catcher->handler);
+	} else {
+		// Catch block
+		auto savedIPc = c.builder.saveAndClearIP();
+		c.builder.SetInsertPoint(catch_block);
+		c.delete_function_variables();
+		Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_};
+		Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_};
+		auto file = c.new_const_string(c.fun->token->location.file->path);
+		auto function_name = c.new_const_string(c.fun->name);
+		c.insn_call(Type::void_, {exception, file, function_name, exception_line}, "System.throw.1");
+		c.fun->compile_return(c, {});
+		c.builder.restoreIP(savedIPc);
+
+		c.builder.CreateBr(catch_block);
 	}
-	return current_version->landing_pad;
+	c.builder.restoreIP(savedIP);
+	return landing_pad;
 }
 
 void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
@@ -396,9 +404,11 @@ void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_
 }
 
 void Function::export_context(const Compiler& c) const {
-	for (const auto& v : c.function_variables.back()) {
-		// std::cout << "var " << v.first << " " << v.second.t << std::endl;
-		c.export_context_variable(v.first, c.insn_load(v.second));
+	int deepness = c.get_current_function_blocks();
+	for (int i = c.variables.size() - 1; i >= (int) c.variables.size() - deepness; --i) {
+		for (auto v = c.variables[i].begin(); v != c.variables[i].end(); ++v) {
+			c.export_context_variable(v->first, c.insn_load(v->second));
+		}
 	}
 }
 

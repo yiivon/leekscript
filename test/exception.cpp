@@ -6,9 +6,8 @@ void Test::test_exceptions() {
 	code("throw 2").ops_limit(1000).exception(ls::vm::Exception::OPERATION_LIMIT_EXCEEDED);
 	code("throw").exception(ls::vm::Exception::EXCEPTION);
 	code("12").exception(ls::vm::Exception::NO_EXCEPTION);
-	// TODO leaks of mpz objects (function variables in Compiler)
-	DISABLED_code("var a = 12m; throw").exception(ls::vm::Exception::EXCEPTION);
-	DISABLED_code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
+	code("var a = 12m; throw").exception(ls::vm::Exception::EXCEPTION);
+	code("var a = 12m + 5m; throw").exception(ls::vm::Exception::EXCEPTION);
 
 	section("Exceptions - Avoid leaks");
 	code("var x = 'hello' [][0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
