@@ -58,7 +58,6 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const override;
 	Compiler::value compile_default_version(Compiler&) const;
-	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
 	void export_context(const Compiler& c) const;
 

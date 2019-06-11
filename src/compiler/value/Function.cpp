@@ -324,41 +324,6 @@ Compiler::value Function::compile_default_version(Compiler& c) const {
 	return default_version->value;
 }
 
-llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
-	auto catch_block = llvm::BasicBlock::Create(c.getContext(), "catch", c.F);
-	auto savedIP = c.builder.saveAndClearIP();
-	auto landing_pad = llvm::BasicBlock::Create(c.getContext(), "lpad", c.F);
-	c.builder.SetInsertPoint(landing_pad);
-	auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(c.getContext()));
-	auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt64Ty(c.getContext()), llvm::Type::getInt32Ty(c.getContext())), 1);
-	auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
-	auto exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(c.getContext()));
-	auto exception_line_slot = c.CreateEntryBlockAlloca("exnline.slot", llvm::Type::getInt64Ty(c.getContext()));
-	c.builder.CreateStore(LPadExn, exception_slot);
-	c.builder.CreateStore(c.new_long(c.exception_line.top()).v, exception_line_slot);
-	landingPadInst->addClause(catchAllSelector);
-	auto catcher = c.find_catcher();
-	if (catcher) {
-		c.builder.CreateBr(catcher->handler);
-	} else {
-		// Catch block
-		auto savedIPc = c.builder.saveAndClearIP();
-		c.builder.SetInsertPoint(catch_block);
-		c.delete_function_variables();
-		Compiler::value exception = {c.builder.CreateLoad(exception_slot), Type::long_};
-		Compiler::value exception_line = {c.builder.CreateLoad(exception_line_slot), Type::long_};
-		auto file = c.new_const_string(c.fun->token->location.file->path);
-		auto function_name = c.new_const_string(c.fun->name);
-		c.insn_call(Type::void_, {exception, file, function_name, exception_line}, "System.throw.1");
-		c.fun->compile_return(c, {});
-		c.builder.restoreIP(savedIPc);
-
-		c.builder.CreateBr(catch_block);
-	}
-	c.builder.restoreIP(savedIP);
-	return landing_pad;
-}
-
 void Function::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
 	c.assert_value_ok(v);
 	// Delete temporary mpz arguments

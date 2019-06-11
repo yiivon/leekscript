@@ -31,6 +31,7 @@ public:
 
 	void create_function(Compiler& c);
 	void compile(Compiler& c, bool create_value = false, bool compile_body = true);
+	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 };
 
 }
