@@ -1,6 +1,7 @@
 #include "VariableValue.hpp"
 #include "math.h"
 #include "../semantic/SemanticAnalyzer.hpp"
+#include "../semantic/FunctionVersion.hpp"
 #include "../value/Function.hpp"
 #include "../instruction/VariableDeclaration.hpp"
 #include "../semantic/Callable.hpp"
@@ -147,11 +148,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 		scope = var->scope;
 		attr_types = var->attr_types;
 		if (scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
-			if (var->type->is_function()) {
-				if (var->name == analyzer->current_function()->name) {
-					analyzer->current_function()->recursive = true;
-				}
-			} else {
+			if (not var->type->is_function()) {
 				if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
 					var = analyzer->convert_var_to_any(var);
 					type = var->type;

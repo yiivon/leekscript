@@ -18,6 +18,7 @@ public:
 	llvm::Function* f = nullptr;
 	Compiler::value value;
 	const Type* placeholder_type = nullptr;
+	bool recursive = false;
 
 	FunctionVersion();
 

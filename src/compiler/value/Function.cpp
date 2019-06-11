@@ -418,7 +418,6 @@ Value* Function::clone() const {
 	f->lambda = lambda;
 	f->name = name;
 	f->body = (Block*) body->clone();
-	f->recursive = recursive;
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}
@@ -435,6 +434,7 @@ Value* Function::clone() const {
 		v2->parent = f;
 		v2->body = (Block*) v.second->body->clone();
 		v2->type = v.second->type;
+		v2->recursive = v.second->recursive;
 		f->versions.insert({v.first, v2});
 	}
 	return f;

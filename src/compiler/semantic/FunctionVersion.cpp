@@ -45,6 +45,9 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	if (parent->arguments.size() != 1) {
 		os << ")";
 	}
+	if (recursive) {
+		os << BLUE_BOLD << " recursive" << END_COLOR;
+	}
 	if (this->body->throws) {
 		os << BLUE_BOLD << " throws" << END_COLOR;
 	}
@@ -132,7 +135,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type
 		type = Type::fun(return_type, arg_types, parent);
 	}
 	// Re-analyse the recursive function to clean the placeholder types
-	if (parent->recursive) {
+	if (recursive) {
 		body->analyze(analyzer);
 	}
 

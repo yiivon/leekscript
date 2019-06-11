@@ -37,7 +37,6 @@ public:
 	bool analyzed = false;
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
-	bool recursive = false;
 
 	Function(std::shared_ptr<Token> token);
 	virtual ~Function();

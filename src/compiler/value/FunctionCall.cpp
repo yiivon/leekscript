@@ -16,6 +16,7 @@
 #include "ObjectAccess.hpp"
 #include "VariableValue.hpp"
 #include "../semantic/Callable.hpp"
+#include "../semantic/FunctionVersion.hpp"
 #include "../../type/Function_type.hpp"
 
 namespace ls {
@@ -118,11 +119,13 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				function->will_take(analyzer, arguments_types, 1);
 				function->set_version(arguments_types, 1);
 				function_type = function->version_type(arguments_types);
+				type = function_type->return_type();
 				auto vv = dynamic_cast<VariableValue*>(function);
-				if (vv and vv->var and vv->var->value and vv->var->name == analyzer->current_function()->name) {
-					type = analyzer->current_function()->getReturnType();
-				} else {
-					type = function_type->return_type();
+				if (vv and vv->var) {
+					if (callable_version->user_fun == analyzer->current_function()->current_version) {
+						analyzer->current_function()->current_version->recursive = true;
+						type = analyzer->current_function()->getReturnType();
+					}
 				}
 			}
 			if (callable_version->unknown) {
