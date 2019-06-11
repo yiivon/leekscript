@@ -182,8 +182,8 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				// For placeholder types, keep them no matter the operator
 				auto return_type = callable_version->type->return_type();
 				if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
-					if (v1->type->is_placeholder()) { return_type = v1_type; }
-					if (v2->type->is_placeholder()) { return_type = v2_type; }
+					if (v1->type->placeholder) { return_type = v1_type; }
+					if (v2->type->placeholder) { return_type = v2_type; }
 				}
 				type = is_void ? Type::void_ : return_type;
 				if (v2_type->is_function() and callable_version->type->argument(1)->is_function()) {

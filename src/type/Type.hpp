@@ -29,6 +29,7 @@ public:
 	bool temporary = false;
 	bool constant = false;
 	bool reference = false;
+	bool placeholder = false;
 
 	virtual int id() const { return 0; }
 	virtual const Type* return_type() const { return Type::any; }
@@ -93,7 +94,6 @@ public:
 	bool is_never() const;
 	bool is_null() const;
 	bool is_class() const;
-	bool is_placeholder() const;
 	bool is_pointer() const;
 	bool is_struct() const;
 	bool is_polymorphic() const;

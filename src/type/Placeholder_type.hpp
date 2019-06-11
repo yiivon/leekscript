@@ -11,7 +11,9 @@ class Placeholder_type : public Any_type {
 	std::string _name;
 	const Type* _implementation = nullptr;
 public:
-	Placeholder_type(const std::string name) : _name(name) {}
+	Placeholder_type(const std::string name) : _name(name) {
+		placeholder = true;
+	}
 	void implement(const Type* type) const;
 	virtual const Type* element() const override { return this; }
 	virtual bool operator == (const Type*) const override;

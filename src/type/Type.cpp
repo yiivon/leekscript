@@ -312,7 +312,6 @@ bool Type::is_object() const { return folded == Type::object; }
 bool Type::is_never() const { return folded == Type::never; }
 bool Type::is_null() const { return folded == Type::null; }
 bool Type::is_class() const { return is_type<Class_type>(); }
-bool Type::is_placeholder() const { return is_type<Placeholder_type>(); }
 bool Type::is_pointer() const { return is_type<Pointer_type>(); }
 bool Type::is_struct() const { return is_type<Struct_type>(); }
 bool Type::is_closure() const {

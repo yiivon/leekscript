@@ -171,7 +171,7 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 		}
 		if (versions.find(version) == versions.end()) {
 			for (const auto& t : version) {
-				if (t->is_placeholder()) return false;
+				if (t->placeholder) return false;
 			}
 			create_version(analyzer, version);
 			return true;
@@ -205,7 +205,7 @@ void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const T
 	// std::cout << "Function::set_version " << args << " " << level << std::endl;
 	if (level == 1) {
 		for (const auto& t : args) {
-			if (t->is_placeholder()) return;
+			if (t->placeholder) return;
 		}
 		version = args;
 		// Fill with defaultValues
