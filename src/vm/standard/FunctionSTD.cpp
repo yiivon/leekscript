@@ -18,10 +18,6 @@ FunctionSTD::FunctionSTD(VM* vm) : Module(vm, "Function") {
 		{Type::closure(Type::void_, {}), {Type::i8->pointer()}, (void*) LSClosure::constructor},
 	});
 
-	// method("copy", {
-	// 	{Type::FUNCTION, {Type::CONST_FUNCTION}, (void*) ValueSTD::copy}
-	// });
-
 	/** Internal **/
 	method("call", {
 		{Type::any, {Type::fun(Type::void_, {})}, (void*) &LSFunction::call}
