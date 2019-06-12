@@ -172,13 +172,19 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::integer, {Type::const_integer}, ValueSTD::copy},
 		{Type::mpz, {Type::mpz}, ValueSTD::copy},
 	});
+
+	auto intT = Type::template_("T");
+	template_(intT).
 	method("int", {
-		{Type::integer, {Type::any}, _int},
-		{Type::integer, {Type::real}, _int}
+		{Type::integer, {intT}, _int},
 	});
+
+	auto longT = Type::template_("T");
+	template_(longT).
 	method("long", {
-		{Type::long_, {Type::any}, _long},
+		{Type::long_, {longT}, _long},
 	});
+
 	auto absT = Type::template_("T");
 	template_(absT).
 	method("abs", {
