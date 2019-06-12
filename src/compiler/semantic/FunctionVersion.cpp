@@ -216,7 +216,9 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		unsigned index = 0;
 		int offset = parent->captures.size() ? -1 : 0;
 		for (auto& arg : f->args()) {
-			if (offset + index < parent->arguments.size()) {
+			if (index == 0 && parent->captures.size()) {
+				arg.setName("closure");
+			} else if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
 				const auto type = this->type->arguments().at(offset + index)->not_temporary();
 				arg.setName(name);
