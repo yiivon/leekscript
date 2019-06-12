@@ -181,8 +181,6 @@ void Test::test_loops() {
 	header("Breaks and Continues");
 	code("break").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
 	code("continue").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
-	code("while (true) { x -> {x break} }").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
-	code("while (true) { x -> {x continue} }").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("while (true) { break 2 }").error(ls::Error::Type::BREAK_MUST_BE_IN_LOOP, {});
 	code("while (true) { continue 2 }").error(ls::Error::Type::CONTINUE_MUST_BE_IN_LOOP, {});
 	code("var r = 0 for x in [1, 2] { for y in [3, 4] { r = 10 * x + y if x + y >= 5 break 2 }} r").equals("14");
