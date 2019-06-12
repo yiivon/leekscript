@@ -674,7 +674,8 @@ Compiler::value Compiler::insn_floor(Compiler::value x) const {
 	assert(x.t->llvm(*this) == x.v->getType());
 	assert(x.t->is_primitive());
 	if (x.t->is_integer()) return x;
-	return to_int(insn_call(Type::real, {x}, "Number.m_floor"));
+	if (x.t->is_long()) return x;
+	return to_long(insn_call(Type::real, {x}, "Number.m_floor"));
 }
 
 Compiler::value Compiler::insn_cos(Compiler::value x) const {

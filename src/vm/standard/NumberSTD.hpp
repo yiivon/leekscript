@@ -117,9 +117,8 @@ public:
 	static double exp_ptr(LSNumber* x);
 	static Compiler::value exp_real(Compiler&, std::vector<Compiler::value>, bool);
 
-	static int floor_ptr(LSNumber* x);
+	static long floor_ptr(LSNumber* x);
 	static Compiler::value floor_real(Compiler&, std::vector<Compiler::value>, bool);
-	static Compiler::value floor_int(Compiler&, std::vector<Compiler::value>, bool);
 
 	static int round_ptr(LSNumber* x);
 	static Compiler::value round_real(Compiler&, std::vector<Compiler::value>, bool);

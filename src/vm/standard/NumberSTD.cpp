@@ -247,11 +247,12 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::any, {Type::any, fold_fun_type, Type::any}, (void*) fold_fun},
 		{Type::any, {Type::any, fold_fun_type, Type::any}, fold}
 	});
+
 	method("floor", {
-		{Type::integer, {Type::any}, (void*) floor_ptr},
-		{Type::integer, {Type::any}, (void*) floor_ptr},
-		{Type::integer, {Type::real}, floor_real},
-		{Type::integer, {Type::integer}, floor_int},
+		{Type::long_, {Type::any}, (void*) floor_ptr},
+		{Type::long_, {Type::real}, floor_real},
+		{Type::long_, {Type::long_}, floor_real},
+		{Type::integer, {Type::integer}, floor_real},
 	});
 	method("hypot", {
 		{Type::real, {Type::any, Type::any}, hypot_ptr_ptr},
@@ -937,18 +938,14 @@ Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> ar
 	return c.insn_exp(args[0]);
 }
 
-int NumberSTD::floor_ptr(LSNumber* x) {
-	int a = floor(x->value);
+long NumberSTD::floor_ptr(LSNumber* x) {
+	long a = floor(x->value);
 	LSValue::delete_temporary(x);
 	return a;
 }
 
 Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args, bool) {
 	return c.insn_floor(args[0]);
-}
-
-Compiler::value NumberSTD::floor_int(Compiler&, std::vector<Compiler::value> args, bool) {
-	return args[0]; // Nothing to do
 }
 
 int NumberSTD::round_ptr(LSNumber* x) {
