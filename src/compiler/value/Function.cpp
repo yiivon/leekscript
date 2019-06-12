@@ -143,7 +143,7 @@ void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
 	type = default_version->type;
 }
 
-void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
+void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
 	// TODO should be ==
 	// assert(args.size() >= arguments.size());

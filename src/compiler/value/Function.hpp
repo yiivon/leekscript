@@ -55,7 +55,7 @@ public:
 	virtual void must_return_any(SemanticAnalyzer*) override;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
-	void create_version(SemanticAnalyzer* analyzer, std::vector<const Type*> args);
+	void create_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const override;

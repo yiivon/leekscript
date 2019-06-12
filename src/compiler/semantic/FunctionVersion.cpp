@@ -85,7 +85,7 @@ const Type* FunctionVersion::getReturnType() {
 	}
 }
 
-void FunctionVersion::analyze(SemanticAnalyzer* analyzer, std::vector<const Type*> args) {
+void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
