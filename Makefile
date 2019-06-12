@@ -114,6 +114,10 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 test: build/leekscript-test
 	@build/leekscript-test
 
+opti: FLAGS += -DNDEBUG
+opti: OPTIM := -O2
+opti: test
+
 # Benchmark
 benchmark-dir:
 	@mkdir -p build/benchmark
