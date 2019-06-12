@@ -46,9 +46,6 @@ public:
 	SemanticVar(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
 		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
 
-	// TODO remove ?
-	SemanticVar(const SemanticVar& o) : name(o.name), scope(o.scope), attr_types(o.attr_types), index(o.index), parent_index(o.parent_index), value(o.value), vd(o.vd), function(o.function), type(o.type), lsvalue(o.lsvalue), call(o.call) {}
-
 	void must_be_any(SemanticAnalyzer*);
 };
 
