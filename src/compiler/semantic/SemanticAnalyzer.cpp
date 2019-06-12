@@ -145,6 +145,19 @@ std::shared_ptr<SemanticVar> SemanticAnalyzer::add_var(Token* v, const Type* typ
 	return variables.back().back().at(v->content);
 }
 
+std::shared_ptr<SemanticVar> SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
+	auto& vars = *variables.begin()->begin();
+	if (vars.find(v->content) != vars.end()) {
+		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
+		return nullptr;
+	}
+	vars.insert(std::pair<std::string, std::shared_ptr<SemanticVar>>(
+		v->content,
+		std::make_shared<SemanticVar>(v->content, VarScope::LOCAL, type, 0, value, vd, (*functions.begin())->default_version, nullptr)
+	));
+	return vars.at(v->content);
+}
+
 void SemanticAnalyzer::add_function(Function* l) {
 	functions.push_back(l);
 }

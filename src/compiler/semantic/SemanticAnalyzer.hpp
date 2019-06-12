@@ -84,6 +84,7 @@ public:
 	bool in_loop(int deepness) const;
 
 	std::shared_ptr<SemanticVar> add_var(Token*, const Type*, Value*, VariableDeclaration*);
+	std::shared_ptr<SemanticVar> add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
 	std::shared_ptr<SemanticVar> add_parameter(Token*, const Type*);
 
 	std::shared_ptr<SemanticVar> get_var(Token* name);

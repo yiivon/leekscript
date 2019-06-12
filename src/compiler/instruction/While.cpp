@@ -27,6 +27,12 @@ Location While::location() const {
 	return token->location;
 }
 
+
+void While::pre_analyze(SemanticAnalyzer* analyzer) {
+	condition->pre_analyze(analyzer);
+	body->pre_analyze(analyzer);
+}
+
 void While::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	condition->analyze(analyzer);
 	throws = condition->throws;

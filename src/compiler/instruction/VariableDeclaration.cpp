@@ -41,12 +41,17 @@ Location VariableDeclaration::location() const {
 	return {keyword->location.file, keyword->location.start, end};
 }
 
-void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) {
+void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
 		auto expr = expressions.at(0);
-		auto v = analyzer->add_var(var.get(), Type::fun(), expr, this);
+		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr, this);
 		vars.insert({var->content, v});
+	}
+	for (unsigned i = 0; i < variables.size(); ++i) {
+		if (expressions[i] != nullptr) {
+			expressions[i]->pre_analyze(analyzer);
+		}
 	}
 }
 

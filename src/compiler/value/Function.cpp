@@ -70,6 +70,10 @@ Location Function::location() const {
 	return body->location();
 }
 
+void Function::will_be_closure() {
+	is_closure = true;
+}
+
 void Function::create_default_version(SemanticAnalyzer* analyzer) {
 	if (default_version) return;
 
@@ -89,11 +93,25 @@ void Function::create_default_version(SemanticAnalyzer* analyzer) {
 	}
 	type = Type::fun(Type::void_, args, this);
 
-	if (captures.size()) {
+	if (captures.size() or is_closure) {
 		default_version->type = Type::closure(default_version->getReturnType(), args, this);
 	} else {
 		default_version->type = Type::fun(default_version->getReturnType(), args, this);
 	}
+}
+
+void Function::pre_analyze(SemanticAnalyzer* analyzer) {
+	parent = analyzer->current_function()->parent;
+
+	create_default_version(analyzer);
+
+	// captures.clear();
+	current_version = default_version;
+	analyzer->enter_function(default_version);
+
+	body->pre_analyze(analyzer);
+
+	analyzer->leave_function();
 }
 
 /*
@@ -131,6 +149,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		function_added = true;
 	}
 	create_default_version(analyzer);
+	pre_analyze(analyzer);
 	if (is_main_function) {
 		analyse_default_method(analyzer);
 	}
@@ -187,7 +206,7 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 
 				analyzer->leave_function();
 
-				if (captures.size()) {
+				if (captures.size() or is_closure) {
 					v->type = Type::closure(f->version_type(args), v->type->arguments(), this);
 				} else {
 					v->type = Type::fun(f->version_type(args), v->type->arguments(), this);

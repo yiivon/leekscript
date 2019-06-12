@@ -22,6 +22,12 @@ void Return::print(std::ostream& os, int indent, bool debug, bool condensed) con
 	}
 }
 
+void Return::pre_analyze(SemanticAnalyzer* analyzer) {
+	if (expression != nullptr) {
+		expression->pre_analyze(analyzer);
+	}
+}
+
 void Return::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	if (expression != nullptr) {
 		expression->analyze(analyzer);

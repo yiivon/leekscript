@@ -211,8 +211,6 @@ std::shared_ptr<SemanticVar> Program::get_operator(std::string name) {
 
 void Program::analyze(SemanticAnalyzer* analyzer) {
 	main->name = "main";
-	main->body->analyze_global_functions(analyzer);
-
 	main->analyze(analyzer);
 }
 

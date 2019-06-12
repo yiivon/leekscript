@@ -41,6 +41,10 @@ Location Foreach::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
+void Foreach::pre_analyze(SemanticAnalyzer* analyzer) {
+	body->pre_analyze(analyzer);
+}
+
 void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 
 	if (req_type->is_array()) {

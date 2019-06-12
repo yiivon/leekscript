@@ -41,18 +41,12 @@ Location Block::location() const {
 	return {instructions.at(0)->location().file, start, end};
 }
 
-void Block::analyze_global_functions(SemanticAnalyzer* analyzer) {
-	int global_count = 0;
-	for (size_t i = 0; i < instructions.size(); ++i) {
-		if (auto vd = dynamic_cast<VariableDeclaration*>(instructions.at(i))) {
-			if (vd->global && vd->function) {
-				instructions.erase(instructions.begin() + i);
-				instructions.insert(instructions.begin() + global_count, vd);
-				global_count++;
-				vd->analyze_global_functions(analyzer);
-			}
-		}
+void Block::pre_analyze(SemanticAnalyzer* analyzer) {
+	analyzer->enter_block();
+	for (const auto& instruction : instructions) {
+		instruction->pre_analyze(analyzer);
 	}
+	analyzer->leave_block();
 }
 
 void Block::analyze(SemanticAnalyzer* analyzer) {

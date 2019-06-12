@@ -26,6 +26,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const = 0;
 	virtual Location location() const = 0;
 
+	virtual void pre_analyze(SemanticAnalyzer* analyzer);
 	virtual void analyze(SemanticAnalyzer* analyzer, const Type* type = Type::any) = 0;
 
 	virtual Compiler::value compile(Compiler&) const;

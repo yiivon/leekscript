@@ -29,6 +29,10 @@ Location ClassDeclaration::location() const {
 	return token->location;
 }
 
+void ClassDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
+	// TODO
+}
+
 void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	var = analyzer->add_var(token.get(), Type::clazz(), nullptr, nullptr);

@@ -59,6 +59,13 @@ Location FunctionCall::location() const {
 	return {closing_parenthesis->location.file, function->location().start, closing_parenthesis->location.end};
 }
 
+void FunctionCall::pre_analyze(SemanticAnalyzer* analyzer) {
+	function->pre_analyze(analyzer);
+	for (const auto& argument : arguments) {
+		argument->pre_analyze(analyzer);
+	}
+}
+
 Call FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
 	std::vector<const Type*> arguments_types;
 	for (const auto& argument : arguments) {

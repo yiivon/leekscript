@@ -99,6 +99,15 @@ Location Expression::location() const {
 	return {v1_location.file, start, end};
 }
 
+void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
+	if (op == nullptr) {
+		v1->pre_analyze(analyzer);
+	} else {
+		v1->pre_analyze(analyzer);
+		v2->pre_analyze(analyzer);
+	}
+}
+
 void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "Expression::analyze()" << std::endl;
 

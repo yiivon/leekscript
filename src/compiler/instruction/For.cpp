@@ -41,6 +41,10 @@ Location For::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}};
 }
 
+void For::pre_analyze(SemanticAnalyzer* analyzer) {
+	
+}
+
 void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	// std::cout << "For::analyze() " << is_void << std::endl;
 

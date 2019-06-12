@@ -29,6 +29,10 @@ Location PostfixExpression::location() const {
 	return expression->location(); // TODO add the op
 }
 
+void PostfixExpression::pre_analyze(SemanticAnalyzer* analyzer) {
+	expression->pre_analyze(analyzer);
+}
+
 void PostfixExpression::analyze(SemanticAnalyzer* analyzer) {
 
 	expression->analyze(analyzer);

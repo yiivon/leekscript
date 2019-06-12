@@ -94,7 +94,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	analyzer->enter_function((FunctionVersion*) this);
 
 	// Prepare the placeholder return type for recursive functions
-	if (parent->captures.size()) {
+	if (parent->captures.size() or parent->is_closure) {
 		type = Type::closure(getReturnType(), args, parent);
 	} else {
 		type = Type::fun(getReturnType(), args, parent);
@@ -108,7 +108,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 
 	body->analyze(analyzer);
-	if (parent->captures.size()) {
+	if (parent->captures.size() or parent->is_closure) {
 		type = Type::closure(body->type, arg_types, parent);
 	} else {
 		type = Type::fun(body->type, arg_types, parent);
@@ -143,7 +143,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 	// std::cout << "return_type " << return_type << std::endl;
 	body->type = return_type;
-	if (parent->captures.size()) {
+	if (parent->captures.size() or parent->is_closure) {
 		type = Type::closure(return_type, arg_types, parent);
 	} else {
 		type = Type::fun(return_type, arg_types, parent);
@@ -163,7 +163,7 @@ void FunctionVersion::create_function(Compiler& c) {
 	if (f) return;
 
 	std::vector<llvm::Type*> args;
-	if (parent->captures.size()) {
+	if (parent->captures.size() or parent->is_closure) {
 		args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 	}
 	for (auto& t : this->type->arguments()) {
@@ -191,7 +191,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 	if (not is_compiled()) {
 
 		std::vector<llvm::Type*> args;
-		if (parent->captures.size()) {
+		if (parent->captures.size() or parent->is_closure) {
 			args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 		}
 		for (auto& t : this->type->arguments()) {
@@ -200,7 +200,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		// Create the llvm function
 		create_function(c);
 
-		c.enter_function(f, parent->captures.size() > 0, this);
+		c.enter_function(f, parent->captures.size() > 0 or parent->is_closure, this);
 
 		c.builder.SetInsertPoint(block);
 
@@ -214,9 +214,9 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 
 		// Create arguments
 		unsigned index = 0;
-		int offset = parent->captures.size() ? -1 : 0;
+		int offset = parent->captures.size() or parent->is_closure ? -1 : 0;
 		for (auto& arg : f->args()) {
-			if (index == 0 && parent->captures.size()) {
+			if (index == 0 && (parent->captures.size() or parent->is_closure)) {
 				arg.setName("closure");
 			} else if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
@@ -256,7 +256,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 	}
 
 	if (create_value) {
-		if (parent->captures.size()) {
+		if (parent->captures.size() or parent->is_closure) {
 			std::vector<Compiler::value> captures;
 			if (!parent->is_main_function) {
 				for (const auto& cap : parent->captures) {

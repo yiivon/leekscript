@@ -14,6 +14,8 @@ Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
 	return {};
 }
 
+void Value::pre_analyze(SemanticAnalyzer*) {}
+
 void Value::analyze(SemanticAnalyzer*) {}
 
 const Type* Value::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {

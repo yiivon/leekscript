@@ -30,6 +30,12 @@ Location Throw::location() const {
 	}
 }
 
+void Throw::pre_analyze(SemanticAnalyzer* analyzer) {
+	if (expression != nullptr) {
+		expression->pre_analyze(analyzer);
+	}
+}
+
 void Throw::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	if (expression != nullptr) {
 		expression->analyze(analyzer);

@@ -132,6 +132,19 @@ Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 	return {};
 }
 
+void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
+	var = analyzer->get_var(token.get());
+	if (var != nullptr) {
+		// std::cout << "pre analyze var " << var->name << " " << (void*) var->function << " <=> " << (void*) analyzer->current_function() << " " << (int) var->scope << std::endl;
+		if (var->scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
+			if (not var->type->is_function()) {
+				// capture_index = analyzer->current_function()->parent->capture(analyzer, var);
+				// analyzer->current_function()->parent->will_be_closure();
+			}
+		}
+	}
+}
+
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 
 	var = analyzer->get_var(token.get());

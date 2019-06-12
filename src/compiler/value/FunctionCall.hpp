@@ -38,6 +38,7 @@ public:
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
+	virtual void pre_analyze(SemanticAnalyzer*) override;
 	virtual Call get_callable(SemanticAnalyzer*, int argument_count) const override;
 	virtual void analyze(SemanticAnalyzer*) override;
 	const Type* will_take(SemanticAnalyzer*, const std::vector<const Type*>& args, int level);
