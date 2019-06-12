@@ -42,7 +42,7 @@ public:
 	virtual ~Function();
 
 	void addArgument(Token* token, Value* defaultValue);
-	int capture(std::shared_ptr<SemanticVar> var);
+	int capture(SemanticAnalyzer* analyzer, std::shared_ptr<SemanticVar> var);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

@@ -254,7 +254,7 @@ namespace std {
 		} else if (v.func) {
 			os << " (compiler func)";
 		} else {
-			os << " (user function)";
+			os << " (value)";
 		}
 		if (v.unknown) os << " (unknown)";
 		if (v.flags) os << " " << v.flags;

@@ -232,6 +232,20 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "FC " << this << " will_take " << args << std::endl;
 	function->will_take(analyzer, args, level + 1);
+
+	if (callable_version) {
+		// Perform a will_take to prepare eventual versions
+		std::vector<const Type*> arguments_types;
+		for (const auto& argument : arguments) {
+			arguments_types.push_back(argument->type);
+		}
+		// Retrieve the callable version
+		call = function->get_callable(analyzer, arguments_types.size());
+		callable_version = call.resolve(analyzer, arguments_types);
+		if (callable_version) {
+			type = callable_version->type->return_type();
+		}
+	}
 	return false;
 }
 

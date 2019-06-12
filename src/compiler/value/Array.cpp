@@ -48,8 +48,8 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 		for (size_t i = 0; i < expressions.size(); ++i) {
 
 			Value* ex = expressions[i];
-			ex->must_return_any(analyzer);
 			ex->analyze(analyzer);
+			ex->must_return_any(analyzer);
 
 			constant &= ex->constant;
 			throws |= ex->throws;

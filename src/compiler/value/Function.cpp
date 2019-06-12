@@ -61,6 +61,8 @@ void Function::print(std::ostream& os, int indent, bool debug, bool condensed) c
 	} else if (default_version) {
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
+	} else {
+		body->print(os, indent, debug, condensed);
 	}
 }
 
@@ -129,19 +131,15 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		function_added = true;
 	}
 	create_default_version(analyzer);
-	// if (is_main_function) {
+	if (is_main_function) {
 		analyse_default_method(analyzer);
-	// }
+	}
 	// std::cout << "Function type: " << type << std::endl;
 }
 
 void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
 	analyzed = true;
 	default_version->analyze(analyzer, type->arguments());
-	// Re-analyze each version
-	for (auto v : versions) {
-		v.second->analyze(analyzer, v.first);
-	}
 	type = default_version->type;
 }
 
@@ -159,9 +157,6 @@ void Function::create_version(SemanticAnalyzer* analyzer, std::vector<const Type
 
 bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
-	if (!analyzed) {
-		analyse_default_method(analyzer);
-	}
 	if (level == 1) {
 		auto version = args;
 		// Fill with default arguments
@@ -226,9 +221,8 @@ void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const T
 	}
 }
 
-int Function::capture(std::shared_ptr<SemanticVar> var) {
+int Function::capture(SemanticAnalyzer* analyzer, std::shared_ptr<SemanticVar> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
-
 	// Function become a closure
 	default_version->type = Type::closure(default_version->type->return_type(), default_version->type->arguments(), this);
 	for (auto& version : versions) {
@@ -245,7 +239,7 @@ int Function::capture(std::shared_ptr<SemanticVar> var) {
 
 	if (var->function->parent != parent) {
 		auto new_var = std::make_shared<SemanticVar>(*var);
-		new_var->index = parent->capture(new_var);
+		new_var->index = parent->capture(analyzer, new_var);
 		var->scope = VarScope::CAPTURE;
 		var->parent_index = new_var->index;
 	}
@@ -266,9 +260,12 @@ const Type* Function::version_type(std::vector<const Type*> version) const {
 	return type;
 }
 
-void Function::must_return_any(SemanticAnalyzer*) {
+void Function::must_return_any(SemanticAnalyzer* analyzer) {
 	// std::cout << "Function " << name << " ::must_return_any()" << std::endl;
 	generate_default_version = true;
+	if (!analyzed) {
+		analyse_default_method(analyzer);
+	}
 }
 
 Call Function::get_callable(SemanticAnalyzer*, int argument_count) const {
