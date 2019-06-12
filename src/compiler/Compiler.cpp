@@ -221,6 +221,9 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (type->is_mpz_ptr()) {
 		return to_int(insn_call(Type::long_, {v}, "Number.mpz_get_si"));
 	}
+	if (type->is_long()) {
+		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer};
+	}
 	if (type->is_bool()) {
 		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer};
 	}
