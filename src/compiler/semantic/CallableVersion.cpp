@@ -88,12 +88,10 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 	for (size_t i = 0; i < new_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
 			const auto& a = arguments.at(i);
-			const auto implem_arg = new_version->type->arguments().at(i);
+			const auto implem_arg = new_version->type->argument(i);
 			if (auto fun = dynamic_cast<const Function_type*>(a)) {
 				if (fun->function() and implem_arg->is_function()) {
-					auto version = implem_arg->arguments();
-					((Value*) fun->function())->will_take(analyzer, version, 1);
-					arguments.at(i) = fun->function()->version_type(version);
+					arguments.at(i) = ((Value*) fun->function())->will_take(analyzer, implem_arg->arguments(), 1);
 				}
 			}
 		} else if (f and f->defaultValues.at(i)) {
@@ -146,8 +144,8 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 			auto f = (Value*) fun->function();
 			if (f) {
 				auto t1_args = build(t1)->arguments();
-				f->will_take(analyzer, t1_args, 1);
-				solve(analyzer, t1->return_type(), fun->function()->version_type(t1_args)->return_type());
+				auto type = f->will_take(analyzer, t1_args, 1);
+				solve(analyzer, t1->return_type(), type->return_type());
 			}
 		}
 	}

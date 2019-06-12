@@ -49,7 +49,7 @@ public:
 
 	void create_default_version(SemanticAnalyzer* analyzer);
 	void analyse_default_method(SemanticAnalyzer* analyzer);
-	bool will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
+	const Type* will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;
 	void set_version(SemanticAnalyzer* analyser, const std::vector<const Type*>& args, int level) override;
 	virtual const Type* version_type(std::vector<const Type*>) const override;
 	virtual void must_return_any(SemanticAnalyzer*) override;

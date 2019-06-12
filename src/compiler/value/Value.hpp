@@ -39,7 +39,7 @@ public:
 
 	virtual Location location() const = 0;
 
-	virtual bool will_take(SemanticAnalyzer*, const std::vector<const Type*>& args_type, int level);
+	virtual const Type* will_take(SemanticAnalyzer*, const std::vector<const Type*>& args_type, int level);
 	virtual bool will_store(SemanticAnalyzer*, const Type*);
 	virtual bool elements_will_store(SemanticAnalyzer*, const Type*, int level);
 	virtual bool must_be_any(SemanticAnalyzer*);

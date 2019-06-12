@@ -198,10 +198,10 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 	//	cout << t.first << " : " << t.second << endl;
 }
 
-bool VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+const Type* VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "VV will take " << args << " type " << type << std::endl;
 	if (var != nullptr and var->value != nullptr) {
-		var->value->will_take(analyzer, args, level);
+		auto ret = var->value->will_take(analyzer, args, level);
 		if (auto f = dynamic_cast<Function*>(var->value)) {
 			if (f->versions.find(args) != f->versions.end()) {
 				var->version = args;
@@ -209,9 +209,10 @@ bool VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<cons
 			}
 		}
 		type = var->type;
+		return ret;
 	}
 	set_version(analyzer, args, level);
-	return false;
+	return type;
 }
 
 void VariableValue::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {

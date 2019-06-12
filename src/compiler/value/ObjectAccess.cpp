@@ -83,10 +83,10 @@ const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
 	return type;
 }
 
-bool ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+const Type* ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "OA will take " << args << std::endl;
 	set_version(analyzer, args, 1);
-	return false;
+	return type;
 }
 
 Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) const {

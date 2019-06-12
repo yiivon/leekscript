@@ -16,9 +16,9 @@ Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
 
 void Value::analyze(SemanticAnalyzer*) {}
 
-bool Value::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
+const Type* Value::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
 	set_version(analyzer, args, 1);
-	return false;
+	return type;
 }
 
 bool Value::will_store(SemanticAnalyzer*, const Type*) {

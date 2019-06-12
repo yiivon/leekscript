@@ -90,8 +90,6 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	function->will_take(analyzer, arguments_types, 1);
 	function->set_version(analyzer, arguments_types, 1);
 
-	// std::cout << "FC function " << function->version_type(arguments_types) << std::endl;
-
 	if (not function->type->can_be_callable()) {
 		analyzer->add_error({Error::Type::CANNOT_CALL_VALUE, location(), function->location(), {function->to_string()}});
 	}
@@ -116,9 +114,8 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				}
 			}
 			if (callable_version->value) {
-				function->will_take(analyzer, arguments_types, 1);
+				function_type =  function->will_take(analyzer, arguments_types, 1);
 				function->set_version(analyzer, arguments_types, 1);
-				function_type = function->version_type(arguments_types);
 				type = function_type->return_type();
 				auto vv = dynamic_cast<VariableValue*>(function);
 				if (vv and vv->var) {
@@ -229,9 +226,9 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	}
 }
 
-bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+const Type* FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "FC " << this << " will_take " << args << std::endl;
-	function->will_take(analyzer, args, level + 1);
+	auto ret = function->will_take(analyzer, args, level + 1);
 
 	if (callable_version) {
 		// Perform a will_take to prepare eventual versions
@@ -246,7 +243,7 @@ bool FunctionCall::will_take(SemanticAnalyzer* analyzer, const std::vector<const
 			type = callable_version->type->return_type();
 		}
 	}
-	return false;
+	return ret;
 }
 
 void FunctionCall::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {

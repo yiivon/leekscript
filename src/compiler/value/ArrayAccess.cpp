@@ -124,7 +124,7 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 	// TODO should be temporary
 }
 
-bool ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
+const Type* ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
@@ -136,7 +136,7 @@ bool ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const 
 	}
 	
 	type = array->type->element();
-	return false;
+	return type;
 }
 
 bool ArrayAccess::array_access_will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& arg_types, int level) {

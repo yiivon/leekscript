@@ -155,7 +155,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<cons
 	version->analyze(analyzer, args);
 }
 
-bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
 	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (level == 1) {
 		auto version = args;
@@ -165,14 +165,15 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 				version.push_back(defaultValues.at(i)->type);
 			}
 		}
-		if (versions.find(version) == versions.end()) {
+		auto v = versions.find(version);
+		if (v == versions.end()) {
 			for (const auto& t : version) {
-				if (t->placeholder) return false;
+				if (t->placeholder) return type;
 			}
 			create_version(analyzer, version);
-			return true;
+			return versions.at(version)->type;
 		}
-		return false;
+		return v->second->type;
 	} else {
 		auto v = current_version ? current_version : default_version;
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
@@ -182,7 +183,7 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 				for (unsigned i = 0; i < arguments.size(); ++i) {
 					analyzer->add_parameter(arguments[i].get(), v->type->argument(i));
 				}
-				f->will_take(analyzer, args, level - 1);
+				auto ret = f->will_take(analyzer, args, level - 1);
 
 				analyzer->leave_function();
 
@@ -191,10 +192,10 @@ bool Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Typ
 				} else {
 					v->type = Type::fun(f->version_type(args), v->type->arguments(), this);
 				}
+				return ret;
 			}
 		}
 	}
-	return false;
 }
 
 void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
