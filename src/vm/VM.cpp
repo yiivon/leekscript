@@ -29,6 +29,7 @@
 #include "standard/JsonSTD.hpp"
 #include "../compiler/semantic/Callable.hpp"
 #include "../compiler/semantic/CallableVersion.hpp"
+#include "../compiler/semantic/SemanticVar.hpp"
 
 namespace ls {
 

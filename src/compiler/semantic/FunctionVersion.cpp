@@ -10,6 +10,7 @@
 #include "../../colors.h"
 #include "../../type/Placeholder_type.hpp"
 #include "../../type/Compound_type.hpp"
+#include "SemanticVar.hpp"
 
 namespace ls {
 

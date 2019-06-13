@@ -9,6 +9,7 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/Module.hpp"
 #include <functional>
+#include "SemanticVar.hpp"
 
 namespace ls {
 
@@ -21,12 +22,6 @@ SemanticAnalyzer::SemanticAnalyzer() {
 }
 
 SemanticAnalyzer::~SemanticAnalyzer() {}
-
-void SemanticVar::must_be_any(SemanticAnalyzer* analyzer) {
-	if (value != nullptr) {
-		value->must_be_any(analyzer);
-	}
-}
 
 void SemanticAnalyzer::analyze(Program* program, Context* context) {
 

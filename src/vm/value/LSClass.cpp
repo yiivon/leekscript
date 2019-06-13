@@ -8,6 +8,7 @@
 #include "../../vm/VM.hpp"
 #include "../../compiler/semantic/CallableVersion.hpp"
 #include "../../compiler/semantic/SemanticAnalyzer.hpp"
+#include "../../compiler/semantic/SemanticVar.hpp"
 
 namespace ls {
 

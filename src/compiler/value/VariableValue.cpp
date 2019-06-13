@@ -10,6 +10,7 @@
 #include "../../vm/value/LSClass.hpp"
 #include "../../vm/Module.hpp"
 #include "../../vm/Program.hpp"
+#include "../semantic/SemanticVar.hpp"
 
 namespace ls {
 

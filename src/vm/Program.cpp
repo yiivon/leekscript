@@ -22,6 +22,7 @@
 #include "../compiler/value/VariableValue.hpp"
 #include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/Bitcode/BitcodeReader.h"
+#include "../compiler/semantic/SemanticVar.hpp"
 
 namespace ls {
 

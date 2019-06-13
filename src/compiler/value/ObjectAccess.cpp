@@ -9,6 +9,7 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Module.hpp"
 #include "../../compiler/semantic/Callable.hpp"
+#include "../semantic/SemanticVar.hpp"
 
 namespace ls {
 

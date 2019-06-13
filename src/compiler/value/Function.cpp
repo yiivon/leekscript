@@ -17,6 +17,7 @@
 #include "../../vm/Module.hpp"
 #include "../resolver/File.hpp"
 #include "../semantic/FunctionVersion.hpp"
+#include "../semantic/SemanticVar.hpp"
 
 namespace ls {
 
