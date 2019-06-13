@@ -4,12 +4,10 @@
 #include "../../vm/Context.hpp"
 #include "../error/Error.hpp"
 #include "../instruction/VariableDeclaration.hpp"
-#include "../../vm/value/LSNumber.hpp"
-#include "../../vm/value/LSArray.hpp"
-#include "../../vm/value/LSNull.hpp"
 #include "../../vm/Module.hpp"
 #include <functional>
 #include "Variable.hpp"
+#include "FunctionVersion.hpp"
 
 namespace ls {
 
@@ -41,17 +39,14 @@ void SemanticAnalyzer::enter_function(FunctionVersion* f) {
 	variables.push_back(std::vector<std::map<std::string, Variable*>> {});
 	// First function block
 	variables.back().push_back(std::map<std::string, Variable*> {});
-	// Parameters
-	parameters.push_back(std::map<std::string, Variable*> {});
 
 	loops.push(0);
-	functions_stack.push(f);
+	functions_stack.push_back(f);
 }
 
 void SemanticAnalyzer::leave_function() {
 	variables.pop_back();
-	parameters.pop_back();
-	functions_stack.pop();
+	functions_stack.pop_back();
 	loops.pop();
 }
 
@@ -64,7 +59,7 @@ void SemanticAnalyzer::leave_block() {
 }
 
 FunctionVersion* SemanticAnalyzer::current_function() const {
-	return functions_stack.top();
+	return functions_stack.back();
 }
 
 void SemanticAnalyzer::enter_loop() {
@@ -77,12 +72,6 @@ void SemanticAnalyzer::leave_loop() {
 
 bool SemanticAnalyzer::in_loop(int deepness) const {
 	return loops.top() >= deepness;
-}
-
-Variable* SemanticAnalyzer::add_parameter(Token* v, const Type* type) {
-	auto arg = new Variable(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
-	parameters.back().insert({v->content, arg});
-	return arg;
 }
 
 Variable* SemanticAnalyzer::get_var(Token* v) {
@@ -102,7 +91,7 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 	while (f >= 0) {
 		// Search in the function parameters
 		try {
-			return parameters.at(f).at(v->content);
+			return functions_stack.at(f)->arguments.at(v->content);
 		} catch (std::exception& e) {}
 
 		// Search in the local variables of the function
@@ -164,7 +153,7 @@ Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 	int f = functions_stack.size() - 1;
 	while (f >= 0) {
 		// Search in the function parameters
-		auto& params = parameters.at(f);
+		auto& params = functions_stack.at(f)->arguments;
 		if (params.find(var->name) != params.end()) {
 			params.at(var->name) = new_var;
 		}

@@ -27,14 +27,10 @@ public:
 
 	Program* program;
 	VM* vm;
-
 	std::vector<std::vector<std::map<std::string, Variable*>>> variables;
-	std::vector<std::map<std::string, Variable*>> parameters;
-
 	std::vector<Function*> functions;
-	std::stack<FunctionVersion*> functions_stack;
+	std::vector<FunctionVersion*> functions_stack;
 	std::stack<int> loops;
-
 	std::vector<Error> errors;
 
 	SemanticAnalyzer();
@@ -54,7 +50,6 @@ public:
 
 	Variable* add_var(Token*, const Type*, Value*, VariableDeclaration*);
 	Variable* add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
-	Variable* add_parameter(Token*, const Type*);
 
 	Variable* get_var(Token* name);
 	std::map<std::string, Variable*>& get_local_vars();

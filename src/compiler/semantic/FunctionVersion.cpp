@@ -86,6 +86,17 @@ const Type* FunctionVersion::getReturnType() {
 	}
 }
 
+void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
+	// Create arguments
+	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
+		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
+		auto name = parent->arguments.at(i)->content;
+		auto arg = new Variable(name, VarScope::PARAMETER, type, i, nullptr, nullptr, (FunctionVersion*) this, nullptr);
+		arguments.insert({ name, arg });
+	}
+	body->pre_analyze(analyzer);
+}
+
 void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
@@ -104,7 +115,6 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	std::vector<const Type*> arg_types;
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
-		analyzer->add_parameter(parent->arguments.at(i).get(), type);
 		arg_types.push_back(type);
 	}
 

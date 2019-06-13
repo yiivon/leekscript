@@ -110,7 +110,7 @@ void Function::pre_analyze(SemanticAnalyzer* analyzer) {
 	current_version = default_version;
 	analyzer->enter_function(default_version);
 
-	body->pre_analyze(analyzer);
+	default_version->pre_analyze(analyzer, default_version->type->arguments());
 
 	analyzer->leave_function();
 }
@@ -172,6 +172,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<cons
 	version->body = (Block*) body->clone();
 	versions.insert({args, version});
 
+	version->pre_analyze(analyzer, args);
 	version->analyze(analyzer, args);
 }
 
@@ -200,11 +201,7 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 			if (auto f = dynamic_cast<Function*>(ei->value)) {
 
 				analyzer->enter_function(this->default_version);
-				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyzer->add_parameter(arguments[i].get(), v->type->argument(i));
-				}
 				auto ret = f->will_take(analyzer, args, level - 1);
-
 				analyzer->leave_function();
 
 				if (captures.size() or is_closure) {
