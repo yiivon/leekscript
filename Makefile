@@ -28,7 +28,8 @@ OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
 OPTIM := -O0
-FLAGS := -std=c++17 -g3 -Wall -Wno-pmf-conversions
+DEBUG := -g3 -Wall
+FLAGS := -std=c++17 -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -lm -lgmp -lstdc++fs `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
 MAKEFLAGS += --jobs=$(shell nproc)
@@ -56,7 +57,7 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) -o $@ $<
+	$(COMPILER) -c $(OPTIM) $(FLAGS) $(DEBUG) -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
@@ -116,6 +117,7 @@ test: build/leekscript-test
 
 opti: FLAGS += -DNDEBUG
 opti: OPTIM := -O2
+opti: DEBUG :=
 opti: test
 
 # Benchmark
