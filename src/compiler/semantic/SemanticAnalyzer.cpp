@@ -26,7 +26,7 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 	if (context) {
 		for (auto var : context->vars) {
 			// std::cout << "Add context var " << var.first << std::endl;
-			add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr, nullptr);
+			add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr);
 		}
 	}
 	program->analyze(this);
@@ -107,7 +107,7 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 	return nullptr;
 }
 
-Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
+Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value) {
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
@@ -118,12 +118,12 @@ Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value, Va
 	}
 	variables.back().back().insert(std::pair<std::string, Variable*>(
 		v->content,
-		new Variable(v->content, VarScope::LOCAL, type, 0, value, vd, current_function(), nullptr)
+		new Variable(v->content, VarScope::LOCAL, type, 0, value, current_function(), nullptr)
 	));
 	return variables.back().back().at(v->content);
 }
 
-Variable* SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
+Variable* SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value) {
 	auto& vars = *variables.begin()->begin();
 	if (vars.find(v->content) != vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
@@ -131,7 +131,7 @@ Variable* SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* va
 	}
 	vars.insert(std::pair<std::string, Variable*>(
 		v->content,
-		new Variable(v->content, VarScope::LOCAL, type, 0, value, vd, (*functions.begin())->default_version, nullptr)
+		new Variable(v->content, VarScope::LOCAL, type, 0, value, (*functions.begin())->default_version, nullptr)
 	));
 	return vars.at(v->content);
 }
@@ -147,7 +147,7 @@ std::map<std::string, Variable*>& SemanticAnalyzer::get_local_vars() {
 Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 	// std::cout << "SemanticAnalyser::convert_var_to_any(" << var->name << ")" << std::endl;
 	if (var->type->is_polymorphic()) return var;
-	auto new_var = new Variable(var->name, var->scope, Type::any, 0, nullptr, nullptr, var->function, nullptr);
+	auto new_var = new Variable(var->name, var->scope, Type::any, 0, nullptr, var->function, nullptr);
 	// Search recursively in the functions
 
 	int f = functions_stack.size() - 1;

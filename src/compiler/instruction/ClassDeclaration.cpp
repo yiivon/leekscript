@@ -35,7 +35,7 @@ void ClassDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 
 void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
-	var = analyzer->add_var(token.get(), Type::clazz(), nullptr, nullptr);
+	var = analyzer->add_var(token.get(), Type::clazz(), nullptr);
 
 	for (auto vd : fields) {
 		vd->analyze(analyzer, Type::any);

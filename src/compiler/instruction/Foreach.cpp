@@ -66,9 +66,9 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	key_type = container->type->key();
 	value_type = container->type->element();
 	if (key != nullptr) {
-		key_var = analyzer->add_var(key.get(), key_type, nullptr, nullptr);
+		key_var = analyzer->add_var(key.get(), key_type, nullptr);
 	}
-	value_var = analyzer->add_var(value.get(), value_type, nullptr, nullptr);
+	value_var = analyzer->add_var(value.get(), value_type, nullptr);
 
 	analyzer->enter_loop();
 	body->analyze(analyzer);

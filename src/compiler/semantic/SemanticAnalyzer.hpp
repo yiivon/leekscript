@@ -18,7 +18,6 @@ class Context;
 class Value;
 class SemanticAnalyzer;
 class Token;
-class VariableDeclaration;
 class Callable;
 class Call;
 
@@ -48,8 +47,8 @@ public:
 	void leave_loop();
 	bool in_loop(int deepness) const;
 
-	Variable* add_var(Token*, const Type*, Value*, VariableDeclaration*);
-	Variable* add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
+	Variable* add_var(Token*, const Type*, Value*);
+	Variable* add_global_var(Token*, const Type*, Value*);
 
 	Variable* get_var(Token* name);
 	std::map<std::string, Variable*>& get_local_vars();

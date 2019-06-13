@@ -46,7 +46,7 @@ void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
 		auto expr = expressions.at(0);
-		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr, this);
+		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr);
 		vars.insert({var->content, v});
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
@@ -64,7 +64,7 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i), this);
+		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i));
 		if (v == nullptr) {
 			continue;
 		}

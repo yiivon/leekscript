@@ -28,15 +28,14 @@ public:
 	int index;
 	int parent_index;
 	Value* value;
-	VariableDeclaration* vd;
 	FunctionVersion* function; // In which function the variable is declared
 	const Type* type;
 	std::vector<const Type*> version;
 	LSValue* lsvalue = nullptr;
 	Call call;
 
-	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
-		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
+	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
+		name(name), scope(scope), index(index), parent_index(0), value(value), function(function), type(type), lsvalue(lsvalue), call(call) {}
 };
 
 }
