@@ -275,11 +275,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 					if (cap->scope == VarScope::LOCAL) {
 						auto f = dynamic_cast<Function*>(cap->value);
 						if (f) {
-							if (cap->has_version) {
-								jit_cap = f->compile_version(c, cap->version);
-							} else {
-								jit_cap = f->compile_default_version(c);
-							}
+							jit_cap = f->compile_version(c, cap->version);
 						} else {
 							if (cap->type->is_mpz_ptr()) {
 								jit_cap = c.get_var(cap->name);

@@ -33,7 +33,6 @@ public:
 	FunctionVersion* function; // In which function the variable is declared
 	const Type* type;
 	std::vector<const Type*> version;
-	bool has_version = false;
 	LSValue* lsvalue = nullptr;
 	Call call;
 

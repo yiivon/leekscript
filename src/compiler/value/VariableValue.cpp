@@ -219,7 +219,6 @@ const Type* VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vect
 		if (auto f = dynamic_cast<Function*>(var->value)) {
 			if (f->versions.find(args) != f->versions.end()) {
 				var->version = args;
-				var->has_version = true;
 			}
 		}
 		type = var->type;
