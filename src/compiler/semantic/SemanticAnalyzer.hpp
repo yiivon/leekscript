@@ -28,8 +28,8 @@ public:
 	Program* program;
 	VM* vm;
 
-	std::vector<std::vector<std::map<std::string, std::shared_ptr<Variable>>>> variables;
-	std::vector<std::map<std::string, std::shared_ptr<Variable>>> parameters;
+	std::vector<std::vector<std::map<std::string, Variable*>>> variables;
+	std::vector<std::map<std::string, Variable*>> parameters;
 
 	std::vector<Function*> functions;
 	std::stack<FunctionVersion*> functions_stack;
@@ -52,13 +52,13 @@ public:
 	void leave_loop();
 	bool in_loop(int deepness) const;
 
-	std::shared_ptr<Variable> add_var(Token*, const Type*, Value*, VariableDeclaration*);
-	std::shared_ptr<Variable> add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
-	std::shared_ptr<Variable> add_parameter(Token*, const Type*);
+	Variable* add_var(Token*, const Type*, Value*, VariableDeclaration*);
+	Variable* add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
+	Variable* add_parameter(Token*, const Type*);
 
-	std::shared_ptr<Variable> get_var(Token* name);
-	std::map<std::string, std::shared_ptr<Variable>>& get_local_vars();
-	std::shared_ptr<Variable> convert_var_to_any(std::shared_ptr<Variable> var);
+	Variable* get_var(Token* name);
+	std::map<std::string, Variable*>& get_local_vars();
+	Variable* convert_var_to_any(Variable* var);
 
 	void add_error(Error ex);
 

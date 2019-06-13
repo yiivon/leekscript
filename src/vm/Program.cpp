@@ -179,7 +179,7 @@ VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseu
 	}
 }
 
-std::shared_ptr<Variable> Program::get_operator(std::string name) {
+Variable* Program::get_operator(std::string name) {
 	// std::cout << "Program::get_operator(" << name << ")" << std::endl;
 
 	auto op = operators.find(name);
@@ -205,7 +205,7 @@ std::shared_ptr<Variable> Program::get_operator(std::string name) {
 	f->body->instructions.push_back(new ExpressionInstruction(ex));
 	auto type = Type::fun(Type::any, {Type::any, Type::any});
 
-	auto var = std::make_shared<Variable>(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
+	auto var = new Variable(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
 	operators.insert({name, var});
 	return var;
 }

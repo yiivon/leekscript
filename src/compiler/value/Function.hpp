@@ -25,8 +25,8 @@ public:
 	std::vector<Value*> defaultValues;
 	Block* body;
 
-	std::vector<std::shared_ptr<Variable>> captures;
-	std::map<std::string, std::shared_ptr<Variable>> vars;
+	std::vector<Variable*> captures;
+	std::map<std::string, Variable*> vars;
 	bool function_added;
 	Function* parent;
 	bool is_main_function = false;
@@ -43,7 +43,7 @@ public:
 	virtual ~Function();
 
 	void addArgument(Token* token, Value* defaultValue);
-	int capture(SemanticAnalyzer* analyzer, std::shared_ptr<Variable> var);
+	int capture(SemanticAnalyzer* analyzer, Variable* var);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

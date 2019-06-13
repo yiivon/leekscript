@@ -38,11 +38,11 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 void SemanticAnalyzer::enter_function(FunctionVersion* f) {
 
 	// Create function scope
-	variables.push_back(std::vector<std::map<std::string, std::shared_ptr<Variable>>> {});
+	variables.push_back(std::vector<std::map<std::string, Variable*>> {});
 	// First function block
-	variables.back().push_back(std::map<std::string, std::shared_ptr<Variable>> {});
+	variables.back().push_back(std::map<std::string, Variable*> {});
 	// Parameters
-	parameters.push_back(std::map<std::string, std::shared_ptr<Variable>> {});
+	parameters.push_back(std::map<std::string, Variable*> {});
 
 	loops.push(0);
 	functions_stack.push(f);
@@ -56,7 +56,7 @@ void SemanticAnalyzer::leave_function() {
 }
 
 void SemanticAnalyzer::enter_block() {
-	variables.back().push_back(std::map<std::string, std::shared_ptr<Variable>> {});
+	variables.back().push_back(std::map<std::string, Variable*> {});
 }
 
 void SemanticAnalyzer::leave_block() {
@@ -79,13 +79,13 @@ bool SemanticAnalyzer::in_loop(int deepness) const {
 	return loops.top() >= deepness;
 }
 
-std::shared_ptr<Variable> SemanticAnalyzer::add_parameter(Token* v, const Type* type) {
-	auto arg = std::make_shared<Variable>(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
+Variable* SemanticAnalyzer::add_parameter(Token* v, const Type* type) {
+	auto arg = new Variable(v->content, VarScope::PARAMETER, type, parameters.back().size(), nullptr, nullptr, current_function(), nullptr);
 	parameters.back().insert({v->content, arg});
 	return arg;
 }
 
-std::shared_ptr<Variable> SemanticAnalyzer::get_var(Token* v) {
+Variable* SemanticAnalyzer::get_var(Token* v) {
 
 	// Search in interval variables : global for the program
 	try {
@@ -118,7 +118,7 @@ std::shared_ptr<Variable> SemanticAnalyzer::get_var(Token* v) {
 	return nullptr;
 }
 
-std::shared_ptr<Variable> SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
+Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
@@ -127,22 +127,22 @@ std::shared_ptr<Variable> SemanticAnalyzer::add_var(Token* v, const Type* type, 
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
-	variables.back().back().insert(std::pair<std::string, std::shared_ptr<Variable>>(
+	variables.back().back().insert(std::pair<std::string, Variable*>(
 		v->content,
-		std::make_shared<Variable>(v->content, VarScope::LOCAL, type, 0, value, vd, current_function(), nullptr)
+		new Variable(v->content, VarScope::LOCAL, type, 0, value, vd, current_function(), nullptr)
 	));
 	return variables.back().back().at(v->content);
 }
 
-std::shared_ptr<Variable> SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
+Variable* SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value, VariableDeclaration* vd) {
 	auto& vars = *variables.begin()->begin();
 	if (vars.find(v->content) != vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
-	vars.insert(std::pair<std::string, std::shared_ptr<Variable>>(
+	vars.insert(std::pair<std::string, Variable*>(
 		v->content,
-		std::make_shared<Variable>(v->content, VarScope::LOCAL, type, 0, value, vd, (*functions.begin())->default_version, nullptr)
+		new Variable(v->content, VarScope::LOCAL, type, 0, value, vd, (*functions.begin())->default_version, nullptr)
 	));
 	return vars.at(v->content);
 }
@@ -151,14 +151,14 @@ void SemanticAnalyzer::add_function(Function* l) {
 	functions.push_back(l);
 }
 
-std::map<std::string, std::shared_ptr<Variable>>& SemanticAnalyzer::get_local_vars() {
+std::map<std::string, Variable*>& SemanticAnalyzer::get_local_vars() {
 	return variables.back().back();
 }
 
-std::shared_ptr<Variable> SemanticAnalyzer::convert_var_to_any(std::shared_ptr<Variable> var) {
+Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 	// std::cout << "SemanticAnalyser::convert_var_to_any(" << var->name << ")" << std::endl;
 	if (var->type->is_polymorphic()) return var;
-	auto new_var = std::make_shared<Variable>(var->name, var->scope, Type::any, 0, nullptr, nullptr, var->function, nullptr);
+	auto new_var = new Variable(var->name, var->scope, Type::any, 0, nullptr, nullptr, var->function, nullptr);
 	// Search recursively in the functions
 
 	int f = functions_stack.size() - 1;

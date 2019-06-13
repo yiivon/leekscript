@@ -17,7 +17,7 @@ public:
 	std::shared_ptr<Token> token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
-	std::shared_ptr<Variable> var;
+	Variable* var;
 
 	ClassDeclaration(std::shared_ptr<Token> token);
 	virtual ~ClassDeclaration();

@@ -24,7 +24,7 @@ public:
 	bool handle_created = false;
 	llvm::Module* module = nullptr;
 	llvm::orc::VModuleKey module_handle;
-	std::map<std::string, std::shared_ptr<Variable>> operators;
+	std::map<std::string, Variable*> operators;
 	File* main_file;
 
 	Program(const std::string& code, const std::string& file_name);
@@ -40,7 +40,7 @@ public:
 	VM::Result compile_ir_file(VM& vm);
 	VM::Result compile_bitcode_file(VM& vm);
 
-	std::shared_ptr<Variable> get_operator(std::string name);
+	Variable* get_operator(std::string name);
 
 	/*
 	 * Execute the program and get a std::string result
