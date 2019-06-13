@@ -160,7 +160,6 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 		}
 		type = var->type;
 		scope = var->scope;
-		attr_types = var->attr_types;
 		if (scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
 			if (not var->type->is_function()) {
 				if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
@@ -208,8 +207,6 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "VV " << name << " : " << type << std::endl;
 	// std::cout << "var scope : " << (int)var->scope << std::endl;
-	//	for (auto t : attr_types)
-	//	cout << t.first << " : " << t.second << endl;
 }
 
 const Type* VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {

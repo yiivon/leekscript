@@ -19,7 +19,6 @@ public:
 	bool may_return = false;
 	std::vector<const Type*> version;
 	bool has_version = false;
-	std::map<std::string, const Type*> attr_types;
 	bool constant;
 	bool parenthesis = false;
 	std::string default_version_fun;

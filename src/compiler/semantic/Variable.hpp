@@ -25,7 +25,6 @@ class Variable {
 public:
 	std::string name;
 	VarScope scope;
-	std::map<std::string, const Type*> attr_types;
 	int index;
 	int parent_index;
 	Value* value;
