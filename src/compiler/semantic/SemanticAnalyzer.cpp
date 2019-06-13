@@ -15,13 +15,7 @@ namespace ls {
 
 SemanticAnalyzer::SemanticAnalyzer() {
 	program = nullptr;
-//	loops.push(0);
-//	variables.push_back(vector<map<std::string, Variable*>> {});
-//	functions_stack.push(nullptr); // The first function is the main function of the program
-//	parameters.push_back(map<std::string, Variable*> {});
 }
-
-SemanticAnalyzer::~SemanticAnalyzer() {}
 
 void SemanticAnalyzer::analyze(Program* program, Context* context) {
 

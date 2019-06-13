@@ -38,7 +38,6 @@ public:
 	std::vector<Error> errors;
 
 	SemanticAnalyzer();
-	virtual ~SemanticAnalyzer();
 
 	void analyze(Program*, Context*);
 
