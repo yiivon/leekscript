@@ -39,8 +39,6 @@ public:
 
 	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
 		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
-
-	void must_be_any(SemanticAnalyzer*);
 };
 
 }
