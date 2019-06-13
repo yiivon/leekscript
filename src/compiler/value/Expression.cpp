@@ -13,7 +13,7 @@
 #include "../../vm/Exception.hpp"
 #include "../semantic/Callable.hpp"
 #include "../semantic/FunctionVersion.hpp"
-#include "../semantic/SemanticVar.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 

@@ -5,7 +5,7 @@
 #include "../error/Error.hpp"
 #include "../value/Function.hpp"
 #include "../value/Nulll.hpp"
-#include "../semantic/SemanticVar.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 

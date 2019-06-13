@@ -17,7 +17,7 @@ public:
 	std::shared_ptr<Token> token;
 	std::string name;
 	std::vector<VariableDeclaration*> fields;
-	std::shared_ptr<SemanticVar> var;
+	std::shared_ptr<Variable> var;
 
 	ClassDeclaration(std::shared_ptr<Token> token);
 	virtual ~ClassDeclaration();

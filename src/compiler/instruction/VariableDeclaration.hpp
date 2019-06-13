@@ -7,7 +7,7 @@
 
 namespace ls {
 
-class SemanticVar;
+class Variable;
 
 class VariableDeclaration : public Instruction {
 public:
@@ -17,7 +17,7 @@ public:
 	bool function;
 	std::vector<std::shared_ptr<Token>> variables;
 	std::vector<Value*> expressions;
-	std::map<std::string, std::shared_ptr<SemanticVar>> vars;
+	std::map<std::string, std::shared_ptr<Variable>> vars;
 	std::shared_ptr<Token> keyword;
 
 	VariableDeclaration();

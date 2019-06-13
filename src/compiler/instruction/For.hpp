@@ -9,7 +9,7 @@
 namespace ls {
 
 class Block;
-class SemanticVar;
+class Variable;
 
 class For : public Instruction {
 public:

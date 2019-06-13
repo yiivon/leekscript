@@ -18,8 +18,8 @@ public:
 	
 	const Type* key_type;
 	const Type* value_type;
-	std::shared_ptr<SemanticVar> value_var;
-	std::shared_ptr<SemanticVar> key_var;
+	std::shared_ptr<Variable> value_var;
+	std::shared_ptr<Variable> key_var;
 
 	Foreach();
 	virtual ~Foreach();

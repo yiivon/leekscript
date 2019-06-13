@@ -17,7 +17,7 @@
 #include "../../vm/Module.hpp"
 #include "../resolver/File.hpp"
 #include "../semantic/FunctionVersion.hpp"
-#include "../semantic/SemanticVar.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 
@@ -242,7 +242,7 @@ void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const T
 	}
 }
 
-int Function::capture(SemanticAnalyzer* analyzer, std::shared_ptr<SemanticVar> var) {
+int Function::capture(SemanticAnalyzer* analyzer, std::shared_ptr<Variable> var) {
 	// std::cout << "Function::capture " << var->name << std::endl;
 	// Function become a closure
 	default_version->type = Type::closure(default_version->type->return_type(), default_version->type->arguments(), this);
@@ -255,11 +255,11 @@ int Function::capture(SemanticAnalyzer* analyzer, std::shared_ptr<SemanticVar> v
 		if (captures[i]->name == var->name)
 			return i;
 	}
-	var = std::make_shared<SemanticVar>(*var);
+	var = std::make_shared<Variable>(*var);
 	captures.push_back(var);
 
 	if (var->function->parent != parent) {
-		auto new_var = std::make_shared<SemanticVar>(*var);
+		auto new_var = std::make_shared<Variable>(*var);
 		new_var->index = parent->capture(analyzer, new_var);
 		var->scope = VarScope::CAPTURE;
 		var->parent_index = new_var->index;

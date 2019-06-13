@@ -9,7 +9,7 @@
 namespace ls {
 
 class Value;
-class SemanticVar;
+class Variable;
 enum class VarScope;
 
 class VariableValue : public LeftValue {
@@ -17,7 +17,7 @@ public:
 
 	std::string name;
 	std::shared_ptr<Token> token;
-	std::shared_ptr<SemanticVar> var;
+	std::shared_ptr<Variable> var;
 	int capture_index = 0;
 	VarScope scope;
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;

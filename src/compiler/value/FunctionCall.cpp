@@ -18,7 +18,7 @@
 #include "../semantic/Callable.hpp"
 #include "../semantic/FunctionVersion.hpp"
 #include "../../type/Function_type.hpp"
-#include "../semantic/SemanticVar.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 

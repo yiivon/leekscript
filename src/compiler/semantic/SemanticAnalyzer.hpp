@@ -4,7 +4,6 @@
 #include <stack>
 #include <vector>
 #include <map>
-
 #include "../../vm/VM.hpp"
 #include "../error/Error.hpp"
 #include "../semantic/Call.hpp"
@@ -29,8 +28,8 @@ public:
 	Program* program;
 	VM* vm;
 
-	std::vector<std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>>> variables;
-	std::vector<std::map<std::string, std::shared_ptr<SemanticVar>>> parameters;
+	std::vector<std::vector<std::map<std::string, std::shared_ptr<Variable>>>> variables;
+	std::vector<std::map<std::string, std::shared_ptr<Variable>>> parameters;
 
 	std::vector<Function*> functions;
 	std::stack<FunctionVersion*> functions_stack;
@@ -54,13 +53,13 @@ public:
 	void leave_loop();
 	bool in_loop(int deepness) const;
 
-	std::shared_ptr<SemanticVar> add_var(Token*, const Type*, Value*, VariableDeclaration*);
-	std::shared_ptr<SemanticVar> add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
-	std::shared_ptr<SemanticVar> add_parameter(Token*, const Type*);
+	std::shared_ptr<Variable> add_var(Token*, const Type*, Value*, VariableDeclaration*);
+	std::shared_ptr<Variable> add_global_var(Token*, const Type*, Value*, VariableDeclaration*);
+	std::shared_ptr<Variable> add_parameter(Token*, const Type*);
 
-	std::shared_ptr<SemanticVar> get_var(Token* name);
-	std::map<std::string, std::shared_ptr<SemanticVar>>& get_local_vars();
-	std::shared_ptr<SemanticVar> convert_var_to_any(std::shared_ptr<SemanticVar> var);
+	std::shared_ptr<Variable> get_var(Token* name);
+	std::map<std::string, std::shared_ptr<Variable>>& get_local_vars();
+	std::shared_ptr<Variable> convert_var_to_any(std::shared_ptr<Variable> var);
 
 	void add_error(Error ex);
 

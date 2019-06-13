@@ -1,5 +1,5 @@
-#ifndef SEMANTIC_VAR_HPP
-#define SEMANTIC_VAR_HPP
+#ifndef VARIABLE_HPP
+#define VARIABLE_HPP
 
 #include "Call.hpp"
 
@@ -21,7 +21,7 @@ enum class VarScope {
 	INTERNAL, LOCAL, PARAMETER, CAPTURE
 };
 
-class SemanticVar {
+class Variable {
 public:
 	std::string name;
 	VarScope scope;
@@ -37,7 +37,7 @@ public:
 	LSValue* lsvalue = nullptr;
 	Call call;
 
-	SemanticVar(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
+	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, VariableDeclaration* vd, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
 		name(name), scope(scope), index(index), parent_index(0), value(value), vd(vd), function(function), type(type), lsvalue(lsvalue), call(call) {}
 
 	void must_be_any(SemanticAnalyzer*);

@@ -4,7 +4,7 @@
 #include <vector>
 #include "../../compiler/value/Value.hpp"
 #include "../value/Block.hpp"
-class SemanticVar;
+class Variable;
 
 namespace ls {
 
