@@ -168,10 +168,10 @@ void Test::test_types() {
 	test("mpz*&&.fold", ls::Type::tmp_mpz_ptr->fold(), ls::Type::tmp_mpz_ptr);
 
 	section("temporary");
-	test("int&&", ls::Type::integer->add_temporary(), ls::Type::integer->add_temporary());
+	test("int&&", ls::Type::integer->add_temporary(), ls::Type::integer);
 	test("string&&", ls::Type::string->add_temporary(), ls::Type::tmp_string);
 	test("(int | string)&&.fold", ls::Type::compound({ls::Type::integer, ls::Type::string})->add_temporary()->fold(), ls::Type::any->add_temporary());
-	test("(const:int)&&", ls::Type::integer->add_constant()->add_temporary(), ls::Type::integer->add_temporary());
+	test("(const:int)&&", ls::Type::integer->add_constant()->add_temporary(), ls::Type::integer->add_constant());
 
 	section("LLVM type");
 	test("void", ls::Type::void_->llvm(vm.compiler), llvm::Type::getVoidTy(vm.compiler.getContext()));

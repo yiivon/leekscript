@@ -284,7 +284,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		// TODO temporary
 		return { builder.CreatePointerCast(v.v, t->llvm(*this)), rt };
 	}
-	if (v.t->fold()->is_primitive() && t->is_polymorphic()) {
+	if (not v.t->fold()->is_polymorphic() && t->is_polymorphic()) {
 		auto r = insn_to_any(v);
 		// TODO
 		// r = { builder.CreatePointerCast(r.v, t->llvm(*this)), t };

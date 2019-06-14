@@ -164,6 +164,7 @@ std::string Type::to_string() const {
 const Type* Type::add_temporary() const {
 	if (placeholder) return this;
 	if (temporary) return this;
+	if (is_primitive()) return this;
 	if (constant) return not_constant()->add_temporary();
 	auto i = temporary_types.find(this);
 	if (i != temporary_types.end()) return i->second;
@@ -340,11 +341,9 @@ bool Type::is_polymorphic() const {
 }
 bool Type::is_primitive() const {
 	return dynamic_cast<const Integer_type*>(folded) != nullptr
-		or dynamic_cast<const Mpz_type*>(folded) != nullptr 
 		or dynamic_cast<const Long_type*>(folded) != nullptr 
 		or dynamic_cast<const Real_type*>(folded) != nullptr 
-		or dynamic_cast<const Bool_type*>(folded) != nullptr
-		or (dynamic_cast<const Pointer_type*>(folded) != nullptr and ((Pointer_type*) folded)->pointed()->is_mpz());
+		or dynamic_cast<const Bool_type*>(folded) != nullptr;
 }
 bool Type::is_void() const {
 	return this == Type::void_;
