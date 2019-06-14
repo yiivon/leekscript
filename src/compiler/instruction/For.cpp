@@ -8,8 +8,6 @@ namespace ls {
 For::For() {}
 
 For::~For() {
-	delete condition;
-	delete body;
 	for (Instruction* ins : inits) {
 		delete ins;
 	}
@@ -192,7 +190,7 @@ Instruction* For::clone() const {
 	for (const auto& i : increments) {
 		f->increments.push_back(i->clone());
 	}
-	f->body = (Block*) body->clone();
+	f->body = unique_static_cast<Block>(body->clone());
 	return f;
 }
 

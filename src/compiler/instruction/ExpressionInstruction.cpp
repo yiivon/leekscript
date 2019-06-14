@@ -4,13 +4,7 @@
 
 namespace ls {
 
-ExpressionInstruction::ExpressionInstruction(Value* value) {
-	this->value = value;
-}
-
-ExpressionInstruction::~ExpressionInstruction() {
-	delete this->value;
-}
+ExpressionInstruction::ExpressionInstruction(std::unique_ptr<Value> value) : value(std::move(value)) {}
 
 void ExpressionInstruction::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	value->print(os, indent, debug, condensed);

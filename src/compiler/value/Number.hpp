@@ -34,7 +34,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

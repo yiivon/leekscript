@@ -9,12 +9,6 @@ Array::Array() {
 	type = Type::array(Type::never);
 }
 
-Array::~Array() {
-	for (const auto& ex : expressions) {
-		delete ex;
-	}
-}
-
 void Array::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -47,7 +41,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 		// First analyze pass
 		for (size_t i = 0; i < expressions.size(); ++i) {
 
-			Value* ex = expressions[i];
+			const auto& ex = expressions[i];
 			ex->analyze(analyzer);
 			ex->must_return_any(analyzer);
 
@@ -63,7 +57,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 		// and second computation of the array type
 		const Type* new_element_type = Type::void_;
 		for (size_t i = 0; i < expressions.size(); ++i) {
-			auto ex = expressions[i];
+			const auto& ex = expressions[i];
 			if (!homogeneous and ex->type->is_array()) {
 				// If the array stores other arrays of different types,
 				// force those arrays to store pointers. (To avoid having unknown array<int> inside arrays.
@@ -92,7 +86,7 @@ void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<con
 	// std::cout << "Array::elements_will_take " << arg_types << " at " << level << std::endl;
 
 	for (size_t i = 0; i < expressions.size(); ++i) {
-		Array* arr = dynamic_cast<Array*>(expressions[i]);
+		const auto& arr = dynamic_cast<Array*>(expressions[i].get());
 		if (arr != nullptr && level > 0) {
 			arr->elements_will_take(analyzer, arg_types, level - 1);
 		} else {
@@ -102,7 +96,7 @@ void Array::elements_will_take(SemanticAnalyzer* analyzer, const std::vector<con
 	// Computation of the new array type
 	const Type* element_type = Type::void_;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		Value* ex = expressions[i];
+		const auto& ex = expressions[i];
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
@@ -138,7 +132,7 @@ bool Array::elements_will_store(SemanticAnalyzer* analyzer, const Type* type, in
 	// Computation of the new array type
 	const Type* element_type = Type::void_;
 	for (unsigned i = 0; i < expressions.size(); ++i) {
-		Value* ex = expressions[i];
+		const auto& ex = expressions[i];
 		if (i == 0) {
 			element_type = ex->type;
 		} else {
@@ -151,7 +145,7 @@ bool Array::elements_will_store(SemanticAnalyzer* analyzer, const Type* type, in
 
 Compiler::value Array::compile(Compiler& c) const {
 	std::vector<Compiler::value> elements;
-	for (Value* val : expressions) {
+	for (const auto& val : expressions) {
 		auto v = val->compile(c);
 		val->compile_end(c);
 		elements.push_back(v);
@@ -159,8 +153,8 @@ Compiler::value Array::compile(Compiler& c) const {
 	return c.new_array(type->element(), elements);
 }
 
-Value* Array::clone() const {
-	auto array = new Array();
+std::unique_ptr<Value> Array::clone() const {
+	auto array = std::make_unique<Array>();
 	array->opening_bracket = opening_bracket;
 	array->closing_bracket = closing_bracket;
 	for (const auto& ex : expressions) {

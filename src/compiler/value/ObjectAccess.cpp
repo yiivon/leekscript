@@ -20,7 +20,6 @@ ObjectAccess::ObjectAccess(std::shared_ptr<Token> token) : field(token) {
 }
 
 ObjectAccess::~ObjectAccess() {
-	delete object;
 	if (ls_function != nullptr) {
 		delete ls_function;
 	}
@@ -30,7 +29,7 @@ bool ObjectAccess::isLeftValue() const {
 	if (native_access_function.size()) {
 		return false;
 	}
-	if (auto v = dynamic_cast<VariableValue*>(object)) {
+	if (auto v = dynamic_cast<VariableValue*>(object.get())) {
 		if (not v->isLeftValue()) return false;
 	}
 	return true;
@@ -93,7 +92,7 @@ const Type* ObjectAccess::will_take(SemanticAnalyzer* analyzer, const std::vecto
 Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) const {
 	// std::cout << "ObjectAccess::get_callable(" << argument_count << ")" << std::endl;
 
-	auto vv = dynamic_cast<VariableValue*>(object);
+	auto vv = dynamic_cast<VariableValue*>(object.get());
 	auto value_class = (LSClass*) analyzer->vm->internal_vars["Value"]->lsvalue;
 
 	std::string object_class_name = object->type->class_name();
@@ -106,13 +105,13 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	if (object_class) {
 		auto i = object_class->methods.find(field->content);
 		if (i != object_class->methods.end()) {
-			return { &i->second, object };
+			return { &i->second, object.get() };
 		}
 	}
 	// <object : Value>.<method>
 	auto i = value_class->methods.find(field->content);
 	if (i != value_class->methods.end() and i->second.is_compatible(argument_count + 1)) {
-		return { &i->second, object };
+		return { &i->second, object.get() };
 	}
 	// <class>.<field>
 	if (object->type->is_class() and vv != nullptr) {
@@ -130,9 +129,9 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	}
 	if (not object->type->is_class()) {
 		std::ostringstream oss;
-		oss << object << "." << field->content;
+		oss << object.get() << "." << field->content;
 		auto type = Type::fun(Type::any, {Type::any, Type::any});
-		return { new Callable { new CallableVersion { oss.str(), type, this, {}, {}, true, true } }, object };
+		return { new Callable { new CallableVersion { oss.str(), type, this, {}, {}, true, true } }, object.get() };
 	}
 	return { (Callable*) nullptr };
 }
@@ -152,7 +151,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	}
 
 	// Static attribute? (Number.PI <= static attr)
-	auto vv = dynamic_cast<VariableValue*>(object);
+	auto vv = dynamic_cast<VariableValue*>(object.get());
 
 	bool found = false;
 	if (object->type->is_class() and vv != nullptr) {
@@ -306,7 +305,7 @@ Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<const Typ
 
 Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	auto o = [&]() { if (object->isLeftValue()) {
-		return c.insn_load(((LeftValue*) object)->compile_l(c));
+		return c.insn_load(((LeftValue*) object.get())->compile_l(c));
 	} else {
 		return object->compile(c);
 	}}();
@@ -315,8 +314,8 @@ Compiler::value ObjectAccess::compile_l(Compiler& c) const {
 	return c.insn_invoke(type->pointer(), {o, k}, "Value.attrL");
 }
 
-Value* ObjectAccess::clone() const {
-	auto oa = new ObjectAccess(field);
+std::unique_ptr<Value> ObjectAccess::clone() const {
+	auto oa = std::make_unique<ObjectAccess>(field);
 	oa->object = object->clone();
 	return oa;
 }

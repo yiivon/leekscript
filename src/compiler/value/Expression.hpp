@@ -13,15 +13,14 @@ class CallableVersion;
 class Expression : public Value {
 public:
 
-	Value* v1;
-	Value* v2;
+	std::unique_ptr<Value> v1;
+	std::unique_ptr<Value> v2;
 	std::shared_ptr<Operator> op;
 	int operations;
 	const CallableVersion* callable_version = nullptr;
 
 	Expression();
 	Expression(Value*);
-	virtual ~Expression();
 
 	void append(std::shared_ptr<Operator>, Value*);
 
@@ -33,7 +32,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

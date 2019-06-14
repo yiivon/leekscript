@@ -148,9 +148,8 @@ Compiler::value Block::compile(Compiler& c) const {
 	return {};
 }
 
-Value* Block::clone() const {
-	auto b = new Block();
-	b->is_function_block = is_function_block;
+std::unique_ptr<Value> Block::clone() const {
+	auto b = std::make_unique<Block>(is_function_block);
 	for (const auto& i : instructions) {
 		b->instructions.push_back(i->clone());
 	}

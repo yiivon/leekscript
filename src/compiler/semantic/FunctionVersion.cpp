@@ -14,7 +14,7 @@
 
 namespace ls {
 
-FunctionVersion::FunctionVersion() : type(Type::void_) {}
+FunctionVersion::FunctionVersion(std::unique_ptr<Block> body) : body(std::move(body)), type(Type::void_) {}
 
 bool FunctionVersion::is_compiled() const {
 	return f != nullptr;

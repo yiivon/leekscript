@@ -7,19 +7,6 @@ Match::Match() {
 	value = nullptr;
 }
 
-Match::~Match() {
-	delete value;
-	for (auto& ps : pattern_list) {
-		for (Pattern p : ps) {
-			delete p.begin;
-			delete p.end;
-		}
-	}
-	for (auto x : returns) {
-		delete x;
-	}
-}
-
 void Match::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "match ";
 	value->print(os, indent, debug);
@@ -28,7 +15,7 @@ void Match::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 
 		os << std::endl << tabs(indent + 1);
 
-		const std::vector<Pattern>& list = pattern_list[i];
+		const auto& list = pattern_list[i];
 		for (size_t j = 0; j < list.size(); ++j) {
 			if (j > 0) {
 				os << "|";
@@ -86,13 +73,13 @@ void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
 		type = Type::any;
-		for (Value* r : returns) {
+		for (const auto& r : returns) {
 			r->analyze(analyzer);
 			throws |= r->throws;
 		}
 	} else {
 		type = Type::void_;
-		for (Value* ret : returns) {
+		for (const auto& ret : returns) {
 			ret->analyze(analyzer);
 			throws |= ret->throws;
 			type = type->operator * (ret->type);
@@ -100,7 +87,7 @@ void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 	}
 }
 
-Compiler::value Match::get_pattern_condition(Compiler& c, Compiler::value v, std::vector<Pattern> patterns) const {
+Compiler::value Match::get_pattern_condition(Compiler& c, Compiler::value v, const std::vector<Pattern>& patterns) const {
 	auto cond = patterns[0].match(c, v);
 	for (size_t i = 1; i < patterns.size(); ++i) {
 		cond = c.insn_or(cond, patterns[i].match(c, v));
@@ -148,9 +135,9 @@ Compiler::value Match::compile(Compiler& c) const {
 	return res;
 }
 
-Match::Pattern::Pattern(Value* value) : interval(false), begin(value), end(nullptr) {}
+Match::Pattern::Pattern(std::unique_ptr<Value> value) : interval(false), begin(std::move(value)), end(nullptr) {}
 
-Match::Pattern::Pattern(Value* begin, Value* end) : interval(true), begin(begin), end(end) {}
+Match::Pattern::Pattern(std::unique_ptr<Value> begin, std::unique_ptr<Value> end) : interval(true), begin(std::move(begin)), end(std::move(end)) {}
 
 Match::Pattern::~Pattern() {}
 
@@ -191,13 +178,13 @@ Compiler::value Match::Pattern::match(Compiler &c, Compiler::value v) const {
 	}
 }
 
-Value* Match::clone() const {
-	auto match = new Match();
+std::unique_ptr<Value> Match::clone() const {
+	auto match = std::make_unique<Match>();
 	match->value = value->clone();
 	for (const auto& pl : pattern_list) {
 		match->pattern_list.push_back({});
 		for (const auto& p : pl) {
-			match->pattern_list.back().push_back(p.clone());
+			match->pattern_list.back().emplace_back(p.clone());
 		}
 	}
 	return match;

@@ -13,10 +13,6 @@ PostfixExpression::PostfixExpression() {
 	return_value = true;
 }
 
-PostfixExpression::~PostfixExpression() {
-	delete expression;
-}
-
 void PostfixExpression::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	expression->print(os, indent, debug);
 	operatorr->print(os);
@@ -123,9 +119,9 @@ Compiler::value PostfixExpression::compile(Compiler& c) const {
 	return {nullptr, {}};
 }
 
-Value* PostfixExpression::clone() const {
-	auto pe = new PostfixExpression();
-	pe->expression = (LeftValue*) expression->clone();
+std::unique_ptr<Value> PostfixExpression::clone() const {
+	auto pe = std::make_unique<PostfixExpression>();
+	pe->expression = unique_static_cast<LeftValue>(expression->clone());
 	pe->operatorr = operatorr;
 	return pe;
 }

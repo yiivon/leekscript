@@ -125,9 +125,8 @@ Compiler::value Number::compile(Compiler& c) const {
 	return c.new_integer(int_value);
 }
 
-Value* Number::clone() const {
-	auto n = new Number(value, token);
-	return n;
+std::unique_ptr<Value> Number::clone() const {
+	return std::make_unique<Number>(value, token);
 }
 
 }

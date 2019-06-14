@@ -26,8 +26,8 @@ Compiler::value Boolean::compile(Compiler& c) const {
 	return c.new_bool(value);
 }
 
-Value* Boolean::clone() const {
-	auto b = new Boolean(token);
+std::unique_ptr<Value> Boolean::clone() const {
+	auto b = std::make_unique<Boolean>(token);
 	b->value = value;
 	return b;
 }

@@ -45,7 +45,7 @@ public:
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*> version) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

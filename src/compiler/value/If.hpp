@@ -9,13 +9,12 @@ namespace ls {
 class If : public Value {
 public:
 
-	Value* condition;
-	Block* then;
-	Block* elze;
+	std::unique_ptr<Value> condition;
+	std::unique_ptr<Block> then;
+	std::unique_ptr<Block> elze;
 	bool ternary;
 
 	If(bool ternary = false);
-	virtual ~If();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -24,7 +23,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

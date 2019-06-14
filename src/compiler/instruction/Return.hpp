@@ -8,10 +8,9 @@ namespace ls {
 class Return : public Instruction {
 public:
 
-	Value* expression;
+	std::unique_ptr<Value> expression;
 
-	Return(Value* = nullptr);
-	virtual ~Return();
+	Return(std::unique_ptr<Value> = nullptr);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

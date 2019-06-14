@@ -11,10 +11,9 @@ class PrefixExpression : public Value {
 public:
 
 	std::shared_ptr<Operator> operatorr;
-	Value* expression;
+	std::unique_ptr<Value> expression;
 
-	PrefixExpression();
-	virtual ~PrefixExpression();
+	PrefixExpression(std::shared_ptr<Operator> op, std::unique_ptr<Value> expression);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -23,7 +22,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

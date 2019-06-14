@@ -19,14 +19,6 @@ ArrayAccess::ArrayAccess() {
 	throws = true;
 }
 
-ArrayAccess::~ArrayAccess() {
-	delete array;
-	delete key;
-	if (key2 != nullptr) {
-		delete key2;
-	}
-}
-
 bool ArrayAccess::isLeftValue() const {
 	return key2 == nullptr; // Range access is not left-value (yet)
 }
@@ -128,10 +120,10 @@ const Type* ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
-	if (Array* arr = dynamic_cast<Array*>(array)) {
+	if (Array* arr = dynamic_cast<Array*>(array.get())) {
 		arr->elements_will_take(analyzer, args, 1);
 	}
-	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array)) {
+	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array.get())) {
 		arr->array_access_will_take(analyzer, args, 1);
 	}
 	
@@ -140,10 +132,10 @@ const Type* ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector
 }
 
 bool ArrayAccess::array_access_will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& arg_types, int level) {
-	if (auto arr = dynamic_cast<Array*>(array)) {
+	if (auto arr = dynamic_cast<Array*>(array.get())) {
 		arr->elements_will_take(analyzer, arg_types, level);
 	}
-	if (auto arr = dynamic_cast<ArrayAccess*>(array)) {
+	if (auto arr = dynamic_cast<ArrayAccess*>(array.get())) {
 		arr->array_access_will_take(analyzer, arg_types, level + 1);
 	}
 	type = array->type->element();
@@ -276,7 +268,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 	// Compile the array
 	((ArrayAccess*) this)->compiled_array = [&]() {
 		if (array->isLeftValue()) {
-			return c.insn_load(static_cast<LeftValue*>(array)->compile_l(c));
+			return c.insn_load(static_cast<LeftValue*>(array.get())->compile_l(c));
 		} else {
 			return array->compile(c);
 		}
@@ -330,8 +322,8 @@ void ArrayAccess::compile_end(Compiler& c) const {
 	c.insn_delete_temporary(compiled_array);
 }
 
-Value* ArrayAccess::clone() const {
-	auto aa = new ArrayAccess();
+std::unique_ptr<Value> ArrayAccess::clone() const {
+	auto aa = std::make_unique<ArrayAccess>();
 	aa->array = array->clone();
 	aa->key = key->clone();
 	aa->key2 = key2 ? key2->clone() : nullptr;

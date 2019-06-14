@@ -11,11 +11,6 @@ While::While() {
 	body = nullptr;
 }
 
-While::~While() {
-	delete condition;
-	delete body;
-}
-
 void While::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "while ";
 	condition->print(os, indent + 1, debug);
@@ -79,7 +74,7 @@ Instruction* While::clone() const {
 	auto w = new While();
 	w->token = token;
 	w->condition = condition->clone();
-	w->body = (Block*) body->clone();
+	w->body = unique_static_cast<Block>(body->clone());
 	return w;
 }
 

@@ -18,36 +18,31 @@
 #include "../resolver/File.hpp"
 #include "../semantic/FunctionVersion.hpp"
 #include "../semantic/Variable.hpp"
+#include "../../util/Util.hpp"
 
 namespace ls {
 
 int Function::id_counter = 0;
 
 Function::Function(std::shared_ptr<Token> token) : token(token) {
-	body = nullptr;
 	parent = nullptr;
 	constant = true;
 	function_added = false;
 }
 
 Function::~Function() {
-	delete body;
-	for (auto value : defaultValues) {
-		delete value;
-	}
 	if (default_version != nullptr) {
 		delete default_version;
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		delete version.second->body;
 		delete version.second;
 	}
 }
 
 void Function::addArgument(Token* name, Value* defaultValue) {
 	arguments.push_back(std::unique_ptr<Token> { name });
-	defaultValues.push_back(defaultValue);
+	defaultValues.emplace_back(defaultValue);
 	if (defaultValue) default_values_count++;
 }
 
@@ -59,16 +54,14 @@ void Function::print(std::ostream& os, int indent, bool debug, bool condensed) c
 			if (i++ > 0) os << std::endl << tabs(indent);
 			v.second->print(os, indent, debug, condensed);
 		}
-	} else if (default_version) {
+	} else {
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
-	} else {
-		body->print(os, indent, debug, condensed);
 	}
 }
 
 Location Function::location() const {
-	return body->location();
+	return default_version->body->location();
 }
 
 void Function::will_be_closure() {
@@ -78,9 +71,8 @@ void Function::will_be_closure() {
 void Function::create_default_version(SemanticAnalyzer* analyzer) {
 	if (default_version) return;
 
-	default_version = new FunctionVersion();
+	default_version = new FunctionVersion(std::unique_ptr<Block>(body));
 	default_version->parent = this;
-	default_version->body = body;
 
 	std::vector<const Type*> args;
 	for (unsigned int i = 0; i < arguments.size(); ++i) {
@@ -167,9 +159,8 @@ void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<cons
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
 	// TODO should be ==
 	// assert(args.size() >= arguments.size());
-	auto version = new FunctionVersion();
+	auto version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
 	version->parent = this;
-	version->body = (Block*) body->clone();
 	versions.insert({args, version});
 
 	version->pre_analyze(analyzer, args);
@@ -198,7 +189,7 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 	} else {
 		auto v = current_version ? current_version : default_version;
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
-			if (auto f = dynamic_cast<Function*>(ei->value)) {
+			if (auto f = dynamic_cast<Function*>(ei->value.get())) {
 
 				analyzer->enter_function(this->default_version);
 				auto ret = f->will_take(analyzer, args, level - 1);
@@ -232,7 +223,7 @@ void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const T
 	} else {
 		auto v = current_version ? current_version : default_version;
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
-			if (auto f = dynamic_cast<Function*>(ei->value)) {
+			if (auto f = dynamic_cast<Function*>(ei->value.get())) {
 				f->set_version(analyzer, args, level - 1);
 			}
 		}
@@ -357,11 +348,12 @@ void Function::export_context(const Compiler& c) const {
 	}
 }
 
-Value* Function::clone() const {
-	auto f = new Function(token);
+std::unique_ptr<Value> Function::clone() const {
+	auto f = std::make_unique<Function>(token);
 	f->lambda = lambda;
 	f->name = name;
-	f->body = (Block*) body->clone();
+	f->default_version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
+	f->default_version->parent = f.get();
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}
@@ -374,9 +366,8 @@ Value* Function::clone() const {
 	}
 	f->default_values_count = default_values_count;
 	for (const auto& v : versions) {
-		auto v2 = new FunctionVersion();
-		v2->parent = f;
-		v2->body = (Block*) v.second->body->clone();
+		auto v2 = new FunctionVersion(unique_static_cast<Block>(v.second->body->clone()));
+		v2->parent = f.get();
 		v2->type = v.second->type;
 		v2->recursive = v.second->recursive;
 		f->versions.insert({v.first, v2});

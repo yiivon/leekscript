@@ -8,10 +8,9 @@ namespace ls {
 class ExpressionInstruction : public Instruction {
 public:
 
-	Value* value;
+	std::unique_ptr<Value> value;
 
-	ExpressionInstruction(Value* expression);
-	virtual ~ExpressionInstruction();
+	ExpressionInstruction(std::unique_ptr<Value> expression);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

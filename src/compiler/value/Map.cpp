@@ -7,15 +7,6 @@ namespace ls {
 
 Map::Map() {}
 
-Map::~Map() {
-	for (auto ex : keys) {
-		delete ex;
-	}
-	for (auto ex : values) {
-		delete ex;
-	}
-}
-
 void Map::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (values.empty()) {
 		os << "[:]";
@@ -44,7 +35,7 @@ void Map::analyze(SemanticAnalyzer* analyzer) {
 	const Type* value_type = Type::void_;
 
 	for (size_t i = 0; i < keys.size(); ++i) {
-		Value* ex = keys[i];
+		const auto& ex = keys[i];
 		ex->analyze(analyzer);
 		key_type = key_type->operator * (ex->type);
 		if (ex->constant == false) constant = false;
@@ -52,7 +43,7 @@ void Map::analyze(SemanticAnalyzer* analyzer) {
 	key_type = key_type->not_temporary();
 
 	for (size_t i = 0; i < values.size(); ++i) {
-		Value* ex = values[i];
+		const auto& ex = values[i];
 		ex->analyze(analyzer);
 		value_type = value_type->operator * (ex->type);
 		if (ex->constant == false) constant = false;
@@ -106,8 +97,8 @@ Compiler::value Map::compile(Compiler &c) const {
 	return map;
 }
 
-Value* Map::clone() const {
-	auto map = new Map();
+std::unique_ptr<Value> Map::clone() const {
+	auto map = std::make_unique<Map>();
 	map->opening_bracket = opening_bracket;
 	map->closing_bracket = closing_bracket;
 	for (const auto& k : keys) {

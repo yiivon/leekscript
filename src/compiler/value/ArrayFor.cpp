@@ -30,8 +30,8 @@ Compiler::value ArrayFor::compile(Compiler& c) const {
 	return forr->compile(c);
 }
 
-Value* ArrayFor::clone() const {
-	auto af = new ArrayFor();
+std::unique_ptr<Value> ArrayFor::clone() const {
+	auto af = std::make_unique<ArrayFor>();
 	af->forr = forr->clone();
 	return af;
 }

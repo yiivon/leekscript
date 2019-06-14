@@ -13,8 +13,8 @@ public:
 
 	std::shared_ptr<Token> key;
 	std::shared_ptr<Token> value;
-	Value* container;
-	Block* body;
+	std::unique_ptr<Value> container;
+	std::unique_ptr<Block> body;
 	
 	const Type* key_type;
 	const Type* value_type;
@@ -22,7 +22,6 @@ public:
 	Variable* key_var;
 
 	Foreach();
-	virtual ~Foreach();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

@@ -6,10 +6,6 @@ namespace ls {
 
 Set::Set() {}
 
-Set::~Set() {
-	for (auto ex : expressions) delete ex;
-}
-
 void Set::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "<";
 	for (size_t i = 0; i < expressions.size(); ++i) {
@@ -70,7 +66,7 @@ Compiler::value Set::compile(Compiler& c) const {
 	auto s = c.insn_call(type, {}, create);
 
 	double i = 0;
-	for (Value* ex : expressions) {
+	for (const auto& ex : expressions) {
 		auto v = c.insn_convert(ex->compile(c), type->element());
 		ex->compile_end(c);
 		c.insn_call(Type::void_, {s, v}, insert);
@@ -80,8 +76,8 @@ Compiler::value Set::compile(Compiler& c) const {
 	return s;
 }
 
-Value* Set::clone() const {
-	auto s = new Set();
+std::unique_ptr<Value> Set::clone() const {
+	auto s = std::make_unique<Set>();
 	for (const auto& v : expressions) {
 		s->expressions.push_back(v->clone());
 	}

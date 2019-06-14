@@ -9,10 +9,9 @@ class Throw : public Instruction {
 public:
 
 	std::shared_ptr<Token> token;
-	Value* expression;
+	std::unique_ptr<Value> expression;
 
-	Throw(std::shared_ptr<Token> token, Value* = nullptr);
-	virtual ~Throw();
+	Throw(std::shared_ptr<Token> token, std::unique_ptr<Value> = nullptr);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

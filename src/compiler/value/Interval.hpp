@@ -13,11 +13,10 @@ public:
 
 	std::shared_ptr<Token> opening_bracket;
 	std::shared_ptr<Token> closing_bracket;
-	Value* start;
-	Value* end;
+	std::unique_ptr<Value> start;
+	std::unique_ptr<Value> end;
 
 	Interval();
-	virtual ~Interval();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -26,7 +25,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

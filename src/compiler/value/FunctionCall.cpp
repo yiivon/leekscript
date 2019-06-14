@@ -29,16 +29,9 @@ FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
 	constant = false;
 }
 
-FunctionCall::~FunctionCall() {
-	delete function;
-	for (const auto& arg : arguments) {
-		delete arg;
-	}
-}
-
 void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
-	auto parenthesis = condensed && dynamic_cast<const Function*>(function);
+	auto parenthesis = condensed && dynamic_cast<const Function*>(function.get());
 	if (parenthesis) os << "(";
 	function->print(os, indent, debug, condensed);
 	if (parenthesis) os << ")";
@@ -111,7 +104,9 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 			// std::cout << "Version: " << callable_version << std::endl;
 			type = callable_version->type->return_type();
 			throws |= callable_version->flags & Module::THROWS;
-			call.apply_mutators(analyzer, callable_version, arguments);
+			std::vector<Value*> raw_arguments;
+			for (const auto& a : arguments) raw_arguments.push_back(a.get());
+			call.apply_mutators(analyzer, callable_version, raw_arguments);
 			
 			int offset = call.object ? 1 : 0;
 			for (size_t a = 0; a < arguments.size(); ++a) {
@@ -125,7 +120,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				function_type =  function->will_take(analyzer, arguments_types, 1);
 				function->set_version(analyzer, arguments_types, 1);
 				type = function_type->return_type();
-				auto vv = dynamic_cast<VariableValue*>(function);
+				auto vv = dynamic_cast<VariableValue*>(function.get());
 				if (vv and vv->var) {
 					if (callable_version->user_fun == analyzer->current_function()) {
 						analyzer->current_function()->recursive = true;
@@ -147,9 +142,9 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		}
 	}
 	// Find the function object
-	function_object = dynamic_cast<Function*>(function);
+	function_object = dynamic_cast<Function*>(function.get());
 	if (!function_object) {
-		auto vv = dynamic_cast<VariableValue*>(function);
+		auto vv = dynamic_cast<VariableValue*>(function.get());
 		if (vv && vv->var && vv->var->value) {
 			if (auto f = dynamic_cast<Function*>(vv->var->value)) {
 				function_object = f;
@@ -158,14 +153,14 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	}
 
 	// Detect standard library functions
-	auto oa = dynamic_cast<ObjectAccess*>(function);
+	auto oa = dynamic_cast<ObjectAccess*>(function.get());
 	if (oa != nullptr) {
 		auto arguments_count = arguments_types.size() + (call.object ? 1 : 0);
 		if (not call.callable or (not callable_version and call.callable->versions[0]->type->arguments().size() == arguments_count)) {
 			auto field_name = oa->field->content;
 			auto object_type = oa->object->type;
 			std::vector<const Type*> arg_types;
-			for (auto arg : arguments) {
+			for (const auto& arg : arguments) {
 				arg_types.push_back(arg->type->fold());
 			}
 			std::ostringstream args_string;
@@ -174,7 +169,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 				args_string << arg_types[i];
 			}
 			if (object_type->is_class()) { // String.size("salut")
-				std::string clazz = ((VariableValue*) oa->object)->name;
+				std::string clazz = ((VariableValue*) oa->object.get())->name;
 				analyzer->add_error({Error::Type::STATIC_METHOD_NOT_FOUND, location(), oa->field->location, {clazz + "::" + oa->field->content + "(" + args_string.str() + ")"}});
 				return;
 			} else {  // "salut".size()
@@ -186,7 +181,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 					return;
 				} else {
 					is_unknown_method = true;
-					object = oa->object;
+					object = oa->object.get();
 				}
 			}
 		}
@@ -316,11 +311,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	return r;
 }
 
-Value* FunctionCall::clone() const {
-	auto fc = new FunctionCall(token);
+std::unique_ptr<Value> FunctionCall::clone() const {
+	auto fc = std::make_unique<FunctionCall>(token);
 	fc->function = function->clone();
 	for (const auto& a : arguments) {
-		fc->arguments.push_back(a->clone());
+		fc->arguments.emplace_back(a->clone());
 	}
 	fc->closing_parenthesis = closing_parenthesis;
 	return fc;

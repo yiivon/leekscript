@@ -23,6 +23,7 @@
 #include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/Bitcode/BitcodeReader.h"
 #include "../compiler/semantic/Variable.hpp"
+#include "../compiler/semantic/FunctionVersion.hpp"
 
 namespace ls {
 
@@ -198,11 +199,11 @@ Variable* Program::get_operator(std::string name) {
 	f->addArgument(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"), nullptr);
 	f->addArgument(new Token(TokenType::IDENT, main_file,2, 1, 2, "y"), nullptr);
 	f->body = new Block(true);
-	auto ex = new Expression();
-	ex->v1 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
-	ex->v2 = new VariableValue(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
+	auto ex = std::make_unique<Expression>();
+	ex->v1 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
+	ex->v2 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
 	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
-	f->body->instructions.push_back(new ExpressionInstruction(ex));
+	f->body->instructions.push_back(new ExpressionInstruction(std::move(ex)));
 	auto type = Type::fun(Type::any, {Type::any, Type::any});
 
 	auto var = new Variable(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
@@ -263,7 +264,7 @@ std::string Program::execute(VM& vm) {
 
 void Program::print(std::ostream& os, bool debug) const {
 	if (main) {
-		main->body->print(os, 0, debug, false);
+		main->default_version->body->print(os, 0, debug, false);
 	} else {
 		os << "(ll file)";
 	}

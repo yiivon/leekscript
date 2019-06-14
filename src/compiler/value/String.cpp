@@ -35,8 +35,8 @@ Compiler::value String::compile(Compiler& c) const {
 	return c.insn_call(Type::tmp_string, {s}, "String.new.1");
 }
 
-Value* String::clone() const {
-	return new String(token);
+std::unique_ptr<Value> String::clone() const {
+	return std::make_unique<String>(token);
 }
 
 }

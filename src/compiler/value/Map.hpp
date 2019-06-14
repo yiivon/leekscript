@@ -12,11 +12,10 @@ class Map : public Value {
 public:
 	std::shared_ptr<Token> opening_bracket;
 	std::shared_ptr<Token> closing_bracket;
-	std::vector<Value*> keys;
-	std::vector<Value*> values;
+	std::vector<std::unique_ptr<Value>> keys;
+	std::vector<std::unique_ptr<Value>> values;
 
 	Map();
-	virtual ~Map();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -24,7 +23,7 @@ public:
 	virtual void analyze(SemanticAnalyzer*) override;
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

@@ -10,12 +10,11 @@ namespace ls {
 class PostfixExpression : public Value {
 public:
 
-	LeftValue* expression;
+	std::unique_ptr<LeftValue> expression;
 	std::shared_ptr<Operator> operatorr;
 	bool return_value;
 
 	PostfixExpression();
-	virtual ~PostfixExpression();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -25,7 +24,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

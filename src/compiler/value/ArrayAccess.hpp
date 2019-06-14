@@ -12,16 +12,15 @@ namespace ls {
 class ArrayAccess : public LeftValue {
 public:
 
-	Value* array;
-	Value* key;
-	Value* key2;
+	std::unique_ptr<Value> array;
+	std::unique_ptr<Value> key;
+	std::unique_ptr<Value> key2;
 	std::shared_ptr<Token> open_bracket;
 	std::shared_ptr<Token> close_bracket;
 	const Type* map_key_type = Type::void_;
 	Compiler::value compiled_array;
 
 	ArrayAccess();
-	virtual ~ArrayAccess();
 	
 	virtual bool isLeftValue() const override;
 
@@ -40,7 +39,7 @@ public:
 	virtual Compiler::value compile_l(Compiler&) const override;
 	virtual void compile_end(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

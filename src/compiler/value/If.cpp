@@ -9,19 +9,8 @@
 namespace ls {
 
 If::If(bool ternary) {
-	elze = nullptr;
-	condition = nullptr;
-	then = nullptr;
 	type = Type::void_;
 	this->ternary = ternary;
-}
-
-If::~If() {
-	delete condition;
-	delete then;
-	if (elze != nullptr) {
-		delete elze;
-	}
 }
 
 void If::print(std::ostream& os, int indent, bool debug, bool condensed) const {
@@ -125,11 +114,11 @@ Compiler::value If::compile(Compiler& c) const {
 	}
 }
 
-Value* If::clone() const {
-	auto iff = new If();
+std::unique_ptr<Value> If::clone() const {
+	auto iff = std::make_unique<If>();
 	iff->condition = condition->clone();
-	iff->then = (Block*) then->clone();
-	iff->elze = elze ? (Block*) elze->clone() : nullptr;
+	iff->then = unique_static_cast<Block>(then->clone());
+	iff->elze = elze ? unique_static_cast<Block>(elze->clone()) : nullptr;
 	iff->ternary = ternary;
 	return iff;
 }

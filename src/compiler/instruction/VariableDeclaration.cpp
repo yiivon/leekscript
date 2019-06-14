@@ -14,12 +14,6 @@ VariableDeclaration::VariableDeclaration() {
 	constant = false;
 }
 
-VariableDeclaration::~VariableDeclaration() {
-	for (const auto& ex : expressions) {
-		delete ex;
-	}
-}
-
 void VariableDeclaration::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 
 	os << (global ? "global " : (constant ? "let " : "var "));
@@ -45,8 +39,8 @@ Location VariableDeclaration::location() const {
 void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
-		auto expr = expressions.at(0);
-		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr);
+		const auto& expr = expressions.at(0);
+		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr.get());
 		vars.insert({var->content, v});
 	}
 	for (unsigned i = 0; i < variables.size(); ++i) {
@@ -64,16 +58,16 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i));
+		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i).get());
 		if (v == nullptr) {
 			continue;
 		}
 		if (expressions[i] != nullptr) {
-			if (Function* f = dynamic_cast<Function*>(expressions[i])) {
+			if (Function* f = dynamic_cast<Function*>(expressions[i].get())) {
 				f->name = var->content;
 			}
 			expressions[i]->analyze(analyzer);
-			v->value = expressions[i];
+			v->value = expressions[i].get();
 			throws |= expressions[i]->throws;
 		} else {
 			v->value = new Nulll(std::shared_ptr<Token>(nullptr));
@@ -93,14 +87,13 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 
-		std::string name = variables[i]->content;
-		auto v = vars.at(name);
+		const auto& name = variables[i]->content;
 
 		if (expressions[i] != nullptr) {
 
-			Value* ex = expressions[i];
+			const auto& ex = expressions[i];
 
-			if (dynamic_cast<Function*>(ex) and not ex->type->is_closure()) {
+			if (dynamic_cast<Function*>(ex.get()) and not ex->type->is_closure()) {
 				continue;
 			}
 			auto val = ex->compile(c);

@@ -10,12 +10,6 @@ Object::Object() {
 	type = Type::tmp_object;
 }
 
-Object::~Object() {
-	for (auto ex : values) {
-		delete ex;
-	}
-}
-
 void Object::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
@@ -52,8 +46,8 @@ Compiler::value Object::compile(Compiler& c) const {
 	return object;
 }
 
-Value* Object::clone() const {
-	auto o = new Object();
+std::unique_ptr<Value> Object::clone() const {
+	auto o = std::make_unique<Object>();
 	for (const auto& k : keys) {
 		o->keys.push_back(k);
 	}

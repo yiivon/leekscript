@@ -10,12 +10,11 @@ namespace ls {
 class AbsoluteValue : public Value {
 public:
 
-	Value* expression;
+	std::unique_ptr<Value> expression;
 	std::shared_ptr<Token> open_pipe;
 	std::shared_ptr<Token> close_pipe;
 
 	AbsoluteValue();
-	virtual ~AbsoluteValue();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -24,7 +23,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

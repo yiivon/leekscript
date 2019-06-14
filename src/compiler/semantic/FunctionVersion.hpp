@@ -13,7 +13,7 @@ class Variable;
 class FunctionVersion {
 public:
 	Function* parent;
-	Block* body;
+	std::unique_ptr<Block> body;
 	const Type* type;
 	llvm::BasicBlock* block = nullptr;
 	llvm::Function* f = nullptr;
@@ -22,7 +22,7 @@ public:
 	bool recursive = false;
 	std::map<std::string, Variable*> arguments;
 
-	FunctionVersion();
+	FunctionVersion(std::unique_ptr<Block> body);
 
 	bool is_compiled() const;
 

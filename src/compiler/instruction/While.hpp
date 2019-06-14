@@ -11,12 +11,11 @@ namespace ls {
 class While : public Instruction {
 public:
 
-	Value* condition;
-	Block* body;
+	std::unique_ptr<Value> condition;
+	std::unique_ptr<Block> body;
 	std::shared_ptr<Token> token;
 
 	While();
-	virtual ~While();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

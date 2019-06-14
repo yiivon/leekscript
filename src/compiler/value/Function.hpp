@@ -22,7 +22,7 @@ public:
 	bool lambda = false;
 	std::shared_ptr<Token> token;
 	std::vector<std::shared_ptr<Token>> arguments;
-	std::vector<Value*> defaultValues;
+	std::vector<std::unique_ptr<Value>> defaultValues;
 	Block* body;
 
 	std::vector<Variable*> captures;
@@ -65,7 +65,7 @@ public:
 	Compiler::value compile_default_version(Compiler&) const;
 	void export_context(const Compiler& c) const;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

@@ -5,13 +5,8 @@
 
 namespace ls {
 
-Throw::Throw(std::shared_ptr<Token> token, Value* v) : token(token) {
-	expression = v;
+Throw::Throw(std::shared_ptr<Token> token, std::unique_ptr<Value> v) : token(token), expression(std::move(v)) {
 	throws = true;
-}
-
-Throw::~Throw() {
-	delete expression;
 }
 
 void Throw::print(std::ostream& os, int indent, bool debug, bool condensed) const {
@@ -57,7 +52,7 @@ Compiler::value Throw::compile(Compiler& c) const {
 
 Instruction* Throw::clone() const {
 	auto ex = expression ? expression->clone() : nullptr;
-	auto t = new Throw(token, ex);
+	auto t = new Throw(token, std::move(ex));
 	return t;
 }
 

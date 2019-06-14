@@ -14,7 +14,7 @@ class Method;
 class ObjectAccess : public LeftValue {
 public:
 
-	Value* object;
+	std::unique_ptr<Value> object;
 	std::shared_ptr<Token> field;
 	std::string object_class_name;
 	std::string class_name;
@@ -47,7 +47,7 @@ public:
 	virtual Compiler::value compile_version(Compiler& c, std::vector<const Type*> version) const;
 	virtual Compiler::value compile_l(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

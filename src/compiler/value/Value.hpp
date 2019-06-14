@@ -53,13 +53,20 @@ public:
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*>) const;
 	virtual void compile_end(Compiler&) const {}
 
-	virtual Value* clone() const = 0;
+	virtual std::unique_ptr<Value> clone() const = 0;
 
 	static std::string tabs(int indent);
 };
 
 std::ostream& operator << (std::ostream& os, const Value* v);
 
+}
+
+template <typename T_DEST, typename T_SRC>
+inline std::unique_ptr<T_DEST> unique_static_cast(std::unique_ptr<T_SRC>&& src) {
+	auto dest_ptr = static_cast<T_DEST*>(src.get());
+	src.release();
+	return std::unique_ptr<T_DEST>(dest_ptr);
 }
 
 #endif

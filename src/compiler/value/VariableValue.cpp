@@ -366,9 +366,8 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	return v;
 }
 
-Value* VariableValue::clone() const {
-	auto vv = new VariableValue(token);
-	return vv;
+std::unique_ptr<Value> VariableValue::clone() const {
+	return std::make_unique<VariableValue>(token);
 }
 
 }

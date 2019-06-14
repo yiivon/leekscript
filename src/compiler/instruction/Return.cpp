@@ -5,14 +5,9 @@
 
 namespace ls {
 
-Return::Return(Value* v) {
-	expression = v;
+Return::Return(std::unique_ptr<Value> v) : expression(std::move(v)) {
 	returning = true;
 	may_return = true;
-}
-
-Return::~Return() {
-	delete expression;
 }
 
 void Return::print(std::ostream& os, int indent, bool debug, bool condensed) const {
@@ -61,7 +56,7 @@ Compiler::value Return::compile(Compiler& c) const {
 
 Instruction* Return::clone() const {
 	auto ex = expression ? expression->clone() : nullptr;
-	auto r = new Return(ex);
+	auto r = new Return(std::move(ex));
 	return r;
 }
 

@@ -16,9 +16,9 @@ public:
 
 	std::shared_ptr<Token> token;
 	std::vector<Instruction*> inits;
-	Value* condition;
+	std::unique_ptr<Value> condition;
 	std::vector<Instruction*> increments;
-	Block* body = nullptr;
+	std::unique_ptr<Block> body;
 
 	For();
 	virtual ~For();

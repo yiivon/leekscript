@@ -16,11 +16,6 @@ Foreach::Foreach() {
 	value_var = nullptr;
 }
 
-Foreach::~Foreach() {
-	delete container;
-	delete body;
-}
-
 void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "for ";
 
@@ -92,7 +87,7 @@ Instruction* Foreach::clone() const {
 	f->key = key;
 	f->value = value;
 	f->container = container->clone();
-	f->body = (Block*) body->clone();
+	f->body = unique_static_cast<Block>(body->clone());
 	return f;
 }
 

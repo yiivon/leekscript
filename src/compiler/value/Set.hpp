@@ -8,10 +8,9 @@ namespace ls {
 
 class Set : public Value {
 public:
-	std::vector<Value*> expressions;
+	std::vector<std::unique_ptr<Value>> expressions;
 
 	Set();
-	virtual ~Set();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -20,7 +19,7 @@ public:
 	
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

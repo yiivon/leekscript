@@ -10,10 +10,6 @@ AbsoluteValue::AbsoluteValue() {
 	throws = true;
 }
 
-AbsoluteValue::~AbsoluteValue() {
-	delete expression;
-}
-
 void AbsoluteValue::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "|";
 	expression->print(os, 0, debug);
@@ -40,8 +36,8 @@ Compiler::value AbsoluteValue::compile(Compiler& c) const {
 	return abso;
 }
 
-Value* AbsoluteValue::clone() const {
-	auto abs = new AbsoluteValue();
+std::unique_ptr<Value> AbsoluteValue::clone() const {
+	auto abs = std::make_unique<AbsoluteValue>();
 	abs->expression = expression->clone();
 	abs->open_pipe = open_pipe;
 	abs->close_pipe = close_pipe;

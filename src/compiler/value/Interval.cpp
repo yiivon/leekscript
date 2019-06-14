@@ -10,11 +10,6 @@ Interval::Interval() {
 	type = Type::interval;
 }
 
-Interval::~Interval() {
-	delete start;
-	delete end;
-}
-
 void Interval::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
 	start->print(os, indent, debug);
@@ -48,8 +43,8 @@ Compiler::value Interval::compile(Compiler& c) const {
 	return interval;
 }
 
-Value* Interval::clone() const {
-	auto interval = new Interval();
+std::unique_ptr<Value> Interval::clone() const {
+	auto interval = std::make_unique<Interval>();
 	interval->opening_bracket = opening_bracket;
 	interval->closing_bracket = closing_bracket;
 	interval->start = start->clone();

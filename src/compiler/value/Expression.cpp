@@ -23,22 +23,13 @@ Expression::Expression(Value* v) :
 	v1(v), v2(nullptr), op(nullptr), operations(1) {
 }
 
-Expression::~Expression() {
-	if (v1 != nullptr) {
-		delete v1;
-	}
-	if (v2 != nullptr) {
-		delete v2;
-	}
-}
-
 void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 	/*
 	 * Single expression (2, 'hello', ...), just add the operator
 	 */
 	if (this->op == nullptr) {
 		this->op = op;
-		v2 = exp;
+		v2.reset(exp);
 		return;
 	}
 	if (!parenthesis and (op->priority < this->op->priority or (op->priority == this->op->priority and op->character == "="))) {
@@ -48,10 +39,10 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		 * such as : '× 7' => '5 + (2 × 7)'
 		 */
 		auto ex = new Expression();
-		ex->v1 = v2;
+		ex->v1 = std::move(v2);
 		ex->op = op;
-		ex->v2 = exp;
-		this->v2 = ex;
+		ex->v2.reset(exp);
+		this->v2.reset(ex);
 	} else {
 		/*
 		 * We already have '5 + 2' for example,
@@ -59,12 +50,12 @@ void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 		 * such as : '< 7' => '(5 + 2) < 7'
 		 */
 		auto newV1 = new Expression();
-		newV1->v1 = this->v1;
+		newV1->v1 = std::move(this->v1);
 		newV1->op = this->op;
-		newV1->v2 = this->v2;
-		this->v1 = newV1;
+		newV1->v2 = std::move(this->v2);
+		this->v1.reset(newV1);
 		this->op = op;
-		v2 = exp;
+		v2.reset(exp);
 	}
 }
 
@@ -157,7 +148,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			if (v1->type->not_temporary() != v2->type->not_temporary()) {
-				((LeftValue*) v1)->change_value(analyzer, v2);
+				((LeftValue*) v1.get())->change_value(analyzer, v2.get());
 			}
 		}
 	}
@@ -165,11 +156,11 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	// Merge operations count
 	// (2 + 3) × 4    ->  2 ops for the × directly
 	if (op->type != TokenType::OR or op->type == TokenType::AND) {
-		if (Expression* ex1 = dynamic_cast<Expression*>(v1)) {
+		if (Expression* ex1 = dynamic_cast<Expression*>(v1.get())) {
 			operations += ex1->operations;
 			ex1->operations = 0;
 		}
-		if (Expression* ex2 = dynamic_cast<Expression*>(v2)) {
+		if (Expression* ex2 = dynamic_cast<Expression*>(v2.get())) {
 			operations += ex2->operations;
 			ex2->operations = 0;
 		}
@@ -187,7 +178,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 			if (callable_version) {
 				// std::cout << "Callable version : " << callable_version << std::endl;
 				throws |= callable_version->flags & Module::THROWS;
-				callable_version->apply_mutators(analyzer, {v1, v2});
+				callable_version->apply_mutators(analyzer, {v1.get(), v2.get()});
 				// For placeholder types, keep them no matter the operator
 				auto return_type = callable_version->type->return_type();
 				if (op->type == TokenType::PLUS or op->type == TokenType::MINUS or op->type == TokenType::TIMES or op->type == TokenType::MODULO) {
@@ -236,7 +227,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::SWAP or op->type == TokenType::CATCH_ELSE
 		) {
 		// Set the correct type nature for the two members
-		auto vv = dynamic_cast<VariableValue*>(v1);
+		auto vv = dynamic_cast<VariableValue*>(v1.get());
 		if (op->type == TokenType::EQUAL and vv != nullptr) {
 			if (is_void) {
 				type = Type::void_;
@@ -287,7 +278,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 	if (callable_version) {
 		std::vector<Compiler::value> args;
 		args.push_back([&](){ if (callable_version->v1_addr) {
-			return ((LeftValue*) v1)->compile_l(c);
+			return ((LeftValue*) v1.get())->compile_l(c);
 		} else {
 			auto v = v1->compile(c);
 			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
@@ -296,7 +287,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return v;
 		}}());
 		args.push_back([&](){ if (callable_version->v2_addr) {
-			return ((LeftValue*) v2)->compile_l(c);
+			return ((LeftValue*) v2.get())->compile_l(c);
 		} else {
 			auto v = v2->compile(c);
 			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(1)->is_any()) {
@@ -313,16 +304,16 @@ Compiler::value Expression::compile(Compiler& c) const {
 	switch (op->type) {
 		case TokenType::EQUAL: {
 			// array[] = 12, array push
-			auto array_access = dynamic_cast<ArrayAccess*>(v1);
+			auto array_access = dynamic_cast<ArrayAccess*>(v1.get());
 			if (array_access && array_access->key == nullptr) {
-				auto x_addr = ((LeftValue*) array_access->array)->compile_l(c);
+				auto x_addr = ((LeftValue*) array_access->array.get())->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
 				v2->compile_end(c);
 				return c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
 			}
 			// Normal a = b operator
-			auto vv = dynamic_cast<VariableValue*>(v1);
-			auto x_addr = ((LeftValue*) v1)->compile_l(c);
+			auto vv = dynamic_cast<VariableValue*>(v1.get());
+			auto x_addr = static_cast<LeftValue*>(v1.get())->compile_l(c);
 			// Compile new value
 			auto y = v2->compile(c);
 			v2->compile_end(c);
@@ -404,8 +395,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 }
 
-Value* Expression::clone() const {
-	auto ex = new Expression();
+std::unique_ptr<Value> Expression::clone() const {
+	auto ex = std::make_unique<Expression>();
 	ex->v1 = v1->clone();
 	ex->op = op;
 	ex->v2 = v2 ? v2->clone() : nullptr;
