@@ -78,7 +78,7 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 
 	// Search in interval variables : global for the program
 	try {
-		return vm->internal_vars.at(v->content);
+		return vm->internal_vars.at(v->content).get();
 	} catch (std::exception& e) {}
 
 	// Search operators

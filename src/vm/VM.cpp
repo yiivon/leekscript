@@ -70,6 +70,8 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 	});
 }
 
+VM::~VM() {}
+
 VM* VM::current() {
 	return current_vm;
 }
@@ -82,9 +84,9 @@ void VM::static_init() {
 }
 
 void VM::add_module(std::unique_ptr<Module> m) {
-	modules.push_back(std::move(m));
 	auto const_class = Type::const_class(m->name);
 	add_internal_var(m->name, const_class, m->clazz);
+	modules.push_back(std::move(m));
 }
 
 VM::Result VM::execute(const std::string code, Context* ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool execute_ir, bool execute_bitcode) {
@@ -178,12 +180,12 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 
 void VM::add_internal_var(std::string name, const Type* type, LSValue* value, Call call) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
-	internal_vars.insert({ name, new Variable(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, value, call) });
+	internal_vars.insert({ name, std::make_unique<Variable>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, value, call) });
 }
 
 void VM::add_internal_var(std::string name, const Type* type, Function* function) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
-	internal_vars.insert({ name, new Variable(name, VarScope::INTERNAL, type, 0, function, nullptr, nullptr) });
+	internal_vars.insert({ name, std::make_unique<Variable>(name, VarScope::INTERNAL, type, 0, function, nullptr, nullptr) });
 }
 
 void* VM::resolve_symbol(std::string name) {
