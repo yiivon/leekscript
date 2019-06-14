@@ -36,8 +36,6 @@ public:
 	std::vector<std::vector<Pattern>> pattern_list;
 	std::vector<std::unique_ptr<Value>> returns;
 
-	Match();
-
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 

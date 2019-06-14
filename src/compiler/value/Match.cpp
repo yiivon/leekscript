@@ -3,10 +3,6 @@
 
 namespace ls {
 
-Match::Match() {
-	value = nullptr;
-}
-
 void Match::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "match ";
 	value->print(os, indent, debug);

@@ -8,8 +8,6 @@
 namespace ls {
 
 PostfixExpression::PostfixExpression() {
-	expression = nullptr;
-	operatorr = nullptr;
 	return_value = true;
 }
 

@@ -10,8 +10,6 @@ String::String(std::shared_ptr<Token> token) : token(token) {
 	constant = true;
 }
 
-String::~String() {}
-
 void String::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
 	if (debug) {

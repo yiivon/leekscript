@@ -14,9 +14,7 @@ public:
 	std::shared_ptr<Token> closing_bracket;
 	std::vector<std::unique_ptr<Value>> keys;
 	std::vector<std::unique_ptr<Value>> values;
-
-	Map();
-
+	
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 

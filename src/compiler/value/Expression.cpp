@@ -17,11 +17,7 @@
 
 namespace ls {
 
-Expression::Expression() : Expression(nullptr) {}
-
-Expression::Expression(Value* v) :
-	v1(v), v2(nullptr), op(nullptr), operations(1) {
-}
+Expression::Expression(Value* v) : v1(v), operations(1) {}
 
 void Expression::append(std::shared_ptr<Operator> op, Value* exp) {
 	/*

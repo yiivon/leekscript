@@ -4,8 +4,6 @@
 
 namespace ls {
 
-Set::Set() {}
-
 void Set::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "<";
 	for (size_t i = 0; i < expressions.size(); ++i) {

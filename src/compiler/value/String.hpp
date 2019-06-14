@@ -14,7 +14,6 @@ public:
 	std::shared_ptr<Token> token;
 
 	String(std::shared_ptr<Token> token);
-	virtual ~String();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

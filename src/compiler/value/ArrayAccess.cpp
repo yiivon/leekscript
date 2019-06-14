@@ -12,9 +12,6 @@
 namespace ls {
 
 ArrayAccess::ArrayAccess() {
-	array = nullptr;
-	key = nullptr;
-	key2 = nullptr;
 	type = Type::any;
 	throws = true;
 }

@@ -1,5 +1,5 @@
-#ifndef SET_H
-#define SET_H
+#ifndef SET_HPP
+#define SET_HPP
 
 #include <vector>
 #include "Value.hpp"
@@ -9,8 +9,6 @@ namespace ls {
 class Set : public Value {
 public:
 	std::vector<std::unique_ptr<Value>> expressions;
-
-	Set();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -24,4 +22,4 @@ public:
 
 }
 
-#endif // SET_H
+#endif
