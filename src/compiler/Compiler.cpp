@@ -307,6 +307,7 @@ Compiler::value Compiler::to_numeric(Compiler::value v) const {
 		return insn_invoke(Type::real, {v}, "Value.real");
 	}
 	insn_throw_object(ls::vm::Exception::WRONG_ARGUMENT_TYPE);
+	assert(false);
 }
 
 // Operators wrapping
