@@ -41,12 +41,12 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
-	null_value = LSNull::create();
-	true_value = LSBoolean::create(true);
-	false_value = LSBoolean::create(false);
-	LSNull::set_null_value(this->null_value);
-	LSBoolean::set_true_value(this->true_value);
-	LSBoolean::set_false_value(this->false_value);
+	null_value = std::unique_ptr<LSNull>(LSNull::create());
+	true_value = std::unique_ptr<LSBoolean>(LSBoolean::create(true));
+	false_value = std::unique_ptr<LSBoolean>(LSBoolean::create(false));
+	LSNull::set_null_value(null_value.get());
+	LSBoolean::set_true_value(true_value.get());
+	LSBoolean::set_false_value(false_value.get());
 
 	// Include STD modules
 	add_module(new ValueSTD(this));
@@ -77,9 +77,6 @@ VM::~VM() {
 	for (auto& fun : system_vars) {
 		delete fun;
 	}
-	delete null_value;
-	delete true_value;
-	delete false_value;
 }
 
 VM* VM::current() {
@@ -104,9 +101,9 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 	// Reset
 	this->file_name = file_name;
 	VM::current_vm = this;
-	LSNull::set_null_value(this->null_value);
-	LSBoolean::set_true_value(this->true_value);
-	LSBoolean::set_false_value(this->false_value);
+	LSNull::set_null_value(null_value.get());
+	LSBoolean::set_true_value(true_value.get());
+	LSBoolean::set_false_value(false_value.get());
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
 	VM::mpz_created = 0;

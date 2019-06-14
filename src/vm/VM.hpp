@@ -64,9 +64,9 @@ public:
 	std::map<std::string, Variable*> internal_vars;
 	std::map<std::string, Compiler::value> internals;
 	Compiler compiler;
-	LSNull* null_value;
-	LSBoolean* true_value;
-	LSBoolean* false_value;
+	std::unique_ptr<LSNull> null_value;
+	std::unique_ptr<LSBoolean> true_value;
+	std::unique_ptr<LSBoolean> false_value;
 	unsigned int operations = 0;
 	bool enable_operations = true;
 	unsigned int operation_limit;
