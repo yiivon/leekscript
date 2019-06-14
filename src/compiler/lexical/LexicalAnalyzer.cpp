@@ -77,8 +77,6 @@ static std::vector<std::vector<std::string>> type_literals = {
 	{ "%%" }, { "%%=" }
 };
 
-LexicalAnalyzer::LexicalAnalyzer() {}
-
 LetterType LexicalAnalyzer::getLetterType(char32_t c) {
 
 	if (c == '\'') {
