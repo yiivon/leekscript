@@ -59,7 +59,6 @@ public:
 	};
 
 	std::vector<std::unique_ptr<Module>> modules;
-	std::vector<LSValue*> system_vars;
 	std::vector<LSValue*> function_created;
 	std::map<std::string, Variable*> internal_vars;
 	std::map<std::string, Compiler::value> internals;
@@ -78,7 +77,6 @@ public:
 	Context* context = nullptr;
 
 	VM(bool legacy = false);
-	virtual ~VM();
 
 	static VM* current();
 	static void static_init();

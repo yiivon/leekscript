@@ -70,12 +70,6 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 	});
 }
 
-VM::~VM() {
-	for (auto& fun : system_vars) {
-		delete fun;
-	}
-}
-
 VM* VM::current() {
 	return current_vm;
 }
@@ -185,7 +179,6 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 void VM::add_internal_var(std::string name, const Type* type, LSValue* value, Call call) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
 	internal_vars.insert({ name, new Variable(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, value, call) });
-	system_vars.push_back(value);
 }
 
 void VM::add_internal_var(std::string name, const Type* type, Function* function) {
