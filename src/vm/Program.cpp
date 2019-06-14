@@ -176,7 +176,7 @@ VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseu
 	}
 }
 
-Variable* Program::get_operator(std::string name) {
+Variable* Program::get_operator(const std::string& name) {
 	// std::cout << "Program::get_operator(" << name << ")" << std::endl;
 
 	auto op = operators.find(name);

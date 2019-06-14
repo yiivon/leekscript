@@ -40,7 +40,7 @@ public:
 	VM::Result compile_ir_file(VM& vm);
 	VM::Result compile_bitcode_file(VM& vm);
 
-	Variable* get_operator(std::string name);
+	Variable* get_operator(const std::string& name);
 
 	/*
 	 * Execute the program and get a std::string result
