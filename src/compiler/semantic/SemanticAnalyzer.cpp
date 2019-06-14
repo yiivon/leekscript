@@ -36,9 +36,9 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 void SemanticAnalyzer::enter_function(FunctionVersion* f) {
 
 	// Create function scope
-	variables.push_back(std::vector<std::map<std::string, Variable*>> {});
+	variables.push_back({});
 	// First function block
-	variables.back().push_back(std::map<std::string, Variable*> {});
+	variables.back().push_back({});
 
 	loops.push(0);
 	functions_stack.push_back(f);
