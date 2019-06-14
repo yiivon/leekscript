@@ -253,7 +253,7 @@ Compiler::value Compiler::to_real(Compiler::value x, bool delete_temporary) cons
 
 Compiler::value Compiler::to_long(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
-	if (v.t->not_temporary()->is_long()) {
+	if (v.t->is_long()) {
 		return v;
 	}
 	if (v.t->is_bool()) {

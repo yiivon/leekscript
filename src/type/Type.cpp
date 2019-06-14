@@ -273,7 +273,7 @@ template <class T> bool Type::can_be_type() const {
 	return false;
 }
 bool Type::is_any() const { return is_type<Any_type>(); }
-bool Type::is_bool() const { return is_type<Bool_type>(); }
+bool Type::is_bool() const { return folded == Type::boolean or folded == Type::const_boolean; }
 bool Type::can_be_bool() const { return can_be_type<Bool_type>(); }
 bool Type::is_number() const { return castable(Type::number, true); }
 bool Type::can_be_number() const {
@@ -303,9 +303,9 @@ bool Type::can_be_callable() const {
 bool Type::can_be_numeric() const {
 	return is_any() or can_be_bool() or can_be_number();
 }
-bool Type::is_real() const { return folded == Type::real; }
-bool Type::is_integer() const { return folded == Type::integer; }
-bool Type::is_long() const { return folded == Type::long_; }
+bool Type::is_real() const { return folded == Type::real or folded == Type::const_real; }
+bool Type::is_integer() const { return folded == Type::integer or folded == Type::const_integer; }
+bool Type::is_long() const { return folded == Type::long_ or folded == Type::const_long; }
 bool Type::is_mpz() const { return folded == Type::mpz or folded == Type::tmp_mpz or folded == Type::const_mpz; }
 bool Type::is_mpz_ptr() const { return folded == Type::mpz_ptr or folded == Type::tmp_mpz_ptr or folded == Type::const_mpz_ptr; }
 bool Type::is_string() const { return folded == Type::string or folded == Type::tmp_string or folded == Type::const_string; }

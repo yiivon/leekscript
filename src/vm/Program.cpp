@@ -221,12 +221,12 @@ std::string Program::execute(VM& vm) {
 		fun();
 		return "(void)";
 	}
-	if (type->not_temporary()->is_bool()) {
+	if (type->is_bool()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
 		return res ? "true" : "false";
 	}
-	if (type->not_temporary()->is_integer()) {
+	if (type->is_integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
 		return std::to_string(res);
@@ -240,12 +240,12 @@ std::string Program::execute(VM& vm) {
 		vm.mpz_deleted++;
 		return std::string(buff);
 	}
-	if (type->not_temporary()->is_real()) {
+	if (type->is_real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
 		return LSNumber::print(res);
 	}
-	if (type->not_temporary()->is_long()) {
+	if (type->is_long()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		return std::to_string(res);
