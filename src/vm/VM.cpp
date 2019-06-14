@@ -49,20 +49,20 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 	LSBoolean::set_false_value(false_value.get());
 
 	// Include STD modules
-	add_module(new ValueSTD(this));
-	add_module(new NullSTD(this));
-	add_module(new BooleanSTD(this));
-	add_module(new NumberSTD(this));
-	add_module(new StringSTD(this));
-	add_module(new ArraySTD(this));
-	add_module(new MapSTD(this));
-	add_module(new SetSTD(this));
-	add_module(new ObjectSTD(this));
-	add_module(new FunctionSTD(this));
-	add_module(new ClassSTD(this));
-	add_module(new SystemSTD(this));
-	add_module(new IntervalSTD(this));
-	add_module(new JsonSTD(this));
+	add_module(std::make_unique<ValueSTD>(this));
+	add_module(std::make_unique<NullSTD>(this));
+	add_module(std::make_unique<BooleanSTD>(this));
+	add_module(std::make_unique<NumberSTD>(this));
+	add_module(std::make_unique<StringSTD>(this));
+	add_module(std::make_unique<ArraySTD>(this));
+	add_module(std::make_unique<MapSTD>(this));
+	add_module(std::make_unique<SetSTD>(this));
+	add_module(std::make_unique<ObjectSTD>(this));
+	add_module(std::make_unique<FunctionSTD>(this));
+	add_module(std::make_unique<ClassSTD>(this));
+	add_module(std::make_unique<SystemSTD>(this));
+	add_module(std::make_unique<IntervalSTD>(this));
+	add_module(std::make_unique<JsonSTD>(this));
 
 	auto ptr_type = Type::fun(Type::any, {Type::any});
 	add_internal_var("ptr", ptr_type, nullptr, {
@@ -71,9 +71,6 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 }
 
 VM::~VM() {
-	for (auto& module : modules) {
-		delete module;
-	}
 	for (auto& fun : system_vars) {
 		delete fun;
 	}
@@ -90,8 +87,8 @@ void VM::static_init() {
 	llvm::InitializeNativeTargetAsmParser();
 }
 
-void VM::add_module(Module* m) {
-	modules.push_back(m);
+void VM::add_module(std::unique_ptr<Module> m) {
+	modules.push_back(std::move(m));
 	auto const_class = Type::const_class(m->name);
 	add_internal_var(m->name, const_class, m->clazz);
 }

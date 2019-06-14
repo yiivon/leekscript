@@ -58,7 +58,7 @@ public:
 		const Type* type;
 	};
 
-	std::vector<Module*> modules;
+	std::vector<std::unique_ptr<Module>> modules;
 	std::vector<LSValue*> system_vars;
 	std::vector<LSValue*> function_created;
 	std::map<std::string, Variable*> internal_vars;
@@ -87,7 +87,7 @@ public:
 	Result execute(const std::string code, Context* ctx, std::string file_name = "unamed", bool debug = false, bool ops = true, bool assembly = false, bool pseudo_code = false, bool execute_ir = false, bool execute_bitcode = false);
 
 	/** Add a module **/
-	void add_module(Module* m);
+	void add_module(std::unique_ptr<Module> m);
 	void add_internal_var(std::string name, const Type* type, LSValue* value, Call call = {});
 	void add_internal_var(std::string name, const Type* type, Function* function);
 	
