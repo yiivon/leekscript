@@ -11,12 +11,6 @@ namespace ls {
 
 Block::Block(bool is_function_block) : is_function_block(is_function_block) {}
 
-Block::~Block() {
-	for (Instruction* instruction : instructions) {
-		delete instruction;
-	}
-}
-
 void Block::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (!condensed) {
 		os << "{";

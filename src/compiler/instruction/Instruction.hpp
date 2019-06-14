@@ -21,7 +21,7 @@ public:
 	bool is_void = false;
 	bool throws = false;
 
-	virtual ~Instruction() = 0;
+	virtual ~Instruction() {}
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const = 0;
 	virtual Location location() const = 0;
@@ -31,7 +31,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const;
 
-	virtual Instruction* clone() const = 0;
+	virtual std::unique_ptr<Instruction> clone() const = 0;
 
 	std::string tabs(int indent) const;
 };

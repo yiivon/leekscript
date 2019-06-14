@@ -27,7 +27,7 @@ public:
 	bool throws = false;
 
 	Value();
-	virtual ~Value();
+	virtual ~Value() {}
 
 	virtual bool isLeftValue() const;
 	virtual bool is_zero() const;

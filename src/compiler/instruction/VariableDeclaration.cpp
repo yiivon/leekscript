@@ -119,8 +119,8 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* VariableDeclaration::clone() const {
-	auto vd = new VariableDeclaration();
+std::unique_ptr<Instruction> VariableDeclaration::clone() const {
+	auto vd = std::make_unique<VariableDeclaration>();
 	vd->keyword = keyword;
 	vd->global = global;
 	vd->constant = constant;

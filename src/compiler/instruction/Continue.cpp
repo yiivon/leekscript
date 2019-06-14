@@ -9,8 +9,6 @@ Continue::Continue() {
 	deepness = 1;
 }
 
-Continue::~Continue() {}
-
 void Continue::print(std::ostream& os, int, bool, bool) const {
 	os << "continue";
 	if (deepness > 1) {
@@ -37,8 +35,8 @@ Compiler::value Continue::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* Continue::clone() const {
-	auto c = new Continue();
+std::unique_ptr<Instruction> Continue::clone() const {
+	auto c = std::make_unique<Continue>();
 	c->deepness = deepness;
 	return c;
 }

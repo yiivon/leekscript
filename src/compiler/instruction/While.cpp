@@ -70,8 +70,8 @@ Compiler::value While::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* While::clone() const {
-	auto w = new While();
+std::unique_ptr<Instruction> While::clone() const {
+	auto w = std::make_unique<While>();
 	w->token = token;
 	w->condition = condition->clone();
 	w->body = unique_static_cast<Block>(body->clone());

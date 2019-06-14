@@ -5,20 +5,9 @@
 
 namespace ls {
 
-For::For() {}
-
-For::~For() {
-	for (Instruction* ins : inits) {
-		delete ins;
-	}
-	for (Instruction* ins : increments) {
-		delete ins;
-	}
-}
-
 void For::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "for";
-	for (auto ins : inits) {
+	for (const auto& ins : inits) {
 		os << " ";
 		ins->print(os, indent + 1, debug, condensed);
 	}
@@ -27,7 +16,7 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 		condition->print(os, indent + 1, debug);
 	}
 	os << ";";
-	for (auto ins : increments) {
+	for (const auto& ins : increments) {
 		os << " ";
 		ins->print(os, indent + 1, debug, condensed);
 	}
@@ -57,7 +46,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	throws = false;
 
 	// Init
-	for (Instruction* ins : inits) {
+	for (const auto& ins : inits) {
 		ins->analyze(analyzer);
 		throws |= ins->throws;
 		if (ins->may_return) {
@@ -91,7 +80,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 
 	// Increment
 	analyzer->enter_block();
-	for (Instruction* ins : increments) {
+	for (const auto& ins : increments) {
 		ins->is_void = true;
 		ins->analyze(analyzer);
 		throws |= ins->throws;
@@ -127,9 +116,9 @@ Compiler::value For::compile(Compiler& c) const {
 	auto inc_label = c.insn_init_label("inc");
 
 	// Init
-	for (Instruction* ins : inits) {
+	for (const auto& ins : inits) {
 		ins->compile(c);
-		if (dynamic_cast<Return*>(ins)) {
+		if (dynamic_cast<Return*>(ins.get())) {
 			auto return_v = c.clone(output_v);
 			c.leave_block();
 			return return_v;
@@ -166,7 +155,7 @@ Compiler::value For::compile(Compiler& c) const {
 	c.enter_block();
 	for (auto& ins : increments) {
 		auto r = ins->compile(c);
-		if (dynamic_cast<Return*>(ins)) {
+		if (dynamic_cast<Return*>(ins.get())) {
 			return r;
 		}
 	}
@@ -180,8 +169,8 @@ Compiler::value For::compile(Compiler& c) const {
 	return return_v;
 }
 
-Instruction* For::clone() const {
-	auto f = new For();
+std::unique_ptr<Instruction> For::clone() const {
+	auto f = std::make_unique<For>();
 	f->token = token;
 	for (const auto& i : inits) {
 		f->inits.push_back(i->clone());

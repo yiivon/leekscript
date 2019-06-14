@@ -54,10 +54,9 @@ Compiler::value Return::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* Return::clone() const {
+std::unique_ptr<Instruction> Return::clone() const {
 	auto ex = expression ? expression->clone() : nullptr;
-	auto r = new Return(std::move(ex));
-	return r;
+	return std::make_unique<Return>(std::move(ex));
 }
 
 }

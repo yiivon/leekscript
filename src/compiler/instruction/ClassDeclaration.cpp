@@ -9,15 +9,9 @@ ClassDeclaration::ClassDeclaration(std::shared_ptr<Token> token) : token(token) 
 	var = nullptr;
 }
 
-ClassDeclaration::~ClassDeclaration() {
-	for (const auto& vd : fields) {
-		delete vd;
-	}
-}
-
 void ClassDeclaration::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "class " << name << " {" << std::endl;
-	for (VariableDeclaration* vd : fields) {
+	for (const auto& vd : fields) {
 		os << tabs(indent + 1);
 		vd->print(os, indent + 1, debug, condensed);
 		os << std::endl;
@@ -37,7 +31,7 @@ void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	var = analyzer->add_var(token.get(), Type::clazz(), nullptr);
 
-	for (auto vd : fields) {
+	for (const auto& vd : fields) {
 		vd->analyze(analyzer, Type::any);
 	}
 }
@@ -46,7 +40,7 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 
 	auto clazz = c.new_class(name);
 
-	for (auto vd : fields) {
+	for (const auto& vd : fields) {
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Compile class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
 			auto default_value = vd->expressions.at(i)->compile(c);
@@ -61,11 +55,11 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 	return clazz;
 }
 
-Instruction* ClassDeclaration::clone() const {
-	auto cd = new ClassDeclaration(token);
+std::unique_ptr<Instruction> ClassDeclaration::clone() const {
+	auto cd = std::make_unique<ClassDeclaration>(token);
 	cd->name = name;
 	for (const auto& f : fields) {
-		cd->fields.push_back((VariableDeclaration*) f->clone());
+		cd->fields.push_back(unique_static_cast<VariableDeclaration>(f->clone()));
 	}
 	return cd;
 }

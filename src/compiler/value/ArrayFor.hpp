@@ -8,9 +8,7 @@ namespace ls {
 
 class ArrayFor : public Value {
 public:
-	Instruction* forr;
-
-	virtual ~ArrayFor();
+	std::unique_ptr<Instruction> forr;
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

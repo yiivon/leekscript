@@ -15,13 +15,10 @@ class For : public Instruction {
 public:
 
 	std::shared_ptr<Token> token;
-	std::vector<Instruction*> inits;
+	std::vector<std::unique_ptr<Instruction>> inits;
 	std::unique_ptr<Value> condition;
-	std::vector<Instruction*> increments;
+	std::vector<std::unique_ptr<Instruction>> increments;
 	std::unique_ptr<Block> body;
-
-	For();
-	virtual ~For();
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
@@ -31,7 +28,7 @@ public:
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Instruction* clone() const override;
+	virtual std::unique_ptr<Instruction> clone() const override;
 };
 
 }

@@ -50,10 +50,9 @@ Compiler::value Throw::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* Throw::clone() const {
+std::unique_ptr<Instruction> Throw::clone() const {
 	auto ex = expression ? expression->clone() : nullptr;
-	auto t = new Throw(token, std::move(ex));
-	return t;
+	return std::make_unique<Throw>(token, std::move(ex));
 }
 
 }

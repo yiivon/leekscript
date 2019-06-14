@@ -40,8 +40,8 @@ Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	return v;
 }
 
-Instruction* ExpressionInstruction::clone() const {
-	return new ExpressionInstruction(value->clone());
+std::unique_ptr<Instruction> ExpressionInstruction::clone() const {
+	return std::make_unique<ExpressionInstruction>(value->clone());
 }
 
 }

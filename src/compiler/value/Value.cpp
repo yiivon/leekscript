@@ -8,8 +8,6 @@ namespace ls {
 
 Value::Value() : type(Type::any), return_type(Type::void_), constant(false) {}
 
-Value::~Value() {}
-
 Call Value::get_callable(SemanticAnalyzer*, int argument_count) const {
 	return {};
 }

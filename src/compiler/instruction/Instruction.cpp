@@ -2,8 +2,6 @@
 
 namespace ls {
 
-Instruction::~Instruction() {}
-
 void Instruction::pre_analyze(SemanticAnalyzer*) {}
 
 Compiler::value Instruction::compile(Compiler&) const {

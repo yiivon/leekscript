@@ -8,10 +8,6 @@
 namespace ls {
 
 Foreach::Foreach() {
-	key = nullptr;
-	value = nullptr;
-	body = nullptr;
-	container = nullptr;
 	key_var = nullptr;
 	value_var = nullptr;
 }
@@ -82,8 +78,8 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	});
 }
 
-Instruction* Foreach::clone() const {
-	auto f = new Foreach();
+std::unique_ptr<Instruction> Foreach::clone() const {
+	auto f = std::make_unique<Foreach>();
 	f->key = key;
 	f->value = value;
 	f->container = container->clone();

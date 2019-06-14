@@ -8,8 +8,6 @@ Break::Break() {
 	deepness = 1;
 }
 
-Break::~Break() {}
-
 void Break::print(std::ostream& os, int, bool, bool) const {
 	os << "break";
 	if (deepness > 1) {
@@ -52,8 +50,8 @@ Compiler::value Break::compile(Compiler& c) const {
 	return {};
 }
 
-Instruction* Break::clone() const {
-	auto b = new Break();
+std::unique_ptr<Instruction> Break::clone() const {
+	auto b = std::make_unique<Break>();
 	b->token = token;
 	b->deepness = deepness;
 	return b;

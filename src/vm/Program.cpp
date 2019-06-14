@@ -203,7 +203,7 @@ Variable* Program::get_operator(std::string name) {
 	ex->v1 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
 	ex->v2 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
 	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
-	f->body->instructions.push_back(new ExpressionInstruction(std::move(ex)));
+	f->body->instructions.emplace_back(new ExpressionInstruction(std::move(ex)));
 	auto type = Type::fun(Type::any, {Type::any, Type::any});
 
 	auto var = new Variable(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
