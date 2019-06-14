@@ -30,14 +30,10 @@ namespace ls {
 Program::Program(const std::string& code, const std::string& file_name) {
 	this->code = code;
 	this->file_name = file_name;
-	main = nullptr;
 	closure = nullptr;
 }
 
 Program::~Program() {
-	if (main != nullptr) {
-		delete main;
-	}
 	if (handle_created) {
 		vm->compiler.removeModule(module_handle);
 	}
@@ -60,7 +56,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 	}
 
 	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
-	this->main = new Function(token);
+	this->main = std::make_unique<Function>(token);
 	this->main->body = block;
 	this->main->is_main_function = true;
 

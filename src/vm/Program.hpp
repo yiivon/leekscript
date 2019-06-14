@@ -16,7 +16,7 @@ private:
 
 public:
 
-	Function* main;
+	std::unique_ptr<Function> main;
 	const Type* type;
 	std::vector<Function*> functions;
 	std::string file_name;
