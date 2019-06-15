@@ -197,9 +197,11 @@ sanitized: build/leekscript-sanitized
 
 # callgrind profiling, results displayed by kcachegrind
 # `apt install kcachegrind`
+callgrind: FLAGS += -DNDEBUG
+callgrind: OPTIM := -O3
 callgrind: build/leekscript-test
-	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/profile/callgrind.out build/leekscript-test
-	kcachegrind build/profile/callgrind.out
+	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/callgrind.out build/leekscript-test
+	kcachegrind build/callgrind.out
 
 # Clean every build files by destroying the build/ folder.
 clean:
