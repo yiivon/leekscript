@@ -91,17 +91,17 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 	int f = functions_stack.size() - 1;
 	while (f >= 0) {
 		// Search in the function parameters
-		const auto& arguments = functions_stack.at(f)->arguments;
+		const auto& arguments = functions_stack[f]->arguments;
 		auto i = arguments.find(v->content);
 		if (i != arguments.end()) {
 			return i->second;
 		}
 
 		// Search in the local variables of the function
-		int b = variables.at(f).size() - 1;
-		const auto& fvars = variables.at(f);
+		const auto& fvars = variables[f];
+		int b = fvars.size() - 1;
 		while (b >= 0) {
-			const auto& vars = fvars.at(b);
+			const auto& vars = fvars[b];
 			auto i = vars.find(v->content);
 			if (i != vars.end()) {
 				return i->second;
