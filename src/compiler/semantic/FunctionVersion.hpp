@@ -20,7 +20,7 @@ public:
 	Compiler::value value;
 	const Type* placeholder_type = nullptr;
 	bool recursive = false;
-	std::map<std::string, Variable*> arguments;
+	std::unordered_map<std::string, Variable*> arguments;
 
 	FunctionVersion(std::unique_ptr<Block> body);
 
