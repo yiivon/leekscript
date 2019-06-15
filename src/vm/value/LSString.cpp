@@ -357,7 +357,7 @@ int LSString::abso() const {
 }
 
 std::ostream& LSString::print(std::ostream& os) const {
-	os << (std::string) *this;
+	os << (const std::string&) *this;
 	return os;
 }
 
