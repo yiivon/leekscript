@@ -77,6 +77,15 @@ static std::vector<std::vector<std::string>> type_literals = {
 	{ "%%" }, { "%%=" }
 };
 
+LexicalAnalyzer::LexicalAnalyzer() {
+	// Build token cache map
+	for (size_t j = 0; j < type_literals.size(); ++j) {
+		for (const auto& text : type_literals[j]) {
+			token_map.insert({ text, (TokenType) j });
+		}
+	}
+}
+
 LetterType LexicalAnalyzer::getLetterType(char32_t c) {
 
 	if (c == '\'') {
@@ -98,12 +107,9 @@ LetterType LexicalAnalyzer::getLetterType(char32_t c) {
 	return LetterType::OTHER;
 }
 
-TokenType LexicalAnalyzer::getTokenType(std::string word, TokenType by_default) {
-	for (size_t j = 0; j < type_literals.size(); ++j) {
-		for (const auto& text : type_literals[j]) {
-			if (word == text) return (TokenType) j;
-		}
-	}
+TokenType LexicalAnalyzer::getTokenType(const std::string& word, TokenType by_default) {
+	auto i = token_map.find(word);
+	if (i != token_map.end()) return i->second;
 	return by_default;
 }
 

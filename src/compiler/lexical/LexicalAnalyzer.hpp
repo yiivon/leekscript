@@ -17,11 +17,12 @@ class LexicalAnalyzer {
 public:
 
 	File* file;
+	std::map<std::string, TokenType> token_map;
 	
-	LexicalAnalyzer() {}
+	LexicalAnalyzer();
 
 	LetterType getLetterType(char32_t c);
-	TokenType getTokenType(std::string word, TokenType by_default);
+	TokenType getTokenType(const std::string& word, TokenType by_default);
 	std::vector<Token*> parseTokens(std::string code);
 
 	std::vector<Token*> analyze(File* file);
