@@ -26,7 +26,7 @@ public:
 
 	Program* program;
 	VM* vm;
-	std::vector<std::vector<std::map<std::string, Variable*>>> variables;
+	std::vector<std::vector<std::unordered_map<std::string, Variable*>>> variables;
 	std::vector<Function*> functions;
 	std::vector<FunctionVersion*> functions_stack;
 	std::stack<int> loops;
