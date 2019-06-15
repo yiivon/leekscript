@@ -146,10 +146,6 @@ void SemanticAnalyzer::add_function(Function* l) {
 	functions.push_back(l);
 }
 
-std::map<std::string, Variable*>& SemanticAnalyzer::get_local_vars() {
-	return variables.back().back();
-}
-
 Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 	// std::cout << "SemanticAnalyser::convert_var_to_any(" << var->name << ")" << std::endl;
 	if (var->type->is_polymorphic()) return var;

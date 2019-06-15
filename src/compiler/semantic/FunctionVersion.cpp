@@ -164,7 +164,6 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 		body->analyze(analyzer);
 	}
 
-	parent->vars = analyzer->get_local_vars();
 	analyzer->leave_function();
 
 	// std::cout << "function analysed body : " << version->type << std::endl;

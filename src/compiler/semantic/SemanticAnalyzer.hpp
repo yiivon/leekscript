@@ -51,7 +51,6 @@ public:
 	Variable* add_global_var(Token*, const Type*, Value*);
 
 	Variable* get_var(Token* name);
-	std::map<std::string, Variable*>& get_local_vars();
 	Variable* convert_var_to_any(Variable* var);
 
 	void add_error(Error ex);

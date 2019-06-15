@@ -26,7 +26,6 @@ public:
 	Block* body;
 
 	std::vector<Variable*> captures;
-	std::map<std::string, Variable*> vars;
 	bool function_added;
 	Function* parent;
 	bool is_main_function = false;
