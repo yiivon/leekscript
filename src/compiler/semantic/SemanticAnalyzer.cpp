@@ -51,7 +51,7 @@ void SemanticAnalyzer::leave_function() {
 }
 
 void SemanticAnalyzer::enter_block() {
-	variables.back().push_back(std::map<std::string, Variable*> {});
+	variables.back().push_back({});
 }
 
 void SemanticAnalyzer::leave_block() {
