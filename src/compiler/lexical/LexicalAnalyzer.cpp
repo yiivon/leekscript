@@ -6,6 +6,8 @@
 
 namespace ls {
 
+std::unordered_map<std::string, TokenType> LexicalAnalyzer::token_map;
+
 static std::vector<std::vector<std::string>> type_literals = {
 
 	{}, // Unknown
@@ -79,9 +81,11 @@ static std::vector<std::vector<std::string>> type_literals = {
 
 LexicalAnalyzer::LexicalAnalyzer() {
 	// Build token cache map
-	for (size_t j = 0; j < type_literals.size(); ++j) {
-		for (const auto& text : type_literals[j]) {
-			token_map.insert({ text, (TokenType) j });
+	if (not token_map.size()) {
+		for (size_t j = 0; j < type_literals.size(); ++j) {
+			for (const auto& text : type_literals[j]) {
+				token_map.insert({ text, (TokenType) j });
+			}
 		}
 	}
 }

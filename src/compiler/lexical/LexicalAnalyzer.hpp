@@ -17,7 +17,7 @@ class LexicalAnalyzer {
 public:
 
 	File* file;
-	std::map<std::string, TokenType> token_map;
+	static std::unordered_map<std::string, TokenType> token_map;
 	
 	LexicalAnalyzer();
 
