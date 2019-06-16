@@ -84,17 +84,17 @@ public:
 	std::stack<FunctionVersion*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
-	std::stack<std::map<std::string, value>> arguments;
+	std::stack<std::unordered_map<std::string, value>> arguments;
 	std::stack<llvm::BasicBlock*> function_llvm_blocks;
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;
-	std::vector<std::map<std::string, value>> variables;
+	std::vector<std::unordered_map<std::string, value>> variables;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
-	std::map<std::string, function_entry> mappings;
+	std::unordered_map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
 	bool export_bitcode = false;
-	std::map<std::string, Compiler::value> global_strings;
+	std::unordered_map<std::string, Compiler::value> global_strings;
 
 	VM* vm;
 	Program* program;

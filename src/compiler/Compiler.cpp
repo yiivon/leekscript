@@ -1884,7 +1884,7 @@ void Compiler::log(const std::string&& str) const { assert(false); }
 
 // Blocks
 void Compiler::enter_block() {
-	variables.push_back(std::map<std::string, value> {});
+	variables.push_back({});
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
 	}
@@ -1919,7 +1919,7 @@ void Compiler::delete_variables_block(int deepness) {
 }
 
 void Compiler::enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun) {
-	variables.push_back(std::map<std::string, value> {});
+	variables.push_back({});
 	functions.push(F);
 	functions2.push(fun);
 	functions_blocks.push_back(0);
