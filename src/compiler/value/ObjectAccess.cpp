@@ -145,8 +145,11 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	// Get the object class : 12 => Number
 	object_class_name = object->type->class_name();
 	LSClass* object_class = nullptr;
-	if (object_class_name != "Value" and analyzer->vm->internal_vars.find(object_class_name) != analyzer->vm->internal_vars.end()) {
-		object_class = (LSClass*) analyzer->vm->internal_vars[object_class_name]->lsvalue;
+	if (object_class_name != "Value") {
+		auto i = analyzer->vm->internal_vars.find(object_class_name);
+		if (i != analyzer->vm->internal_vars.end()) {
+			object_class = (LSClass*) i->second->lsvalue;
+		}
 	}
 
 	// Static attribute? (Number.PI <= static attr)
@@ -156,10 +159,10 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	if (object->type->is_class() and vv != nullptr) {
 
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
-		
-		if (std_class->methods.find(field->content) != std_class->methods.end()) {
+		auto i = std_class->methods.find(field->content);
+		if (i != std_class->methods.end()) {
 
-			auto& method = std_class->methods[field->content];
+			auto& method = i->second;
 			int i = 0;
 			for (const auto& m : method.versions) {
 				versions.insert({m->type->arguments(), std_class->name + "." + field->content + "." + std::to_string(i)});
@@ -176,9 +179,10 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 
 		auto std_class = (LSClass*) analyzer->vm->internal_vars[vv->name]->lsvalue;
 
-		if (std_class->static_fields.find(field->content) != std_class->static_fields.end()) {
+		auto i = std_class->static_fields.find(field->content);
+		if (i != std_class->static_fields.end()) {
 
-			const auto& mod_field = std_class->static_fields.at(field->content);
+			const auto& mod_field = i->second;
 			type = mod_field.type;
 
 			if (mod_field.static_fun != nullptr) {
@@ -200,8 +204,9 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 	// Attribute? Fields and methods ([1, 2, 3].length, 12.abs)
 	if (!found and object_class != nullptr) {
 		// Attribute : (x -> x).return
-		try {
-			const auto& f = object_class->fields.at(field->content);
+		auto i = object_class->fields.find(field->content);
+		if (i != object_class->fields.end()) {
+			const auto& f = i->second;
 			type = f.type;
 			if (f.fun != nullptr) {
 				access_function = f.fun;
@@ -209,10 +214,11 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 			if (f.native_fun != nullptr) {
 				native_access_function = object_class->name + "." + f.name;
 			}
-		} catch (...) {
+		} else {
 			// Attribute in Value?
-			try {
-				auto f = value_class->fields.at(field->content);
+			auto i = value_class->fields.find(field->content);
+			if (i != value_class->fields.end()) {
+				auto f = i->second;
 				type = f.type;
 				class_field = true;
 				if (f.fun != nullptr) {
@@ -221,26 +227,28 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 				if (f.native_fun != nullptr) {
 					native_access_function = "Value." + f.name;
 				}
-			} catch (...) {
+			} else {
 				// Method : 12.abs
-				try {
-					for (const auto& m : object_class->methods.at(field->content).versions) {
+				auto i = object_class->methods.find(field->content);
+				if (i != object_class->methods.end()) {
+					for (const auto& m : i->second.versions) {
 						if (!m->addr) continue;
 						versions.insert({m->type->arguments(), object_class->name + "." + field->content});
 					}
-					type = object_class->methods.at(field->content).versions[0]->type;
+					type = i->second.versions[0]->type;
 					default_version_fun = object_class->name + "." + field->content;
 					class_method = true;
-				} catch (...) {
-					try {
-						for (const auto& m : value_class->methods.at(field->content).versions) {
+				} else {
+					auto i = value_class->methods.find(field->content);
+					if (i != value_class->methods.end()) {
+						for (const auto& m : i->second.versions) {
 							if (!m->addr) continue;
 							versions.insert({m->type->arguments(), "Value." + field->content});
 						}
-						type = value_class->methods.at(field->content).versions[0]->type;
+						type = i->second.versions[0]->type;
 						default_version_fun = "Value." + field->content;
 						class_field = true;
-					} catch (...) {
+					} else {
 						if (object_class->name != "Object") {
 							if (object->type->is_class() and vv != nullptr) {
 								analyzer->add_error({Error::Type::NO_SUCH_ATTRIBUTE, location(), field->location, {field->content, vv->name}});
