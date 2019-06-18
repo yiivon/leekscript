@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include "Token.hpp"
-#include "LexicalError.hpp"
 #include "../resolver/File.hpp"
 
 namespace ls {
