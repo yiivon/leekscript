@@ -47,8 +47,8 @@ public:
 	static int obj_count;
 	static int obj_deleted;
 	#if DEBUG_LEAKS
-		static std::map<void*, LSValue*>& objs() {
-			static std::map<void*, LSValue*> objs;
+		static std::unordered_map<void*, LSValue*>& objs() {
+			static std::unordered_map<void*, LSValue*> objs;
 			return objs;
 		}
 	#endif
