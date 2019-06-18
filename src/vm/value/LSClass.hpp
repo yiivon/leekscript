@@ -37,11 +37,11 @@ public:
 
 	LSClass* parent;
 	std::string name;
-	std::map<std::string, field> fields;
-	std::map<std::string, field> static_fields;
-	std::map<std::string, Callable> methods;
-	std::map<std::string, std::vector<CallableVersion>> operators;
-	std::map<std::string, Callable*> operators_callables;
+	std::unordered_map<std::string, field> fields;
+	std::unordered_map<std::string, field> static_fields;
+	std::unordered_map<std::string, Callable> methods;
+	std::unordered_map<std::string, std::vector<CallableVersion>> operators;
+	std::unordered_map<std::string, Callable*> operators_callables;
 
 	static LSValue* clazz;
 	static LSClass* constructor(char* name);
