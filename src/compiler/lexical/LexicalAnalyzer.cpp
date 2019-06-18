@@ -116,6 +116,9 @@ TokenType LexicalAnalyzer::getTokenType(const std::string& word, TokenType by_de
 	if (i != token_map.end()) return i->second;
 	return by_default;
 }
+bool LexicalAnalyzer::isToken(const std::string& word) {
+	return token_map.find(word) != token_map.end();
+}
 
 std::vector<Token*> LexicalAnalyzer::analyze(File* file) {
 
@@ -395,21 +398,11 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(std::string code) {
 							word += buff;
 						}
 					} else if (other) {
-						bool is_longer = false;
-						for (size_t j = 0; j < type_literals.size() && !is_longer; ++j) {
-							for (const auto& text : type_literals[j]) {
-								if (text.size() > word.size() && text.compare(0, word.size(), word) == 0 && text[word.size()] == (char) c) {
-									is_longer = true;
-									break;
-								}
-							}
-						}
-						if (!is_longer or (word == "!" and c == '!')) {
+						u8_toutf8(buff, 5, &c, 1);
+						if ((c == '!' and word == "!") or not isToken(word + buff)) {
 							tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
-							u8_toutf8(buff, 5, &c, 1);
 							word = buff;
 						} else {
-							u8_toutf8(buff, 5, &c, 1);
 							word += buff;
 						}
 					} else {
