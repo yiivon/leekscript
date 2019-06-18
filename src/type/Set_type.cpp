@@ -6,8 +6,8 @@
 
 namespace ls {
 
-std::map<const Type*, const Type*> Set_type::nodes;
-std::map<const Type*, const Type*> Set_type::iterators;
+std::unordered_map<const Type*, const Type*> Set_type::nodes;
+std::unordered_map<const Type*, const Type*> Set_type::iterators;
 
 Set_type::Set_type(const Type* element) : Pointer_type(Type::structure("set<" + element->getName() + ">", {
 	Type::integer, // ?

@@ -20,7 +20,7 @@ public:
 	Context(std::string ctx);
 	virtual ~Context();
 
-	std::map<std::string, ContextVar> vars;
+	std::unordered_map<std::string, ContextVar> vars;
 
 	void add_variable(char* name, void* v, const Type* type);
 };

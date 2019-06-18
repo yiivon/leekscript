@@ -24,7 +24,7 @@ public:
 	bool handle_created = false;
 	llvm::Module* module = nullptr;
 	llvm::orc::VModuleKey module_handle;
-	std::map<std::string, Variable*> operators;
+	std::unordered_map<std::string, Variable*> operators;
 	File* main_file;
 
 	Program(const std::string& code, const std::string& file_name);

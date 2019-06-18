@@ -60,8 +60,8 @@ public:
 
 	std::vector<std::unique_ptr<Module>> modules;
 	std::vector<LSValue*> function_created;
-	std::map<std::string, std::unique_ptr<Variable>> internal_vars;
-	std::map<std::string, Compiler::value> internals;
+	std::unordered_map<std::string, std::unique_ptr<Variable>> internal_vars;
+	std::unordered_map<std::string, Compiler::value> internals;
 	Compiler compiler;
 	std::unique_ptr<LSNull> null_value;
 	std::unique_ptr<LSBoolean> true_value;
