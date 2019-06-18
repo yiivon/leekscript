@@ -213,7 +213,9 @@ bool LSMap<K, T>::to_bool() const {
 
 template <class K, class T>
 bool LSMap<K, T>::ls_not() const {
-	return this->size() == 0;
+	auto r = this->size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <class K, class T>

@@ -141,7 +141,9 @@ bool LSSet<T>::to_bool() const {
 
 template <typename T>
 bool LSSet<T>::ls_not() const {
-	return this->empty();
+	auto r = this->empty();
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <>

@@ -64,7 +64,9 @@ bool LSInterval::to_bool() const {
 }
 
 bool LSInterval::ls_not() const {
-	return b < a;
+	auto r = b < a;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 bool LSInterval::eq(const LSValue* v) const {

@@ -687,9 +687,7 @@ LSValue** ValueSTD::attrL(LSValue* v, char* field) {
 	return v->attrL(field);
 }
 bool ValueSTD::ls_not(LSValue* x) {
-	auto r = x->ls_not();
-	LSValue::delete_temporary(x);
-	return r;
+	return x->ls_not();
 }
 LSValue* ValueSTD::ls_minus(LSValue* x) {
 	return x->ls_minus();

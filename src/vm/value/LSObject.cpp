@@ -84,7 +84,9 @@ bool LSObject::to_bool() const {
 }
 
 bool LSObject::ls_not() const {
-	return values.size() == 0;
+	auto r = values.size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 bool LSObject::eq(const LSValue* v) const {

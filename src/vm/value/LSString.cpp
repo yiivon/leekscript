@@ -198,7 +198,9 @@ bool LSString::to_bool() const {
 }
 
 bool LSString::ls_not() const {
-	return size() == 0;
+	auto r = size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 LSValue* LSString::ls_tilde() {
