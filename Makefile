@@ -27,8 +27,8 @@ OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
-OPTIM := -O0
-DEBUG := -g3 -Wall
+OPTIM := -O0 -Wall
+DEBUG := -g3
 FLAGS := -std=c++17 -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
 LIBS := -lm -lgmp -lstdc++fs `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
@@ -197,7 +197,7 @@ sanitized: build/leekscript-sanitized
 
 # callgrind profiling, results displayed by kcachegrind
 # `apt install kcachegrind`
-callgrind: FLAGS += -DNDEBUG
+callgrind: FLAGS += -DNDEBUG -w
 callgrind: OPTIM := -O3
 callgrind: build/leekscript-test
 	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/callgrind.out build/leekscript-test
