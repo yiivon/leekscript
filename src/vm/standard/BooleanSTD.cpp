@@ -8,7 +8,7 @@ namespace ls {
 
 BooleanSTD::BooleanSTD(VM* vm) : Module(vm, "Boolean") {
 
-	LSBoolean::clazz = clazz;
+	LSBoolean::clazz = clazz.get();
 
 	/*
 	 * Constructors

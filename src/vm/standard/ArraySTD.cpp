@@ -10,9 +10,9 @@ namespace ls {
 
 ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
-	LSArray<LSValue*>::clazz = clazz;
-	LSArray<int>::clazz = clazz;
-	LSArray<double>::clazz = clazz;
+	LSArray<LSValue*>::clazz = clazz.get();
+	LSArray<int>::clazz = clazz.get();
+	LSArray<double>::clazz = clazz.get();
 
 	/*
 	 * Constructor

@@ -6,7 +6,7 @@ namespace ls {
 
 ClassSTD::ClassSTD(VM* vm) : Module(vm, "Class") {
 
-	LSClass::clazz = clazz;
+	LSClass::clazz = clazz.get();
 
 	field("name", Type::string);
 

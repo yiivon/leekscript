@@ -11,7 +11,7 @@ LSNumber* ObjectSTD::readonly_value = LSNumber::get(12);
 
 ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 
-	LSObject::object_class = clazz;
+	LSObject::object_class = clazz.get();
 
 	readonly->addField("v", readonly_value);
 	readonly->readonly = true;

@@ -58,7 +58,6 @@ void Documentation::generate(VM* vm, std::ostream& os, std::string lang) {
 	os << "}\n";
 
 	for (const auto& m : modules) {
-		delete m->clazz;
 		delete m;
 	}
 }

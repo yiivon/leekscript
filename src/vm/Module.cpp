@@ -18,14 +18,10 @@ int Module::LEGACY = 2;
 int Module::DEFAULT = 4;
 
 Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
-	clazz = new LSClass(name);
+	clazz = std::make_unique<LSClass>(name);
 	if (name != "Value") {
 		clazz->parent = LSValue::ValueClass;
 	}
-}
-
-Module::~Module() {
-	//delete clazz;
 }
 
 void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates) {

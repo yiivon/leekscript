@@ -24,7 +24,7 @@ int mpz_log(__mpz_struct* n) {
 
 NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 
-	LSNumber::clazz = clazz;
+	LSNumber::clazz = clazz.get();
 
 	static_field("pi", Type::real, [](Compiler& c) { return c.new_real(3.14159265358979323846); });
 	static_field("e", Type::real, [](Compiler& c) { return c.new_real(M_E); });

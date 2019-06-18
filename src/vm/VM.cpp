@@ -85,7 +85,7 @@ void VM::static_init() {
 
 void VM::add_module(std::unique_ptr<Module> m) {
 	auto const_class = Type::const_class(m->name);
-	add_internal_var(m->name, const_class, m->clazz);
+	add_internal_var(m->name, const_class, m->clazz.get());
 	modules.push_back(std::move(m));
 }
 

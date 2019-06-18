@@ -35,10 +35,10 @@ public:
 
 	VM* vm;
 	std::string name;
-	LSClass* clazz;
+	std::unique_ptr<LSClass> clazz;
 
 	Module(VM* vm, std::string name);
-	virtual ~Module();
+	virtual ~Module() {}
 
 	void operator_(std::string name, std::initializer_list<CallableVersion>, std::vector<const Type*> templates = {});
 
