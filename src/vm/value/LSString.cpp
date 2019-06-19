@@ -230,7 +230,11 @@ LSValue* LSString::add(LSValue* v) {
 }
 
 LSValue* LSString::add_eq(LSValue* v) {
-	append(v->to_string());
+	if (auto s = dynamic_cast<LSString*>(v)) {
+		append(*(const std::string*) s);
+	} else {
+		append(v->to_string());
+	}
 	LSValue::delete_temporary(v);
 	return this;
 }
