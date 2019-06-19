@@ -121,8 +121,7 @@ bool LexicalAnalyzer::isToken(const std::string& word) {
 std::vector<Token*> LexicalAnalyzer::analyze(File* file) {
 
 	this->file = file;
-
-	std::vector<Token*> tokens = LexicalAnalyzer::parseTokens(file->code + " ");
+	auto tokens = LexicalAnalyzer::parseTokens(file->code + " ");
 
 	tokens.push_back(new Token(TokenType::FINISHED, file, 0, 0, 1, ""));
 
