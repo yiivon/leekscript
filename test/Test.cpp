@@ -167,7 +167,7 @@ ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 	return result;
 }
 
-void Test::Input::pass(std::string expected) {
+void Test::Input::pass(const std::string& expected) {
 	std::ostringstream oss;
 	oss << C_GREEN << "OK   " << END_COLOR << ": " << label;
 	if (v1) oss << C_BLUE << " [V1]" << END_COLOR;
@@ -185,7 +185,7 @@ void Test::Input::pass(std::string expected) {
 	}
 }
 
-void Test::Input::fail(std::string expected, std::string actual) {
+void Test::Input::fail(const std::string& expected, const std::string& actual) {
 	std::ostringstream oss;
 	oss << C_RED << "FAIL " << END_COLOR << ": " << label;
 	if (v1) std::cout << C_BLUE << " [V1]" << END_COLOR;
@@ -216,7 +216,7 @@ void Test::Input::works() {
 	pass("works");
 }
 
-void Test::Input::equals(std::string expected) {
+void Test::Input::equals(const std::string& expected) {
 	if (disabled) return disable();
 	
 	auto result = run();
@@ -292,7 +292,7 @@ void Test::Input::type(const ls::Type* type) {
 	}
 }
 
-void Test::Input::output(std::string expected) {
+void Test::Input::output(const std::string& expected) {
 	if (disabled) return disable();
 
 	OutputStringStream oss;
@@ -313,7 +313,7 @@ void Test::Input::between(T a, T b) {
 
 }
 
-void Test::Input::error(ls::Error::Type expected_type, std::vector<std::string> parameters) {
+void Test::Input::error(ls::Error::Type expected_type, std::vector<std::string>&& parameters) {
 	if (disabled) return disable();
 	
 	auto result = run(false);
@@ -377,7 +377,7 @@ Test::Input& Test::Input::context(ls::Context* ctx) {
 	return *this;
 }
 
-void Test::header(std::string text) {
+void Test::header(const std::string& text) {
 	std::cout << "╔";
 	for (unsigned i = 0; i < text.size() + 2; ++i) std::cout << "═";
 	std::cout << "╗" << std::endl;
@@ -388,7 +388,7 @@ void Test::header(std::string text) {
 	std::cout << std::endl;
 }
 
-void Test::section(std::string text) {
+void Test::section(const std::string& text) {
 	std::cout << "┌";
 	for (unsigned i = 0; i < text.size() + 2; ++i) std::cout << "─";
 	std::cout << "┐" << std::endl;

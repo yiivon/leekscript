@@ -45,8 +45,8 @@ public:
 	virtual ~Test();
 
 	int all();
-	void header(std::string);
-	void section(std::string);
+	void header(const std::string&);
+	void section(const std::string&);
 
 	Input code(const std::string& _code);
 	Input DISABLED_code(const std::string& _code);
@@ -57,7 +57,7 @@ public:
 	Input file_v1(const std::string& file_name);
 
 	template <class T1, class T2>
-	void test(std::string label, T1 value, T2 expected) {
+	void test(const std::string& label, T1 value, T2 expected) {
 		total++;
 		std::ostringstream oss;
 		if (value == expected) {
@@ -115,15 +115,15 @@ public:
 
 		Input(Test* test, const std::string& label, const std::string& file_name, const std::string& code, bool file = false, bool v1 = false, bool disabled = false) : test(test), label(label), file_name(file_name), code(code), file(file), v1(v1), disabled(disabled) {};
 		void works();
-		void equals(std::string expected);
+		void equals(const std::string& expected);
 		template <typename T>
 		void almost(T expected, T delta = 1e-10);
 		template <typename T>
 		void between(T a, T b);
-		void error(ls::Error::Type error, std::vector<std::string> params = {});
+		void error(ls::Error::Type error, std::vector<std::string>&& params = {});
 		void operations(int ops);
 		void exception(ls::vm::Exception, std::vector<ls::vm::exception_frame> frames = {{"test", "main", 1}});
-		void output(std::string expected);
+		void output(const std::string& expected);
 		void quine();
 		void type(const ls::Type*);
 		Input& timeout(int ms);
@@ -131,8 +131,8 @@ public:
 		Input& context(ls::Context* ctx);
 
 		ls::VM::Result run(bool display_errors = true, bool ops = false);
-		void pass(std::string expected);
-		void fail(std::string expected, std::string actuel);
+		void pass(const std::string& expected);
+		void fail(const std::string& expected, const std::string& actuel);
 		void disable();
 	};
 };
