@@ -20,7 +20,7 @@ public:
 	
 	LexicalAnalyzer();
 
-	LetterType getLetterType(char32_t c);
+	LetterType getLetterType(unsigned char c, unsigned char nc);
 	bool isToken(const std::string& word);
 	TokenType getTokenType(const std::string& word, TokenType by_default);
 	std::vector<Token*> parseTokens(const std::string& code);
