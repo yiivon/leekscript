@@ -415,7 +415,7 @@ std::string LSString::escaped(char quote) const {
 }
 
 LSValue* LSString::clone() const {
-	return new LSString((std::string) *this);
+	return new LSString((const std::string&) *this);
 }
 
 LSValue* LSString::getClass() const {
