@@ -1082,14 +1082,11 @@ Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> ar
 
 template<typename T>
 int NumberSTD::is_prime_number(T n) {
-	if (((!(n & 1)) and n != 2) or (n < 2) || (n % 3 == 0 and n != 3)) {
-		return false;
-	}
-	for (T k = 1; 36 * k * k - 12 * k < n; ++k) {
-		if ((n % (6 * k + 1) == 0) or (n % (6 * k - 1) == 0)) {
-			return false;
-		}
-	}
+	if (n <= 1) return false;
+	if (n <= 3) return true;
+	if (n % 2 == 0 || n % 3 == 0) return false;
+	for (T i = 5; i * i <= n; i = i + 6)
+		if (n % i == 0 || n % (i + 2) == 0) return false;
 	return true;
 }
 
