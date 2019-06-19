@@ -217,10 +217,7 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 	if (v.t->is_mpz_ptr()) {
 		return to_int(insn_call(Type::long_, {v}, "Number.mpz_get_si"));
 	}
-	if (v.t->is_long()) {
-		return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer };
-	}
-	if (v.t->is_bool()) {
+	if (v.t->is_long() or v.t->is_bool()) {
 		return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer };
 	}
 	if (v.t->is_real()) {
@@ -231,20 +228,20 @@ Compiler::value Compiler::to_int(Compiler::value v) const {
 
 Compiler::value Compiler::to_real(Compiler::value x, bool delete_temporary) const {
 	assert(x.t->llvm(*this) == x.v->getType());
-	if (x.t->is_polymorphic()) {
-		if (delete_temporary) {
-			return insn_invoke(Type::real, {x}, "Value.real_delete");
-		} else {
-			return insn_invoke(Type::real, {x}, "Value.real");
-		}
-	}
 	if (x.t->is_real()) {
 		return x;
 	}
 	if (x.t->is_bool()) {
-		return {builder.CreateUIToFP(x.v, Type::real->llvm(*this)), Type::real};
+		return { builder.CreateUIToFP(x.v, Type::real->llvm(*this)), Type::real };
 	}
-	return {builder.CreateSIToFP(x.v, Type::real->llvm(*this)), Type::real};
+	if (x.t->is_long() or x.t->is_integer()) {
+		return { builder.CreateSIToFP(x.v, Type::real->llvm(*this)), Type::real };
+	}
+	if (delete_temporary) {
+		return insn_invoke(Type::real, {x}, "Value.real_delete");
+	} else {
+		return insn_invoke(Type::real, {x}, "Value.real");
+	}
 }
 
 Compiler::value Compiler::to_long(Compiler::value v) const {
@@ -252,23 +249,13 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	if (v.t->is_long()) {
 		return v;
 	}
-	if (v.t->is_bool()) {
-		return {builder.CreateIntCast(v.v, Type::long_->llvm(*this), false), Type::long_};
-	}
-	if (v.t->is_integer()) {
-		return {builder.CreateIntCast(v.v, Type::long_->llvm(*this), true), Type::long_};
-	}
-	if (v.t->is_bool()) {
-		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::long_};
+	if (v.t->is_bool() or v.t->is_integer()) {
+		return { builder.CreateIntCast(v.v, Type::long_->llvm(*this), false), Type::long_ };
 	}
 	if (v.t->is_real()) {
-		return {builder.CreateFPToSI(v.v, Type::long_->llvm(*this)), Type::long_};
+		return { builder.CreateFPToSI(v.v, Type::long_->llvm(*this)), Type::long_ };
 	}
-	if (v.t->is_polymorphic()) {
-		return insn_invoke(Type::long_, {v}, "Value.long");
-	}
-	assert(false && "not converted...");
-	return v;
+	return insn_invoke(Type::long_, {v}, "Value.long");
 }
 
 Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool delete_temporary) const {
