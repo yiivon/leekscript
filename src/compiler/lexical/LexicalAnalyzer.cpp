@@ -73,7 +73,7 @@ static std::vector<std::vector<std::string>> type_literals = {
 	{ "\\" },
 	{ "throw" },
 	{ "var" },
-	{ "★" },
+	{ "$" },
 	{ "\\=" },
 	{ "!?" },
 	{ "%%" }, { "%%=" }

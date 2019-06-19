@@ -181,8 +181,8 @@ void Test::test_numbers() {
 	code("var a = 12 ['', ~a]").equals("['', -13]");
 
 	section("Number.operator ++x");
-	code("var a = 20★; ++a").equals("21");
-	code("var a = 30★; ++a a").equals("31");
+	code("var a = 20$; ++a").equals("21");
+	code("var a = 30$; ++a a").equals("31");
 	code("var a = 20m; ++a").equals("21");
 	code("var a = 20m; ++a a").equals("21");
 	code("var a = 20m; let b = ++a b").equals("21");
@@ -190,8 +190,8 @@ void Test::test_numbers() {
 	code("var a = 5 ['', ++a]").equals("['', 6]");
 
 	section("Number.operator --x");
-	code("var a = 20★; --a").equals("19");
-	code("var a = 30★; --a a").equals("29");
+	code("var a = 20$; --a").equals("19");
+	code("var a = 30$; --a a").equals("29");
 	code("--5").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"5"});
 	code("var a = 5 ['', --a]").equals("['', 4]");
 
@@ -227,16 +227,16 @@ void Test::test_numbers() {
 	code("1m + (2m + 3m)").equals("6");
 	code("(1m + 2m) + 3m").equals("6");
 	code("(1m + 2m) + (3m + 4m)").equals("10");
-	code("15★ + false").equals("15");
-	code("15★ + true").equals("16");
-	code("let a = 15★ a + true").equals("16");
+	code("15$ + false").equals("15");
+	code("15$ + true").equals("16");
+	code("let a = 15$ a + true").equals("16");
 	code("10000m + 15").equals("10015");
 	code("let a = ['a', 12321111111111111111111111111111111321321321999999] a[1] + 123456789").equals("12321111111111111111111111111111111321321445456788");
 
 	section("Number.operator +=");
-	code("var a = 15★ a += true a").equals("16");
-	code("var a = 15★ a += []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = 15★ a += [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a += true a").equals("16");
+	code("var a = 15$ a += []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a += [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 10m a += 4m").equals("14");
 	code("var a = 10m a += 4m a").equals("14");
 	code("var a = 15 ['', a += 7]").equals("['', 22]");
@@ -247,31 +247,31 @@ void Test::test_numbers() {
 	code("(1m - 2m) - 3m").equals("-4");
 	code("(1m - 2m) - (3m - 4m)").equals("0");
 	code("(10m + 10m) - 1").equals("19");
-	code("15★ - 3★").equals("12");
+	code("15$ - 3$").equals("12");
 	code("1000m - 12").equals("988");
 	code("1000m - (-12)").equals("1012");
-	code("15★ - false").equals("15");
-	code("15★ - true").equals("14");
-	code("let a = 15★ a - true").equals("14");
-	code("12★ - []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("let a = 100★ a - 20").equals("80");
+	code("15$ - false").equals("15");
+	code("15$ - true").equals("14");
+	code("let a = 15$ a - true").equals("14");
+	code("12$ - []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("let a = 100$ a - 20").equals("80");
 
 	section("Number.operator -=");
-	code("var a = 15★ a -= true a").equals("14");
-	code("var a = 15★ a -= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = 15★ a -= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a -= true a").equals("14");
+	code("var a = 15$ a -= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a -= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15 ['', a -= 6]").equals("['', 9]");
 
 	section("Number.operator *");
 	code("3m * 4m").equals("12");
 	code("10m + 3m * 4m").equals("22");
 	code("(5m + 2m) * (16m * 2m)").equals("224");
-	code("12★ * false").equals("0");
-	code("let a = 13★; a * false").equals("0");
-	code("13★ * true").equals("13");
-	code("7★ * 2").equals("14");
-	code("let a = 6★; a * 3").equals("18");
-	code("14★ * []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("12$ * false").equals("0");
+	code("let a = 13$; a * false").equals("0");
+	code("13$ * true").equals("13");
+	code("7$ * 2").equals("14");
+	code("let a = 6$; a * 3").equals("18");
+	code("14$ * []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("12344532132423m * 987657897613412m").equals("12192174652930109838844857276");
 	code("5 * 'yo'").equals("'yoyoyoyoyo'");
 	code("50m * 10").equals("500");
@@ -279,18 +279,18 @@ void Test::test_numbers() {
 	code("let a = ['a', 12321111111111111111111111111111111321321321999999] a[1] * 123456789").equals("1521124814690000000000000000000000025951877651354934543211");
 
 	section("Number.operator *=");
-	code("var a = 15★ a *= true a").equals("15");
-	code("var a = 15★ a *= false a").equals("0");
-	code("var a = 15★ a *= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = 15★ a *= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a *= true a").equals("15");
+	code("var a = 15$ a *= false a").equals("0");
+	code("var a = 15$ a *= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 15$ a *= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15; ['', a *= 2]").equals("['', 30]");
 
 	section("Number.operator **");
-	code("14★ ** 3").equals("2744");
-	code("14★ ** true").equals("14");
-	code("14★ ** false").equals("1");
-	code("let a = 14★ a ** false").equals("1");
-	code("14★ ** []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("14$ ** 3").equals("2744");
+	code("14$ ** true").equals("14");
+	code("14$ ** false").equals("1");
+	code("let a = 14$ a ** false").equals("1");
+	code("14$ ** []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("2 ** 50").equals("-2147483648");
 	code("2l ** 50").equals("1125899906842624");
 	code("257l ** 20").equals("1580019571820317091067056229141713082467867426816");
@@ -301,21 +301,21 @@ void Test::test_numbers() {
 	code("var s = 0 s = 5 ** 2 s").equals("25");
 
 	section("Number.operator **=");
-	code("var a = 5★; a **= 4").equals("625");
-	code("var a = 5★; a **= true").equals("5");
-	code("var a = 5★; a **= false").equals("1");
-	code("var a = 5★; a **= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 5$; a **= 4").equals("625");
+	code("var a = 5$; a **= true").equals("5");
+	code("var a = 5$; a **= false").equals("1");
+	code("var a = 5$; a **= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 5; ['', a **= 4]").equals("['', 625]");
 
 	section("Number.operator %");
 	code("721 % 57").equals("37");
-	code("721★ % 57★").equals("37");
-	code("let a = 721★ a % 57").equals("37");
-	code("let a = 721★ a % []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("721★ % true").equals("0");
-	code("721★ % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("let a = 721★ a % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("let a = 721★ a % true").equals("0");
+	code("721$ % 57$").equals("37");
+	code("let a = 721$ a % 57").equals("37");
+	code("let a = 721$ a % []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("721$ % true").equals("0");
+	code("721$ % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 721$ a % false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 721$ a % true").equals("0");
 	code("123456789123456789m % 234567m").equals("221463");
 	code("(12m ** 40m) % 234567m").equals("228798");
 	code("100000m % (12m ** 3m)").equals("1504");
@@ -325,8 +325,8 @@ void Test::test_numbers() {
 	// code("['salut', 'a'][0] % 5").error(ls::Error::NO_SUCH_OPERATOR, {});
 
 	section("Number.operator %=");
-	code("var a = 721★ a %= true").equals("0");
-	code("var a = 721★ a %= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 721$ a %= true").equals("0");
+	code("var a = 721$ a %= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator %%");
 	code("0 %% 1").equals("0");
@@ -335,7 +335,7 @@ void Test::test_numbers() {
 	code("(-12) %% 5").equals("3");
 	code("721 %% 57").equals("37");
 	code("(-721) %% 57").equals("20");
-	code("(-721★) %% 57★").equals("20");
+	code("(-721$) %% 57$").equals("20");
 
 	section("Number.operator %%=");
 	code("var a = 0 a %%= 1").equals("0");
@@ -344,22 +344,22 @@ void Test::test_numbers() {
 	code("var a = -12 a %%= 5").equals("3");
 	code("var a = 721 a %%= 57").equals("37");
 	code("var a = -721 a %%= 57").equals("20");
-	code("var a = -721★ a %%= 57★").equals("20");
+	code("var a = -721$ a %%= 57$").equals("20");
 
 	section("Number.operator /");
-	code("12★ / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("let a = 13★; a / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("13★ / true").equals("13");
-	code("14★ / 2").equals("7");
-	code("let a = 18★; a / 3").equals("6");
-	code("14★ / []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("12$ / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 13$; a / false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("13$ / true").equals("13");
+	code("14$ / 2").equals("7");
+	code("let a = 18$; a / 3").equals("6");
+	code("14$ / []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("let a = 17, b = 5 a / b").equals("3.4");
 
 	section("Number.operator /=");
-	code("var a = 12★ a /= true a").equals("12");
-	code("var a = 12★ a /= false a").equals("nan");
-	code("var a = 12★ a /= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = 12★ a /= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12$ a /= true a").equals("12");
+	code("var a = 12$ a /= false a").equals("nan");
+	code("var a = 12$ a /= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12$ a /= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 15; ['', a /= 2]").equals("['', 7.5]");
 
 	section("Number.operator <");
@@ -380,7 +380,7 @@ void Test::test_numbers() {
 	code("2.1 <= 5.1").equals("true");
 	code("3 <= 4").equals("true");
 	code("3 <= []").equals("true");
-	code("3 <= 4★").equals("true");
+	code("3 <= 4$").equals("true");
 
 	section("Number.operator >");
 	code("5 > 2").equals("true");
@@ -401,28 +401,28 @@ void Test::test_numbers() {
 	code("10 \\ 2").equals("5");
 	code("10 \\ 4").equals("2");
 	code("2432431 \\ 2313").equals("1051");
-	code("let a = 420987★ a \\ 546★").equals("771");
-	code("420987★ \\ 12").equals("35082");
+	code("let a = 420987$ a \\ 546$").equals("771");
+	code("420987$ \\ 12").equals("35082");
 	code("12345678912345l \\ 1234").equals("10004602035");
-	code("12★ \\ false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("let a = 13★; a \\ false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("13★ \\ true").equals("13");
-	code("17★ \\ 4").equals("4");
-	code("let a = 10.7★; a \\ true").equals("10");
-	code("let a = 10★; a \\ 4").equals("2");
-	code("14★ \\ []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("67.89★ \\ 1").equals("67");
+	code("12$ \\ false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("let a = 13$; a \\ false").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("13$ \\ true").equals("13");
+	code("17$ \\ 4").equals("4");
+	code("let a = 10.7$; a \\ true").equals("10");
+	code("let a = 10$; a \\ 4").equals("2");
+	code("14$ \\ []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("67.89$ \\ 1").equals("67");
 	code("['', 10 \\ 2]").equals("['', 5]");
-	code("['', 10★ \\ 2]").equals("['', 5]");
+	code("['', 10$ \\ 2]").equals("['', 5]");
 
 	section("Number.operator \\=");
 	code("var a = 12 a \\= 5").equals("2");
-	code("var a = 12★ a \\= 5").equals("2");
-	code("var a = 30★ a \\= 4 a").equals("7");
-	code("var a = 12★ a \\= true a").equals("12");
-	code("var a = 12★ a \\= false a").exception(ls::vm::Exception::DIVISION_BY_ZERO);
-	code("var a = 12★ a \\= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
-	code("var a = 12★ a \\= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12$ a \\= 5").equals("2");
+	code("var a = 30$ a \\= 4 a").equals("7");
+	code("var a = 12$ a \\= true a").equals("12");
+	code("var a = 12$ a \\= false a").exception(ls::vm::Exception::DIVISION_BY_ZERO);
+	code("var a = 12$ a \\= []").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("var a = 12$ a \\= [] a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = 12 ['', a \\= 5]").equals("['', 2]");
 
 	section("Number.operator &");
@@ -431,12 +431,12 @@ void Test::test_numbers() {
 	code("1 & 1").equals("1");
 	code("5 & 12").equals("4"); 
 	code("87619 & 18431").equals("17987");
-	code("87619★ & [18431, ''][0]").equals("17987");
+	code("87619$ & [18431, ''][0]").equals("17987");
 	code("var a = 87619 a &= 18431").equals("17987");
 	code("var a = 87619 a &= 18431 a").equals("17987");
-	code("87619★ & 18431").equals("17987");
-	code("87619★ &= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
-	code("var a = 87619★ a &= 18431 a").equals("17987");
+	code("87619$ & 18431").equals("17987");
+	code("87619$ &= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619$ a &= 18431 a").equals("17987");
 	code("[12, 'hello'][1] & 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 	code("var a = [12, 'hello'][1] a &= 18431 a").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
@@ -450,8 +450,8 @@ void Test::test_numbers() {
 	code("var a = 87619 a |= 18431").equals("88063");
 	code("var a = 87619 a |= 18431 a").equals("88063");
 	code("[87619, ''][0] | 18431").equals("88063");
-	code("87619★ |= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
-	code("var a = 87619★ a |= 18431 a").equals("88063");
+	code("87619$ |= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619$ a |= 18431 a").equals("88063");
 	code("[12, 'hello'][1] | 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator ^");
@@ -464,8 +464,8 @@ void Test::test_numbers() {
 	code("var a = 87619 a ^= 18431").equals("70076");
 	code("var a = 87619 a ^= 18431 a").equals("70076");
 	code("[87619, ''][0] ^ 18431").equals("70076");
-	code("87619★ ^= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
-	code("var a = 87619★ a ^= 18431 a").equals("70076");
+	code("87619$ ^= 18431").error(ls::Error::VALUE_MUST_BE_A_LVALUE, {"87619"});
+	code("var a = 87619$ a ^= 18431 a").equals("70076");
 	code("[12, 'hello'][1] ^ 5").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("Number.operator <<");

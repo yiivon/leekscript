@@ -34,7 +34,7 @@ void Test::test_intervals() {
 	code("'a' in [[1..1000], ''][0]").equals("false");
 	code("500 in [[1..1000], ''][0]").equals("true");
 	code("1500 in [[1..1000], ''][0]").equals("false");
-	code("500★ in [[1..1000], ''][0]").equals("true");
+	code("500$ in [[1..1000], ''][0]").equals("true");
 
 	section("Interval.operator ==");
 	code("[1..1000] == [1..1000]").equals("true");
