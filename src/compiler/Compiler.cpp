@@ -211,26 +211,22 @@ Compiler::value Compiler::get_symbol(const std::string& name, const Type* type) 
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
-	auto type = v.t->fold();
-	if (type->is_polymorphic()) {
-		return insn_invoke(Type::integer, {v}, "Value.int");
-	}
-	if (type->is_integer()) {
+	if (v.t->is_integer()) {
 		return v;
 	}
-	if (type->is_mpz_ptr()) {
+	if (v.t->is_mpz_ptr()) {
 		return to_int(insn_call(Type::long_, {v}, "Number.mpz_get_si"));
 	}
-	if (type->is_long()) {
-		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer};
+	if (v.t->is_long()) {
+		return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer };
 	}
-	if (type->is_bool()) {
-		return {builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer};
+	if (v.t->is_bool()) {
+		return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), false), Type::integer };
 	}
-	if (type->is_real()) {
-		return {builder.CreateFPToSI(v.v, Type::integer->llvm(*this)), Type::integer};
+	if (v.t->is_real()) {
+		return { builder.CreateFPToSI(v.v, Type::integer->llvm(*this)), Type::integer };
 	}
-	return { builder.CreateIntCast(v.v, Type::integer->llvm(*this), true), Type::integer };
+	return insn_invoke(Type::integer, {v}, "Value.int");
 }
 
 Compiler::value Compiler::to_real(Compiler::value x, bool delete_temporary) const {
