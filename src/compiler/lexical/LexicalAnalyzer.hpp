@@ -23,7 +23,7 @@ public:
 	LetterType getLetterType(char32_t c);
 	bool isToken(const std::string& word);
 	TokenType getTokenType(const std::string& word, TokenType by_default);
-	std::vector<Token*> parseTokens(std::string code);
+	std::vector<Token*> parseTokens(const std::string& code);
 
 	std::vector<Token*> analyze(File* file);
 };

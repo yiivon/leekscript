@@ -139,7 +139,7 @@ std::vector<Token*> LexicalAnalyzer::analyze(File* file) {
 	return tokens;
 }
 
-std::vector<Token*> LexicalAnalyzer::parseTokens(std::string code) {
+std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 
 	char buff[5];
 	const char* string_chars = code.c_str();
