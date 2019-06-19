@@ -160,19 +160,17 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(std::string code) {
 	int comment = 0;
 	bool lineComment = false;
 
-	int i = 0;
 	int l = strlen(string_chars);
+	int i = 0, j = 0;
+	u_int32_t c, nc = u8_nextchar(string_chars, &j);
 
 	while (i < l) {
 
 		character++;
-
-		u_int32_t c = u8_nextchar(string_chars, &i);
-		int oldi = i;
-		u_int32_t nc = u8_nextchar(string_chars, &i);
-		i = oldi;
-
-		LetterType type = getLetterType(c);
+		c = nc;
+		i = j;
+		nc = u8_nextchar(string_chars, &j);
+		auto type = getLetterType(c);
 
 		if (lineComment) {
 			if (c == '\n') {
