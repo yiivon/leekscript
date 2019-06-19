@@ -22,10 +22,10 @@ int u8_charnum(char *s, int offset);
 u_int32_t u8_nextchar(const char *s, int *i);
 
 /* move to next character */
-void u8_inc(char *s, int *i);
+void u8_inc(const char *s, int *i);
 
 /* move to previous character */
-void u8_dec(char *s, int *i);
+void u8_dec(const char *s, int *i);
 
 /* returns length of next utf-8 sequence */
 int u8_seqlen(char *s);

@@ -227,13 +227,13 @@ u_int32_t u8_nextchar(const char *s, int *i)
 	return ch;
 }
 
-void u8_inc(char *s, int *i)
+void u8_inc(const char *s, int *i)
 {
     (void)(isutf(s[++(*i)]) || isutf(s[++(*i)]) ||
            isutf(s[++(*i)]) || ++(*i));
 }
 
-void u8_dec(char *s, int *i)
+void u8_dec(const char *s, int *i)
 {
     (void)(isutf(s[--(*i)]) || isutf(s[--(*i)]) ||
            isutf(s[--(*i)]) || --(*i));
