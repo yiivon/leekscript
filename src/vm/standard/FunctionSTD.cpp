@@ -14,8 +14,8 @@ FunctionSTD::FunctionSTD(VM* vm) : Module(vm, "Function") {
 	field("args", Type::array(Type::clazz()), field_args);
 
 	constructor_({
-		{Type::fun(Type::void_, {}), {Type::i8->pointer()}, (void*) LSFunction::constructor},
-		{Type::closure(Type::void_, {}), {Type::i8->pointer()}, (void*) LSClosure::constructor},
+		{Type::fun(Type::void_, {}), {Type::i8_ptr}, (void*) LSFunction::constructor},
+		{Type::closure(Type::void_, {}), {Type::i8_ptr}, (void*) LSClosure::constructor},
 	});
 
 	/** Internal **/

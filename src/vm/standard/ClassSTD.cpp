@@ -11,12 +11,12 @@ ClassSTD::ClassSTD(VM* vm) : Module(vm, "Class") {
 	field("name", Type::string);
 
 	constructor_({
-		{Type::clazz(), {Type::i8->pointer()}, (void*) LSClass::constructor},
+		{Type::clazz(), {Type::i8_ptr}, (void*) LSClass::constructor},
 	});
 
 	/** Internal **/
 	method("add_field", {
-		{Type::void_, {Type::clazz(), Type::i8->pointer(), Type::any}, (void*) add_field}
+		{Type::void_, {Type::clazz(), Type::i8_ptr, Type::any}, (void*) add_field}
 	});
 }
 

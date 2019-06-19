@@ -248,10 +248,10 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 		{Type::any, {Type::const_any}, (void*) ls_pre_tilde}
 	});
 	method("attr", {
-		{Type::any, {Type::any, Type::i8->pointer()}, (void*) attr},
+		{Type::any, {Type::any, Type::i8_ptr}, (void*) attr},
 	});
 	method("attrL", {
-		{Type::any, {Type::any, Type::i8->pointer()}, (void*) attrL},
+		{Type::any, {Type::any, Type::i8_ptr}, (void*) attrL},
 	});
 	method("int", {
 		{Type::integer, {Type::const_any}, (void*) integer}
@@ -299,10 +299,10 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 		{Type::clazz(), {Type::any}, (void*) get_class}
 	});
 	method("export_ctx_var", {
-		{Type::void_, {Type::i8->pointer(), Type::any}, (void*) export_context_variable},
-		{Type::void_, {Type::i8->pointer(), Type::integer}, (void*) export_context_variable_int},
-		{Type::void_, {Type::i8->pointer(), Type::long_}, (void*) export_context_variable_long},
-		{Type::void_, {Type::i8->pointer(), Type::real}, (void*) export_context_variable_real},
+		{Type::void_, {Type::i8_ptr, Type::any}, (void*) export_context_variable},
+		{Type::void_, {Type::i8_ptr, Type::integer}, (void*) export_context_variable_int},
+		{Type::void_, {Type::i8_ptr, Type::long_}, (void*) export_context_variable_long},
+		{Type::void_, {Type::i8_ptr, Type::real}, (void*) export_context_variable_real},
 	});
 }
 

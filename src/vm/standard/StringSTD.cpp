@@ -78,7 +78,7 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 	 */
 	constructor_({
 		{Type::tmp_string, {}, (void*) &LSString::constructor_1},
-		{Type::tmp_string, {Type::i8->pointer()}, (void*) &LSString::constructor_2},
+		{Type::tmp_string, {Type::i8_ptr}, (void*) &LSString::constructor_2},
 	});
 
 	/*
@@ -206,20 +206,20 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 		{Type::integer, {Type::string}, (void*) &LSString::int_size}
 	});
 	method("iterator_begin", {
-		{Type::void_, {Type::string, Type::i8->pointer()}, (void*) iterator_begin}
+		{Type::void_, {Type::string, Type::i8_ptr}, (void*) iterator_begin}
 	});
 	method("iterator_end", {
-		{Type::void_, {Type::i8->pointer()}, (void*) &LSString::iterator_end}
+		{Type::void_, {Type::i8_ptr}, (void*) &LSString::iterator_end}
 	});
 	method("iterator_get", {
-		{Type::integer, {Type::i8->pointer()}, (void*) &LSString::iterator_get},
+		{Type::integer, {Type::i8_ptr}, (void*) &LSString::iterator_get},
 		{Type::tmp_string, {Type::integer, Type::string}, (void*) iterator_get},
 	});
 	method("iterator_key", {
-		{Type::integer, {Type::i8->pointer()}, (void*) &LSString::iterator_key}
+		{Type::integer, {Type::i8_ptr}, (void*) &LSString::iterator_key}
 	});
 	method("iterator_next", {
-		{Type::void_, {Type::i8->pointer()}, (void*) &LSString::iterator_next}
+		{Type::void_, {Type::i8_ptr}, (void*) &LSString::iterator_next}
 	});
 }
 

@@ -27,8 +27,8 @@ SystemSTD::SystemSTD(VM* vm) : Module(vm, "System") {
 	});
 
 	method("throw", {
-		{Type::void_, {Type::integer, Type::i8->pointer(), Type::i8->pointer(), Type::long_}, (void*) throw1},
-		{Type::void_, {Type::long_, Type::long_, Type::i8->pointer(), Type::i8->pointer()}, (void*) throw2},
+		{Type::void_, {Type::integer, Type::i8_ptr, Type::i8_ptr, Type::long_}, (void*) throw1},
+		{Type::void_, {Type::long_, Type::long_, Type::i8_ptr, Type::i8_ptr}, (void*) throw2},
 	});
 
 	method("debug", {

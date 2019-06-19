@@ -131,7 +131,7 @@ Compiler::value Compiler::new_const_string(std::string s) const {
 	if (i != global_strings.end()) {
 		return i->second;
 	}
-	Compiler::value str { builder.CreateGlobalStringPtr(s, "s"), Type::i8->pointer() };
+	Compiler::value str { builder.CreateGlobalStringPtr(s, "s"), Type::i8_ptr };
 	((Compiler*) this)->global_strings.insert({ s, str });
 	return str;
 }
@@ -142,17 +142,17 @@ Compiler::value Compiler::new_function(const Type* type) const {
 	return insn_call(type, {new_integer(0)}, "Function.new");
 }
 Compiler::value Compiler::new_function(llvm::Function* f, const Type* type) const {
-	auto fun = insn_convert({ f, type }, Type::i8->pointer());
+	auto fun = insn_convert({ f, type }, Type::i8_ptr);
 	return insn_call(type, {fun}, "Function.new");
 }
 Compiler::value Compiler::new_function(std::string name, const Type* type) const {
 	auto ptr = get_symbol(name, type);
-	auto fun = insn_convert(ptr, Type::i8->pointer());
+	auto fun = insn_convert(ptr, Type::i8_ptr);
 	return insn_call(type, {fun}, "Function.new");
 }
 Compiler::value Compiler::new_closure(llvm::Function* f, const Type* type, std::vector<Compiler::value> captures) const {
 	// std::cout << "new_closure " << captures << std::endl;
-	auto fun = insn_convert({ f, type }, Type::i8->pointer());
+	auto fun = insn_convert({ f, type }, Type::i8_ptr);
 	auto closure = insn_call(type, {fun}, "Function.new.1");
 	for (const auto& capture : captures) {
 		function_add_capture(closure, capture);

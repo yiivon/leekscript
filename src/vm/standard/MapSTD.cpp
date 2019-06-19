@@ -242,7 +242,7 @@ MapSTD::MapSTD(VM* vm) : Module(vm, "Map") {
 		{Type::map()->iterator(), {Type::map()->iterator()}, (void*) iterator_dec}
 	});
 	method("iterator_rkey", {
-		{Type::i8->pointer(), {Type::map()->iterator()}, (void*) iterator_rkey}
+		{Type::i8_ptr, {Type::map()->iterator()}, (void*) iterator_rkey}
 	});
 	method("iterator_rget", {
 		{Type::integer, {Type::map()->iterator()}, (void*) iterator_rget_ii},

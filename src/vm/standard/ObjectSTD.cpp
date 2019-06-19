@@ -55,7 +55,7 @@ ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 
 	/** Internal **/
 	method("add_field", {
-		{Type::void_, {Type::object, Type::i8->pointer(), Type::any}, (void*) &LSObject::addField}
+		{Type::void_, {Type::object, Type::i8_ptr, Type::any}, (void*) &LSObject::addField}
 	});
 }
 

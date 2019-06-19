@@ -121,6 +121,7 @@ public:
 	static const Type* const number;
 	static const Type* const const_number;
 	static const Type* const i8;
+	static const Type* const i8_ptr;
 	static const Type* const integer;
 	static const Type* const const_integer;
 	static const Type* const long_;

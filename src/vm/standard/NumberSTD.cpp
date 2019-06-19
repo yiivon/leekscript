@@ -374,7 +374,7 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::void_, {Type::mpz_ptr}, (void*) mpz_init_set}
 	});
 	method("mpz_init_str", {
-		{Type::void_, {Type::mpz_ptr, Type::i8->pointer(), Type::integer}, (void*) mpz_init_set_str}
+		{Type::void_, {Type::mpz_ptr, Type::i8_ptr, Type::integer}, (void*) mpz_init_set_str}
 	});
 	method("mpz_get_ui", {
 		{{Type::long_}, {Type::mpz_ptr}, (void*) mpz_get_ui}

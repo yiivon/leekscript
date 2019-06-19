@@ -72,6 +72,7 @@ const Type* const Type::const_boolean = Type::boolean->add_constant();
 const Type* const Type::number = new Number_type {};
 const Type* const Type::const_number = Type::number->add_constant();
 const Type* const Type::i8 = new I8_type {};
+const Type* const Type::i8_ptr = i8->pointer();
 const Type* const Type::integer = new Integer_type {};
 const Type* const Type::const_integer = Type::integer->add_constant();
 const Type* const Type::long_ = new Long_type {};
