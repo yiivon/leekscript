@@ -8,7 +8,10 @@ WillStoreMutator::WillStoreMutator() {}
 
 void WillStoreMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
 	// std::cout << "will store mutator " << values[0]->type << " += " << values[1]->type << std::endl;
-	values[0]->will_store(analyzer, values[1]->type);
+	auto type = values[1]->type;
+	if (type->is_function()) type = Type::fun_object(type->return_type(), type->arguments());
+	values[0]->will_store(analyzer, type);
+	values[1]->must_return_any(analyzer);
 }
 
 void ChangeTypeMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {

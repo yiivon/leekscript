@@ -573,6 +573,7 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, b
 	auto fun = [&]() {
 		if (args[0].t->element()->fold()->is_integer()) return "Array.vpush";
 		if (args[0].t->element()->fold()->is_real()) return "Array.vpush.1";
+		args[1] = c.insn_convert(args[1], Type::any);
 		return "Array.vpush.2";
 	}();
 	c.insn_call(Type::void_, args, fun);
