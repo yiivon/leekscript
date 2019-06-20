@@ -45,7 +45,7 @@ int Function_object_type::distance(const Type* type) const {
 		for (size_t i = 0; i < _arguments.size(); ++i) {
 			d += _arguments.at(i)->distance(fun->arguments().at(i)->not_temporary());
 		}
-		int d2 = (_closure != fun->closure()) ? 1 : 0;
+		int d2 = _closure ? 1 : 0;
 		if (d == 0) {
 			return d2 + _return_type->distance(fun->return_type());
 		} else {

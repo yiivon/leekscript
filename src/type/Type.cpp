@@ -453,7 +453,7 @@ const Type* Type::fun(const Type* return_type, std::vector<const Type*> argument
 		function_types.insert({ key, type });
 		return type;
 	} else {
-		auto t = new Function_type(return_type, arguments, false, function);
+		auto t = new Function_type(return_type, arguments, function);
 		t->constant = true;
 		return t;
 	}

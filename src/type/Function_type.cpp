@@ -7,7 +7,7 @@
 
 namespace ls {
 
-Function_type::Function_type(const Type* ret, const std::vector<const Type*>& args, bool closure, const Value* function) : Pointer_type(Type::structure("function", {
+Function_type::Function_type(const Type* ret, const std::vector<const Type*>& args, const Value* function) : Pointer_type(Type::structure("function", {
 	Type::integer, // ?
 	Type::integer, // ?
 	Type::integer, // ?
@@ -65,7 +65,7 @@ std::ostream& Function_type::print(std::ostream& os) const {
 	return os;
 }
 Type* Function_type::clone() const {
-	return new Function_type { _return_type, _arguments, false, _function };
+	return new Function_type { _return_type, _arguments, _function };
 }
 
 }
