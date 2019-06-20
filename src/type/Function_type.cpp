@@ -1,4 +1,5 @@
 #include "Function_type.hpp"
+#include "Function_object_type.hpp"
 #include "../colors.h"
 #include "Type.hpp"
 #include "Placeholder_type.hpp"
@@ -33,6 +34,19 @@ int Function_type::distance(const Type* type) const {
 		}
 		if (d == 0) {
 			return _return_type->distance(fun->_return_type);
+		} else {
+			return d;
+		}
+	}
+	if (auto fun = dynamic_cast<const Function_object_type*>(type->folded)) {
+		if (_arguments.size() > fun->arguments().size()) return -1;
+		int d = 0;
+		for (size_t i = 0; i < _arguments.size(); ++i) {
+			d += _arguments.at(i)->distance(fun->arguments().at(i)->not_temporary());
+		}
+		int d2 = fun->closure() ? 1 : 0;
+		if (d == 0) {
+			return d2 + _return_type->distance(fun->return_type());
 		} else {
 			return d;
 		}
