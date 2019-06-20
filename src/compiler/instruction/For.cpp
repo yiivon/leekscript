@@ -29,7 +29,20 @@ Location For::location() const {
 }
 
 void For::pre_analyze(SemanticAnalyzer* analyzer) {
-	
+	analyzer->enter_block(init.get());
+	for (const auto& ins : init->instructions) {
+		ins->pre_analyze(analyzer);
+	}
+	if (condition != nullptr) {
+		condition->pre_analyze(analyzer);
+	}
+	body->pre_analyze(analyzer);
+	analyzer->enter_block(increment.get());
+	for (const auto& ins : increment->instructions) {
+		ins->pre_analyze(analyzer);
+	}
+	analyzer->leave_block();
+	analyzer->leave_block();
 }
 
 void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {

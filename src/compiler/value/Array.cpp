@@ -27,6 +27,13 @@ Location Array::location() const {
 	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
+void Array::pre_analyze(SemanticAnalyzer* analyzer) {
+	for (size_t i = 0; i < expressions.size(); ++i) {
+		const auto& ex = expressions[i];
+		ex->pre_analyze(analyzer);
+	}
+}
+
 void Array::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "Array::analyze " << req_type << std::endl;

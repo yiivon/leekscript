@@ -41,6 +41,14 @@ Location If::location() const {
 	return condition->location(); // TODO better
 }
 
+void If::pre_analyze(SemanticAnalyzer* analyzer) {
+	condition->pre_analyze(analyzer);
+	then->pre_analyze(analyzer);
+	if (elze != nullptr) {
+		elze->pre_analyze(analyzer);
+	}
+}
+
 void If::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "If " << is_void << std::endl;
 	

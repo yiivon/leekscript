@@ -28,6 +28,10 @@ Location PrefixExpression::location() const {
 	return {operatorr->token->location.file, operatorr->token->location.start, expression->location().end};
 }
 
+void PrefixExpression::pre_analyze(SemanticAnalyzer* analyzer) {
+	expression->pre_analyze(analyzer);
+}
+
 void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 
 	expression->analyze(analyzer);

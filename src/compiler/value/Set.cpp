@@ -18,6 +18,12 @@ Location Set::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
+void Set::pre_analyze(SemanticAnalyzer* analyzer) {
+	for (auto& ex : expressions) {
+		ex->pre_analyze(analyzer);
+	}
+}
+
 void Set::analyze(SemanticAnalyzer* analyzer) {
 
 	const Type* element_type = Type::void_;

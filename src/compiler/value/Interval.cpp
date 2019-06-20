@@ -25,6 +25,11 @@ Location Interval::location() const {
 	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
+void Interval::pre_analyze(SemanticAnalyzer* analyzer) {
+	start->pre_analyze(analyzer);
+	end->pre_analyze(analyzer);
+}
+
 void Interval::analyze(SemanticAnalyzer* analyzer) {
 	constant = true;
 	type = Type::tmp_interval;

@@ -87,6 +87,7 @@ const Type* FunctionVersion::getReturnType() {
 }
 
 void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
+	analyzer->enter_function((FunctionVersion*) this);
 	// Create arguments
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
@@ -95,6 +96,7 @@ void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<
 		arguments.insert({ name, arg });
 	}
 	body->pre_analyze(analyzer);
+	analyzer->leave_function();
 }
 
 void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {

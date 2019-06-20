@@ -24,7 +24,10 @@ Location ClassDeclaration::location() const {
 }
 
 void ClassDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
-	// TODO
+	var = analyzer->add_var(token.get(), Type::clazz(), nullptr);
+	for (const auto& vd : fields) {
+		vd->pre_analyze(analyzer);
+	}
 }
 
 void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {

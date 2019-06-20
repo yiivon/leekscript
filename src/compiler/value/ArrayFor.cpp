@@ -16,6 +16,10 @@ Location ArrayFor::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
+void ArrayFor::pre_analyze(SemanticAnalyzer* analyzer) {
+	forr->pre_analyze(analyzer);
+}
+
 void ArrayFor::analyze(SemanticAnalyzer* analyzer) {
 	forr->analyze(analyzer, Type::array());
 	type = forr->type;

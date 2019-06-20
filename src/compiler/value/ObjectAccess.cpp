@@ -135,6 +135,10 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	return { (Callable*) nullptr };
 }
 
+void ObjectAccess::pre_analyze(SemanticAnalyzer* analyzer) {
+	object->pre_analyze(analyzer);
+}
+
 void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "ObjectAccess analyse " << this << std::endl;

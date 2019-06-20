@@ -22,6 +22,9 @@ Location AbsoluteValue::location() const {
 	return {open_pipe->location.file, open_pipe->location.start, close_pipe->location.end};
 }
 
+void AbsoluteValue::pre_analyze(SemanticAnalyzer* analyzer) {
+	expression->pre_analyze(analyzer);
+}
 void AbsoluteValue::analyze(SemanticAnalyzer* analyzer) {
 	expression->analyze(analyzer);
 	constant = expression->constant;

@@ -31,6 +31,10 @@ Location Match::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
+void Match::pre_analyze(ls::SemanticAnalyzer* analyzer) {
+	value->pre_analyze(analyzer);
+}
+
 void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 
 	bool any_pointer = false;

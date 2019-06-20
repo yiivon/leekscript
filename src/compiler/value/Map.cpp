@@ -27,6 +27,17 @@ Location Map::location() const {
 	return {opening_bracket->location.file, opening_bracket->location.start, closing_bracket->location.end};
 }
 
+void Map::pre_analyze(SemanticAnalyzer* analyzer) {
+	for (size_t i = 0; i < keys.size(); ++i) {
+		const auto& ex = keys[i];
+		ex->pre_analyze(analyzer);
+	}
+	for (size_t i = 0; i < values.size(); ++i) {
+		const auto& ex = values[i];
+		ex->pre_analyze(analyzer);
+	}
+}
+
 void Map::analyze(SemanticAnalyzer* analyzer) {
 
 	const Type* key_type = Type::void_;

@@ -30,6 +30,12 @@ Location Object::location() const {
 	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
+void Object::pre_analyze(SemanticAnalyzer* analyzer) {
+	for (auto& value : values) {
+		value->pre_analyze(analyzer);
+	}
+}
+
 void Object::analyze(SemanticAnalyzer* analyzer) {
 	for (auto& value : values) {
 		value->analyze(analyzer);
