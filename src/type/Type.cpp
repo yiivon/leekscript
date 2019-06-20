@@ -48,7 +48,7 @@ unsigned int Type::placeholder_counter = 0;
 
 const std::vector<const Type*> Type::empty_types;
 std::map<std::set<const Type*>, const Type*> Type::compound_types;
-std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_types;
+std::map<std::pair<const Type*, std::vector<const Type*>>, const Function_type*> Type::function_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::closure_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_object_types;
 std::unordered_map<const Type*, const Type*> Type::array_types;
@@ -443,7 +443,7 @@ const Type* Type::tmp_map(const Type* key, const Type* element) {
 	tmp_map_types.insert({{key, element}, type});
 	return type;
 }
-const Type* Type::fun(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
+const Function_type* Type::fun(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
 	if (function == nullptr) {
 		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
 		auto i = function_types.find(key);

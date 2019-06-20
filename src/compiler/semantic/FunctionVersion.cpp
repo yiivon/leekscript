@@ -76,7 +76,7 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 }
 
 const Type* FunctionVersion::getReturnType() {
-	if (type->return_type()->is_void()) {
+	if (not type or type->return_type()->is_void()) {
 		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
@@ -108,11 +108,11 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	analyzer->enter_function((FunctionVersion*) this);
 
 	// Prepare the placeholder return type for recursive functions
-	if (parent->captures.size() or parent->is_closure) {
-		type = Type::closure(getReturnType(), args, parent);
-	} else {
+	// if (parent->captures.size() or parent->is_closure) {
+	// 	type = Type::closure(getReturnType(), args, parent);
+	// } else {
 		type = Type::fun(getReturnType(), args, parent);
-	}
+	// }
 
 	std::vector<const Type*> arg_types;
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
@@ -121,11 +121,8 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 
 	body->analyze(analyzer);
-	if (parent->captures.size() or parent->is_closure) {
-		type = Type::closure(body->type, arg_types, parent);
-	} else {
-		type = Type::fun(body->type, arg_types, parent);
-	}
+	type = Type::fun(body->type, arg_types, parent);
+	
 	auto return_type = Type::void_;
 	// std::cout << "version->body->type " << body->type << std::endl;
 	// std::cout << "version->body->return_type " << body->return_type << std::endl;
@@ -156,11 +153,8 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 	// std::cout << "return_type " << return_type << std::endl;
 	body->type = return_type;
-	if (parent->captures.size() or parent->is_closure) {
-		type = Type::closure(return_type, arg_types, parent);
-	} else {
-		type = Type::fun(return_type, arg_types, parent);
-	}
+	type = Type::fun(return_type, arg_types, parent);
+	
 	// Re-analyse the recursive function to clean the placeholder types
 	if (recursive) {
 		body->analyze(analyzer);

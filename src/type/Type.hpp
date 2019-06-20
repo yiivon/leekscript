@@ -15,6 +15,7 @@ class Type;
 class Function;
 class Value;
 class Compiler;
+class Function_type;
 
 class Type {
 public:
@@ -152,7 +153,7 @@ public:
 	static const Type* const interval;
 	static const Type* const const_interval;
 	static const Type* const tmp_interval;
-	static const Type* fun(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
+	static const Function_type* fun(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* fun_object(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* closure(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* structure(const std::string name, std::initializer_list<const Type*> types);
@@ -171,7 +172,7 @@ public:
 	// Const types to be used to optimize return of references
 	static const std::vector<const Type*> empty_types;
 	static std::map<std::set<const Type*>, const Type*> compound_types;
-	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_types;
+	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Function_type*> function_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_object_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> closure_types;
 	static std::unordered_map<const Type*, const Type*> array_types;

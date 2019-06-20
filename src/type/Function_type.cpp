@@ -8,14 +8,7 @@
 
 namespace ls {
 
-Function_type::Function_type(const Type* ret, const std::vector<const Type*>& args, const Value* function) : Pointer_type(Type::structure("function", {
-	Type::integer, // ?
-	Type::integer, // ?
-	Type::integer, // ?
-	Type::integer, // refs
-	Type::boolean, // native
-	Type::long_->pointer() // pointer to the function
-}), true), _return_type(ret), _arguments(args), _function(function) {}
+Function_type::Function_type(const Type* ret, const std::vector<const Type*>& args, const Value* function) : Type(true), _return_type(ret), _arguments(args), _function(function) {}
 
 bool Function_type::operator == (const Type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
@@ -65,6 +58,15 @@ const Type* Function_type::argument(size_t i) const {
 		return _arguments[i];
 	}
 	return Type::any;
+}
+llvm::Type* Function_type::llvm(const Compiler& c) const {
+	if (llvm_type) return llvm_type;
+	std::vector<llvm::Type*> llvm_types;
+	for (const auto& a : _arguments) {
+		llvm_types.push_back(a->llvm(c));
+	}
+	((Function_type*) this)->llvm_type = llvm::FunctionType::get(_return_type->llvm(c), llvm_types, false);
+	return llvm_type;
 }
 std::string Function_type::class_name() const {
 	return "Function";

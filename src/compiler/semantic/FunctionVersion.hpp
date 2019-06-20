@@ -9,12 +9,13 @@ class Block;
 class Function;
 class SemanticAnalyzer;
 class Variable;
+class Function_type;
 
 class FunctionVersion {
 public:
 	Function* parent;
 	std::unique_ptr<Block> body;
-	const Type* type;
+	const Function_type* type = nullptr;
 	llvm::BasicBlock* block = nullptr;
 	llvm::Function* f = nullptr;
 	Compiler::value value;
