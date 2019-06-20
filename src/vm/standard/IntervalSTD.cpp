@@ -34,7 +34,7 @@ IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 	method("copy", {
 		{Type::interval, {Type::interval}, ValueSTD::copy}
 	});
-	auto pred_fun_type_int = Type::fun(Type::boolean, {Type::integer});
+	auto pred_fun_type_int = Type::fun_object(Type::boolean, {Type::integer});
 	auto pred_clo_type_int = Type::closure(Type::boolean, {Type::integer});
 	auto filter_fun = &LSInterval::ls_filter<LSFunction*>;
 	auto filter_clo = &LSInterval::ls_filter<LSClosure*>;

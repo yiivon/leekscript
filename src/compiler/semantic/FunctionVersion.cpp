@@ -10,6 +10,7 @@
 #include "../../colors.h"
 #include "../../type/Placeholder_type.hpp"
 #include "../../type/Compound_type.hpp"
+#include "../../type/Function_type.hpp"
 #include "Variable.hpp"
 
 namespace ls {
@@ -17,7 +18,7 @@ namespace ls {
 FunctionVersion::FunctionVersion(std::unique_ptr<Block> body) : body(std::move(body)), type(Type::void_) {}
 
 bool FunctionVersion::is_compiled() const {
-	return f != nullptr;
+	return fun.v != nullptr;
 }
 
 void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool condensed) const {
@@ -76,7 +77,8 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 }
 
 const Type* FunctionVersion::getReturnType() {
-	if (not type or type->return_type()->is_void()) {
+	// std::cout << "getReturnType() " << type << std::endl;
+	if (type->is_void()) {
 		if (!placeholder_type) {
 			placeholder_type = Type::generate_new_placeholder_type();
 		}
@@ -107,11 +109,8 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	analyzer->enter_function((FunctionVersion*) this);
 
 	// Prepare the placeholder return type for recursive functions
-	// if (parent->captures.size() or parent->is_closure) {
-	// 	type = Type::closure(getReturnType(), args, parent);
-	// } else {
-		type = Type::fun(getReturnType(), args, parent);
-	// }
+	// std::cout << "Create version type " << getReturnType() << std::endl;
+	type = Type::fun(getReturnType(), args, parent)->pointer();
 
 	std::vector<const Type*> arg_types;
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
@@ -120,11 +119,10 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 
 	body->analyze(analyzer);
-	type = Type::fun(body->type, arg_types, parent);
 	
 	auto return_type = Type::void_;
-	// std::cout << "version->body->type " << body->type << std::endl;
-	// std::cout << "version->body->return_type " << body->return_type << std::endl;
+	// std::cout << "body->type " << body->type << std::endl;
+	// std::cout << "body->return_type " << body->return_type << std::endl;
 	if (auto c = dynamic_cast<const Compound_type*>(body->type)) {
 		for (const auto& t : c->types) {
 			if (t != placeholder_type) {
@@ -150,9 +148,16 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	if (not return_type->is_void() and not parent->is_main_function and this == parent->default_version and parent->generate_default_version) {
 		return_type = Type::any;
 	}
+	if (return_type->is_function()) {
+		return_type = return_type->pointer();
+	}
 	// std::cout << "return_type " << return_type << std::endl;
 	body->type = return_type;
-	type = Type::fun(return_type, arg_types, parent);
+	if (captures.size()) {
+		type = Type::closure(return_type, arg_types, parent);
+	} else {
+		type = Type::fun(return_type, arg_types, parent)->pointer();
+	}
 	
 	// Re-analyse the recursive function to clean the placeholder types
 	if (recursive) {
@@ -189,20 +194,21 @@ int FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
 }
 
 void FunctionVersion::create_function(Compiler& c) {
-	if (f) return;
+	if (fun.v) return;
 
-	std::vector<llvm::Type*> args;
-	if (parent->captures.size() or parent->is_closure) {
-		args.push_back(Type::any->llvm(c)); // first arg is the function pointer
+	std::vector<const Type*> args;
+	if (captures.size()) {
+		args.push_back(Type::any); // first arg is the function pointer
 	}
 	for (auto& t : this->type->arguments()) {
-		args.push_back(t->llvm(c));
+		args.push_back(t);
 	}
-
-	auto llvm_return_type = this->type->return_type()->llvm(c);
-	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
+	auto function_type = Type::fun(type->return_type(), args);
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
-	f = llvm::Function::Create(function_type, llvm::Function::InternalLinkage, fun_name, c.program->module);
+	auto f = llvm::Function::Create((llvm::FunctionType*) function_type->llvm(c), llvm::Function::InternalLinkage, fun_name, c.program->module);
+	// std::cout << "f->getType() " << f->getType() << std::endl;
+	fun = { f, function_type->pointer() };
+	assert(c.check_value(fun));
 
 	if (body->throws) {
 		auto personalityfn = c.program->module->getFunction("__gxx_personality_v0");
@@ -214,13 +220,21 @@ void FunctionVersion::create_function(Compiler& c) {
 	block = llvm::BasicBlock::Create(c.getContext(), "start", f);
 }
 
-void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body) {
-	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ", create_value=" << create_value << ")" << std::endl;
+Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
+	// std::cout << "Function::Version " << parent->name << "::compile(" << type << ", compile_body=" << compile_body << ")" << std::endl;
+	// std::cout << "Captures : " << captures.size() << " : ";
+	// for (const auto& c : captures) std::cout << c->name << " " << c->type << " " << (int)c->scope << " ";
+	// std::cout << std::endl;
 
 	if (not is_compiled()) {
 
+		for (const auto& cap : captures) {
+			if (cap->scope == VarScope::LOCAL or cap->scope == VarScope::PARAMETER) {
+				c.convert_var_to_poly(cap->name);
+			}
+		}
 		std::vector<llvm::Type*> args;
-		if (parent->captures.size() or parent->is_closure) {
+		if (captures.size()) {
 			args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 		}
 		for (auto& t : this->type->arguments()) {
@@ -229,7 +243,7 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 		// Create the llvm function
 		create_function(c);
 
-		c.enter_function(f, parent->captures.size() > 0 or parent->is_closure, this);
+		c.enter_function((llvm::Function*) fun.v, captures.size() > 0, this);
 
 		c.builder.SetInsertPoint(block);
 
@@ -243,9 +257,9 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 
 		// Create arguments
 		unsigned index = 0;
-		int offset = parent->captures.size() or parent->is_closure ? -1 : 0;
-		for (auto& arg : f->args()) {
-			if (index == 0 && (parent->captures.size() or parent->is_closure)) {
+		int offset = captures.size() ? -1 : 0;
+		for (auto& arg : ((llvm::Function*) fun.v)->args()) {
+			if (index == 0 && captures.size()) {
 				arg.setName("closure");
 			} else if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
@@ -265,7 +279,6 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 					}
 				}
 				c.arguments.top()[name] = var;
-				// c.arguments.top()[name] = {&arg, type};
 			}
 			index++;
 		}
@@ -281,45 +294,48 @@ void FunctionVersion::compile(Compiler& c, bool create_value, bool compile_body)
 			// Create a function : 1 op
 			c.inc_ops(1);
 		}
-		llvm::verifyFunction(*f);
+		llvm::verifyFunction(*((llvm::Function*) fun.v));
 	}
 
-	if (create_value) {
-		if (parent->captures.size() or parent->is_closure) {
-			std::vector<Compiler::value> captures;
-			if (!parent->is_main_function) {
-				for (const auto& cap : parent->captures) {
-					Compiler::value jit_cap;
-					if (cap->scope == VarScope::LOCAL) {
-						auto f = dynamic_cast<Function*>(cap->value);
-						if (f) {
-							jit_cap = f->compile_version(c, cap->version);
-						} else {
-							if (cap->type->is_mpz_ptr()) {
-								jit_cap = c.get_var(cap->name);
-							} else {
-								jit_cap = c.insn_load(c.get_var(cap->name));
-							}
-						}
-					} else if (cap->scope == VarScope::CAPTURE) {
-						jit_cap = c.insn_get_capture(cap->parent_index, cap->type);
+	if (captures.size()) {
+		std::vector<Compiler::value> captures;
+		if (!parent->is_main_function) {
+			for (const auto& cap : this->captures) {
+				Compiler::value jit_cap;
+				if (cap->scope == VarScope::LOCAL) {
+					auto f = dynamic_cast<Function*>(cap->value);
+					if (f) {
+						jit_cap = f->compile_version(c, cap->version);
 					} else {
-						jit_cap = c.insn_load(c.insn_get_argument(cap->name));
+						if (cap->type->is_mpz_ptr()) {
+							jit_cap = c.get_var(cap->name);
+						} else {
+							jit_cap = c.insn_load(c.get_var(cap->name));
+						}
 					}
-					assert(jit_cap.t->is_polymorphic());
-					captures.push_back(jit_cap);
+				} else if (cap->scope == VarScope::CAPTURE) {
+					jit_cap = c.insn_get_capture(cap->parent_index, cap->type);
+				} else {
+					jit_cap = c.insn_load(c.insn_get_argument(cap->name));
 				}
+				assert(jit_cap.t->is_polymorphic());
+				captures.push_back(jit_cap);
 			}
-			value = c.new_closure(f, type, captures);
-		} else {
-			value = c.new_function(f, type);
 		}
+		value = c.new_closure(fun, captures);
+	} else {
+		// if (fun.t->is_pointer()) {
+			value = fun;
+		// } else {
+			// value = { c.builder.CreatePointerCast(fun.v, fun.t->pointer()->llvm(c)), fun.t->pointer() };
+		// }
 	}
-	// std::cout << "Function '" << parent->name << "' compiled: " << value.v << std::endl;
+	// std::cout << "Function '" << parent->name << "' compiled: " << value.t << std::endl;
+	return value;
 }
 
 void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool delete_variables) const {
-	c.assert_value_ok(v);
+	assert(c.check_value(v));
 	// Delete temporary mpz arguments
 	for (size_t i = 0; i < type->arguments().size(); ++i) {
 		const auto& name = parent->arguments.at(i)->content;
@@ -340,15 +356,22 @@ void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool 
 		c.insn_return_void();
 	} else {
 		auto return_type = ((FunctionVersion*) this)->getReturnType()->fold();
+		// std::cout << "return type " << return_type << std::endl;
 		if (v.t->is_void()) {
 			if (return_type->is_bool()) v = c.new_bool(false);
 			else if (return_type->is_real()) v = c.new_real(0);
+			else if (return_type->is_long()) v = c.new_long(0);
+			// else if (return_type->is_raw_function()) v = c.new_null_pointer();
 			else v = c.new_integer(0);
 		}
 		if (return_type->is_any()) {
 			v = c.insn_convert(v, return_type);
 		}
-		c.assert_value_ok(v);
+		// if (return_type->is_function()) {
+		// 	std::cout << "return type function " << std::endl;
+		// 	v = { c.builder.CreatePointerCast(v.v, return_type->pointer()->llvm(c)), return_type->pointer() };
+		// }
+		assert(c.check_value(v));
 		c.insn_return(v);
 	}
 }

@@ -165,6 +165,8 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 	auto v1_type = op->reversed ? v2->type : v1->type;
 	auto v2_type = op->reversed ? v1->type : v2->type;
 
+	// std::cout << "Expression " << v1_type << " " << op->token->content << " " << v2_type << std::endl;
+
 	if (v1_type->class_name().size()) {
 		auto object_class = (LSClass*) analyzer->vm->internal_vars[v1_type->class_name()]->lsvalue;
 		auto callable = object_class->getOperator(analyzer, op->character);
@@ -182,7 +184,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 					if (v2->type->placeholder) { return_type = v2_type; }
 				}
 				type = is_void ? Type::void_ : return_type;
-				if (v2_type->is_function() and callable_version->type->argument(1)->is_function()) {
+				if ((v2_type->is_function() or v2_type->is_function_pointer() or v2_type->is_function_object()) and (callable_version->type->argument(1)->is_function() or callable_version->type->argument(1)->is_function_pointer())) {
 					v2->will_take(analyzer, callable_version->type->argument(1)->arguments(), 1);
 					v2->set_version(analyzer, callable_version->type->argument(1)->arguments(), 1);
 				}

@@ -316,7 +316,9 @@ bool Type::is_array() const { return is_type<Array_type>(); }
 bool Type::is_set() const { return is_type<Set_type>(); }
 bool Type::is_interval() const { return folded == Type::interval or folded == Type::tmp_interval or folded == Type::const_interval; }
 bool Type::is_map() const { return is_type<Map_type>(); }
-bool Type::is_function() const { return is_type<Function_type>() or is_type<Function_object_type>(); }
+bool Type::is_function() const { return is_type<Function_type>(); }
+bool Type::is_function_object() const { return is_type<Function_object_type>(); }
+bool Type::is_function_pointer() const { return is_pointer() and pointed()->is_type<Function_type>(); }
 bool Type::is_object() const { return folded == Type::object; }
 bool Type::is_never() const { return folded == Type::never; }
 bool Type::is_null() const { return folded == Type::null; }
@@ -340,7 +342,6 @@ bool Type::is_polymorphic() const {
 		or dynamic_cast<const Map_type*>(folded) != nullptr
 		or dynamic_cast<const Interval_type*>(folded) != nullptr
 		or dynamic_cast<const Any_type*>(folded) != nullptr
-		or dynamic_cast<const Function_type*>(folded) != nullptr
 		or dynamic_cast<const Function_object_type*>(folded) != nullptr
 		or dynamic_cast<const Class_type*>(folded) != nullptr
 		or dynamic_cast<const Object_type*>(folded) != nullptr
@@ -350,7 +351,8 @@ bool Type::is_primitive() const {
 	return dynamic_cast<const Integer_type*>(folded) != nullptr
 		or dynamic_cast<const Long_type*>(folded) != nullptr 
 		or dynamic_cast<const Real_type*>(folded) != nullptr 
-		or dynamic_cast<const Bool_type*>(folded) != nullptr;
+		or dynamic_cast<const Bool_type*>(folded) != nullptr
+		or dynamic_cast<const Function_type*>(folded) != nullptr;
 }
 bool Type::is_void() const {
 	return this == Type::void_;
@@ -443,7 +445,7 @@ const Type* Type::tmp_map(const Type* key, const Type* element) {
 	tmp_map_types.insert({{key, element}, type});
 	return type;
 }
-const Function_type* Type::fun(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
+const Type* Type::fun(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
 	if (function == nullptr) {
 		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
 		auto i = function_types.find(key);

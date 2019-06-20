@@ -155,11 +155,11 @@ public:
 	value new_long(long l) const;
 	value new_mpz() const;
 	value new_const_string(std::string s) const;
-	value new_null_pointer() const;
+	value new_null_pointer(const Type* type) const;
 	value new_function(const Type* type) const;
-	value new_function(llvm::Function* f, const Type* type) const;
+	value new_function(Compiler::value fun) const;
 	value new_function(std::string name, const Type* type) const;
-	value new_closure(llvm::Function* f, const Type* type, std::vector<value> captures) const;
+	value new_closure(Compiler::value fun, std::vector<value> captures) const;
 	value new_class(std::string name) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
@@ -280,9 +280,7 @@ public:
 	// Call functions
 	value insn_invoke(const Type* return_type, std::vector<value> args, std::string name) const;
 	value insn_invoke(const Type* return_type, std::vector<value> args, value func) const;
-	value insn_invoke(const Type* return_type, std::vector<value> args, llvm::Function* fun) const;
-	value insn_call(const Type* return_type, std::vector<value> args, value fun) const;
-	value insn_call(const Type* return_type, std::vector<value> args, llvm::Function* fun) const;
+	value insn_call(value fun, std::vector<value> args) const;
 	value insn_call(const Type* return_type, std::vector<value> args, std::string name) const;
 	void function_add_capture(value fun, value capture) const;
 	void log(const std::string&& str) const;
@@ -327,7 +325,7 @@ public:
 
 	// Utils
 	static void print_mpz(__mpz_struct value);
-	void assert_value_ok(value) const;
+	bool check_value(value) const;
 	void increment_mpz_created() const;
 	void increment_mpz_deleted() const;
 };

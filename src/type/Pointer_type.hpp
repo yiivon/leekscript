@@ -12,8 +12,13 @@ public:
 	Pointer_type(const Type* type, bool native = false);
 	virtual ~Pointer_type() {}
 	virtual const Type* pointed() const override;
+	virtual const Value* function() const override;
+	virtual const Type* return_type() const override;
+	virtual const Type* argument(size_t) const override;
+	virtual const std::vector<const Type*>& arguments() const override;
 	virtual const std::string getName() const { return "pointer"; }
 	virtual const std::string getJsonName() const override { return _type->getJsonName() + "*"; }
+	virtual bool callable() const override;
 	virtual bool operator == (const Type*) const override;
 	virtual int distance(const Type* type) const override;
 	virtual llvm::Type* llvm(const Compiler& c) const override;

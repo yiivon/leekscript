@@ -120,11 +120,11 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort},
 		{Type::tmp_array(Type::real), {Type::array(Type::real)}, (void*) &LSArray<double>::ls_sort},
 		{Type::tmp_array(Type::integer), {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_sort},
-		{Type::tmp_array(sT), {Type::array(sT), Type::fun(Type::boolean, {sT, sT})}, sort}
+		{Type::tmp_array(sT), {Type::array(sT), Type::fun_object(Type::boolean, {sT, sT})}, sort}
 	});
 
-	auto map2_fun_type = Type::fun(Type::any, {Type::any, Type::any});
-	auto map2_fun_type_int = Type::fun(Type::any, {Type::any, Type::integer});
+	auto map2_fun_type = (const Type*) Type::fun_object(Type::any, {Type::any, Type::any});
+	auto map2_fun_type_int = (const Type*) Type::fun_object(Type::any, {Type::any, Type::integer});
 	auto map2_ptr_ptr = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, LSValue*>;
 	auto map2_ptr_int = &LSArray<LSValue*>::ls_map2<LSFunction*, LSValue*, int>;
 	method("map2", {
@@ -350,9 +350,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto sort_fun_real = &LSArray<double>::ls_sort_fun<LSFunction*>;
 	auto sort_fun_any = &LSArray<LSValue*>::ls_sort_fun<LSFunction*>;
 	method("sort_fun", {
-		{Type::array(), {Type::array(), Type::fun(Type::void_, {})}, (void*) sort_fun_any},
-		{Type::array(), {Type::array(), Type::fun(Type::void_, {})}, (void*) sort_fun_real},
-		{Type::array(), {Type::array(), Type::fun(Type::void_, {})}, (void*) sort_fun_int},
+		{Type::array(), {Type::array(), (const Type*) Type::fun_object(Type::void_, {})}, (void*) sort_fun_any},
+		{Type::array(), {Type::array(), (const Type*) Type::fun_object(Type::void_, {})}, (void*) sort_fun_real},
+		{Type::array(), {Type::array(), (const Type*) Type::fun_object(Type::void_, {})}, (void*) sort_fun_int},
 	});
 
 	method("fill_fun", {
@@ -443,7 +443,7 @@ Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> ar
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move_inc(args[2]));
 	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function.t->return_type(), {c.insn_load(result), v}, function);
+		auto r = c.insn_call(function, {c.insn_load(result), v});
 		c.insn_delete(c.insn_load(result));
 		c.insn_store(result, c.insn_move_inc(r));
 		return {};
@@ -456,7 +456,7 @@ Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> a
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move(args[2]));
 	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function.t->return_type(), {v, c.insn_load(result)}, function));
+		c.insn_store(result, c.insn_call(function, {v, c.insn_load(result)}));
 		return {};
 	}, true);
 	return c.insn_load(result);
@@ -465,7 +465,7 @@ Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> a
 Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		return c.insn_call(function.t->return_type(), {v}, function);
+		return c.insn_call(function, {v});
 	});
 	return {};
 }
@@ -498,7 +498,7 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	auto array_true = c.new_array(array.t->element(), {});
 	auto array_false = c.new_array(array.t->element(), {});
 	c.insn_foreach(array, Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function.t->return_type(), {v}, function);
+		auto r = c.insn_call(function, {v});
 		c.insn_if(r, [&]() {
 			c.insn_push_array(array_true, v);
 		}, [&]() {
@@ -517,7 +517,7 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bo
 	c.insn_foreach(array, Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
-		auto r = c.insn_call(function.t->return_type(), {x}, function);
+		auto r = c.insn_call(function, {x});
 		if (no_return) {
 			if (not r.t->is_void()) c.insn_delete_temporary(r);
 		} else {
@@ -583,7 +583,7 @@ Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args,
 	auto function = args[1];
 	auto result = c.new_array(args[0].t->element(), {});
 	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function.t->return_type(), {v}, function);
+		auto r = c.insn_call(function, {v});
 		c.insn_if(r, [&]() {
 			c.insn_push_array(result, c.clone(v));
 		});

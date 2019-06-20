@@ -49,7 +49,7 @@ Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 		auto R = Type::template_("R");
 		auto type = Type::fun(R, {T, Type::fun(R, {T})});
 		auto fun = [&](Compiler& c, std::vector<Compiler::value> args, bool) {
-			return c.insn_call(args[1].t->return_type(), {args[0]}, args[1]);
+			return c.insn_call(args[1], {args[0]});
 		};
 		return { new CallableVersion { name, type, fun, {}, {R, T} } };
 	}
@@ -166,7 +166,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 					var = analyzer->convert_var_to_any(var);
 					type = var->type;
 				}
-				capture_index = analyzer->current_function()->parent->capture(analyzer, var);
+				capture_index = analyzer->current_function()->capture(analyzer, var);
 				var->index = capture_index;
 				scope = VarScope::CAPTURE;
 			}
@@ -277,8 +277,8 @@ const Type* VariableValue::version_type(std::vector<const Type*> version) const 
 }
 
 Compiler::value VariableValue::compile(Compiler& c) const {
-	// std::cout << "Compile var " << name << " " << version << std::endl;
-	// std::cout << "compile vv " << name << " : " << type << "(" << (int) scope << ")" << std::endl;
+	// std::cout << "Compile var " << name << " " << type << std::endl;
+	// std::cout << "Compile vv " << name << " : " << type << "(" << (int) scope << ")" << std::endl;
 
 	if (static_access_function != nullptr) {
 		return static_access_function(c);
@@ -332,7 +332,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 	} else {
 		assert(false);
 	}
-	c.assert_value_ok(v);
+	assert(c.check_value(v));
 	return v;
 }
 

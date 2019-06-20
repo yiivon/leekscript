@@ -165,7 +165,7 @@ const Type* ArrayAccess::version_type(std::vector<const Type*> version) const {
 		return type;
 	} else {
 		// The array is not homogeneous, so the function inside an array always returns any
-		return Type::fun(Type::any, {Type::any});
+		return Type::fun_object(Type::any, {Type::any});
 	}
 }
 

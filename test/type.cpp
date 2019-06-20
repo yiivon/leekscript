@@ -1,6 +1,7 @@
 #include "Test.hpp"
 #include "../src/colors.h"
 #include "../src/type/Array_type.hpp"
+#include "../src/type/Function_type.hpp"
 
 void Test::test_types() {
 

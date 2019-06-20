@@ -92,6 +92,8 @@ public:
 	bool is_map() const;
 	bool is_closure() const;
 	bool is_function() const;
+	bool is_function_object() const;
+	bool is_function_pointer() const;
 	bool is_object() const;
 	bool is_never() const;
 	bool is_null() const;
@@ -153,7 +155,7 @@ public:
 	static const Type* const interval;
 	static const Type* const const_interval;
 	static const Type* const tmp_interval;
-	static const Function_type* fun(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
+	static const Type* fun(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* fun_object(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* closure(const Type* return_type = Type::void_, std::vector<const Type*> arguments = {}, const Value* function = nullptr);
 	static const Type* structure(const std::string name, std::initializer_list<const Type*> types);

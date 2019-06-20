@@ -131,7 +131,15 @@ VM::Result Program::compile_ir_file(VM& vm) {
 	auto symbol = vm.compiler.findSymbol("main");
 	closure = (void*) cantFail(symbol.getAddress());
 
-	type = llvm_type->isPointerTy() ? Type::any : (llvm_type->isStructTy() ? Type::mpz : Type::integer);
+	if (llvm_type->isPointerTy() and llvm_type->getPointerElementType()->isFunctionTy()) {
+		type = (const Type*) Type::fun();
+	} else if (llvm_type->isPointerTy()) {
+		type = Type::any;
+	} else if (llvm_type->isStructTy()) {
+		type = Type::mpz;
+	} else {
+		type = Type::integer;
+	}
 
 	result.compilation_success = true;
 	std::ostringstream oss;
@@ -249,6 +257,11 @@ std::string Program::execute(VM& vm) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
 		return std::to_string(res);
+	}
+	if (type->is_function_pointer()) {
+		auto fun = (long (*)()) closure;
+		fun();
+		return "<function>";
 	}
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();

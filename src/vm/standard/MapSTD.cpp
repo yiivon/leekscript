@@ -280,7 +280,7 @@ Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move(args[2]));
 	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function.t->return_type(), {c.insn_load(result), k, v}, function));
+		c.insn_store(result, c.insn_call(function, {c.insn_load(result), k, v}));
 		return {};
 	});
 	return c.insn_load(result);
@@ -291,7 +291,7 @@ Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> arg
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move(args[2]));
 	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function.t->return_type(), {k, v, c.insn_load(result)}, function));
+		c.insn_store(result, c.insn_call(function, {k, v, c.insn_load(result)}));
 		return {};
 	}, true);
 	return c.insn_load(result);
@@ -300,7 +300,7 @@ Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> arg
 Compiler::value MapSTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		return c.insn_call(function.t->return_type(), {k, v}, function);
+		return c.insn_call(function, {k, v});
 	});
 	return {};
 }

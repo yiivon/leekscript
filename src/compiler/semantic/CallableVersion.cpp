@@ -7,6 +7,7 @@
 #include "../value/ObjectAccess.hpp"
 #include "FunctionVersion.hpp"
 #include "../value/Function.hpp"
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
@@ -41,6 +42,20 @@ const Type* build(const Type* type) {
 			args.push_back(build(t));
 		}
 		return Type::fun(build(type->return_type()), args);
+	}
+	if (type->is_function_pointer()) {
+		std::vector<const Type*> args;
+		for (const auto& t : type->arguments()) {
+			args.push_back(build(t));
+		}
+		return Type::fun(build(type->return_type()), args)->pointer();
+	}
+	if (type->is_function_object()) {
+		std::vector<const Type*> args;
+		for (const auto& t : type->arguments()) {
+			args.push_back(build(t));
+		}
+		return Type::fun_object(build(type->return_type()), args);
 	}
 	if (auto mul = dynamic_cast<const Meta_mul_type*>(type)) {
 		return build(mul->t1)->operator * (build(mul->t2));
@@ -87,7 +102,8 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		if (i < arguments.size()) {
 			const auto& a = arguments.at(i);
 			const auto implem_arg = new_version->type->argument(i);
-			if (a->function() and implem_arg->is_function()) {
+			// std::cout << "argument " << i << " " << implem_arg << std::endl;
+			if (a->function() and (implem_arg->is_function() or implem_arg->is_function_pointer() or implem_arg->is_function_object())) {
 				arguments.at(i) = ((Function*) a->function())->will_take(analyzer, implem_arg->arguments(), 1);
 			}
 		} else if (f and ((Function*) f)->defaultValues.at(i)) {
@@ -110,7 +126,7 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 				assert(false);
 			}}();
 			auto di = type->distance(new_version->type->arguments().at(i));
-			// std::cout << type << " distance " << version_type.arguments().at(i) << " " << di << std::endl;
+			// std::cout << type << " distance " << new_version->type->arguments().at(i) << " " << di << std::endl;
 			if (di < 0) return { std::numeric_limits<int>::max(), nullptr };
 			d += di;
 		}
@@ -134,7 +150,8 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 		solve(analyzer, t1->key(), t2->key());
 		solve(analyzer, t1->element(), t2->element());
 	}
-	else if (t1->is_function() and t2->is_function()) {
+	else if ((t1->is_function() or t1->is_function_pointer() or t1->is_function_object()) and (t2->is_function() or t2->is_function_pointer() or t2->is_function_object())) {
+		// std::cout << "solve function " << t2 << std::endl;
 		auto f = t2->function();
 		if (f) {
 			auto t1_args = build(t1)->arguments();
@@ -169,18 +186,15 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Do the call
 	auto r = [&]() { if (user_fun) {
+		// std::cout << "Compile CallableVersion user_fun " << user_fun->type << std::endl;
 		user_fun->compile(c);
 		if (user_fun->type->is_closure() or unknown) {
-			if (user_fun->value.v) {
-				args.insert(args.begin(), user_fun->value);
-			} else {
-				args.insert(args.begin(), {user_fun->f, Type::any});
-			}
+			args.insert(args.begin(), user_fun->value);
 		}
 		if (flags & Module::THROWS) {
-			return c.insn_invoke(type->return_type(), args, user_fun->f);
+			return c.insn_invoke(type->return_type(), args, user_fun->fun);
 		} else {
-			return c.insn_call(type->return_type(), args, user_fun->f);
+			return c.insn_call(user_fun->fun, args);
 		}
 	} else if (symbol) {
 		if (flags & Module::THROWS) {
@@ -210,7 +224,7 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 			if (flags & Module::THROWS) {
 				return c.insn_invoke(type->return_type(), args, fun);
 			} else {
-				return c.insn_call(type->return_type(), args, fun);
+				return c.insn_call(fun, args);
 			}
 		}}();
 		if (!object) {

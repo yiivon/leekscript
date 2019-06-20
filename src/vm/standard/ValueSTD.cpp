@@ -641,7 +641,7 @@ LSValue* ValueSTD::op_swap_ptr(LSValue** x, LSValue** y) {
 
 Compiler::value ValueSTD::op_call(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = args[1];
-	return c.insn_call(fun.t->return_type(), {args[0]}, fun);
+	return c.insn_call(fun, {args[0]});
 }
 
 Compiler::value ValueSTD::copy(Compiler& c, std::vector<Compiler::value> args, bool) {

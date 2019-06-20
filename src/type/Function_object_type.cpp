@@ -8,7 +8,7 @@
 
 namespace ls {
 
-Function_object_type::Function_object_type(const Type* ret, const std::vector<const Type*>& args, bool closure, const Value* function) : Pointer_type(Type::structure("function", {
+Function_object_type::Function_object_type(const Type* ret, const std::vector<const Type*>& args, bool closure, const Value* function) : Pointer_type(Type::structure(closure ? "closure" : "function", {
 	Type::integer, // ?
 	Type::integer, // ?
 	Type::integer, // ?
@@ -45,11 +45,11 @@ int Function_object_type::distance(const Type* type) const {
 		for (size_t i = 0; i < _arguments.size(); ++i) {
 			d += _arguments.at(i)->distance(fun->arguments().at(i)->not_temporary());
 		}
-		int d2 = _closure ? 1 : 0;
+		int d2 = (_closure) ? 1 : 0;
 		if (d == 0) {
 			return d2 + _return_type->distance(fun->return_type());
 		} else {
-			return d2;
+			return d + d2;
 		}
 	}
 	return -1;

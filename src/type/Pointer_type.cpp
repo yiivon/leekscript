@@ -9,6 +9,24 @@ Pointer_type::Pointer_type(const Type* type, bool native) : Type(native), _type(
 const Type* Pointer_type::pointed() const {
 	return _type;
 }
+const Value* Pointer_type::function() const {
+	return _type->function();
+}
+const Type* Pointer_type::return_type() const {
+	return _type->return_type();
+}
+const Type* Pointer_type::argument(size_t i) const {
+	return _type->argument(i);
+}
+const std::vector<const Type*>& Pointer_type::arguments() const {
+	return _type->arguments();
+}
+bool Pointer_type::callable() const {
+	if (_type->is_function()) {
+		return true;
+	}
+	return false;
+}
 bool Pointer_type::operator == (const Type* type) const {
 	if (auto p = dynamic_cast<const Pointer_type*>(type)) {
 		return p->_type == _type;
@@ -20,6 +38,10 @@ int Pointer_type::distance(const Type* type) const {
 	auto p = dynamic_cast<const Pointer_type*>(type->folded);
 	if (_type->is_mpz()) {
 		if (p and p->pointed()->is_mpz()) return 0;
+		return _type->distance(type->folded);
+	}
+	if (_type->is_function()) {
+		if (p and p->pointed()->is_function()) return 0;
 		return _type->distance(type->folded);
 	}
 	if (p) {

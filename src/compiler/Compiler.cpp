@@ -25,6 +25,8 @@
 #include "llvm/Bitcode/BitcodeWriter.h"
 #include "resolver/File.hpp"
 #include "semantic/FunctionVersion.hpp"
+#include "../type/Function_type.hpp"
+#include "../type/Function_object_type.hpp"
 
 namespace ls {
 
@@ -135,25 +137,29 @@ Compiler::value Compiler::new_const_string(std::string s) const {
 	((Compiler*) this)->global_strings.insert({ s, str });
 	return str;
 }
-Compiler::value Compiler::new_null_pointer() const {
-	return { llvm::ConstantPointerNull::get((llvm::PointerType*) Type::any->llvm(*this)), Type::any };
+Compiler::value Compiler::new_null_pointer(const Type* type) const {
+	assert(type->is_pointer());
+	return { llvm::ConstantPointerNull::get((llvm::PointerType*) type->llvm(*this)), type };
 }
 Compiler::value Compiler::new_function(const Type* type) const {
-	return insn_call(type, {new_integer(0)}, "Function.new");
+	assert(dynamic_cast<const Function_type*>(type));
+	return insn_call(Type::fun_object(type->return_type(), type->arguments()), {new_integer(0)}, "Function.new");
 }
-Compiler::value Compiler::new_function(llvm::Function* f, const Type* type) const {
-	auto fun = insn_convert({ f, type }, Type::i8_ptr);
-	return insn_call(type, {fun}, "Function.new");
+Compiler::value Compiler::new_function(Compiler::value fun) const {
+	assert(fun.t->is_function() or fun.t->is_function_pointer());
+	auto f = insn_convert(fun, Type::i8_ptr);
+	return insn_call(Type::fun_object(fun.t->return_type(), fun.t->arguments()), {f}, "Function.new");
 }
 Compiler::value Compiler::new_function(std::string name, const Type* type) const {
+	assert(dynamic_cast<const Function_type*>(type));
 	auto ptr = get_symbol(name, type);
 	auto fun = insn_convert(ptr, Type::i8_ptr);
-	return insn_call(type, {fun}, "Function.new");
+	return insn_call(Type::fun_object(type->return_type(), type->arguments()), {fun}, "Function.new");
 }
-Compiler::value Compiler::new_closure(llvm::Function* f, const Type* type, std::vector<Compiler::value> captures) const {
+Compiler::value Compiler::new_closure(Compiler::value f, std::vector<Compiler::value> captures) const {
 	// std::cout << "new_closure " << captures << std::endl;
-	auto fun = insn_convert({ f, type }, Type::i8_ptr);
-	auto closure = insn_call(type, {fun}, "Function.new.1");
+	auto fun = insn_convert(f, Type::i8_ptr);
+	auto closure = insn_call(Type::closure(f.t->return_type(), f.t->arguments()), {fun}, "Function.new.1");
 	for (const auto& capture : captures) {
 		function_add_capture(closure, capture);
 	}
@@ -200,13 +206,19 @@ Compiler::value Compiler::create_entry(const std::string& name, const Type* type
 
 Compiler::value Compiler::get_symbol(const std::string& name, const Type* type) const {
 	// std::cout << "get_symbol(" << name << ", " << type << ")" << std::endl;
-	Compiler::value ptr = { program->module->getGlobalVariable(name), type };
-	if (!ptr.v) {
-		auto t = type->llvm(*this)->getPointerElementType();
-		ptr.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, name);
+	if (dynamic_cast<const Function_type*>(type)) {
+		auto fun = llvm::Function::Create((llvm::FunctionType*) type->llvm(*this), llvm::Function::ExternalLinkage, name, program->module);
+		return { fun, type };
+	} else {
+		assert(type->is_pointer());
+		Compiler::value ptr = { program->module->getGlobalVariable(name), type };
+		if (!ptr.v) {
+			auto t = type->llvm(*this)->getPointerElementType();
+			ptr.v = new llvm::GlobalVariable(*program->module, t, false, llvm::GlobalValue::ExternalLinkage, nullptr, name);
+		}
+		assert(ptr.v->getType() == type->llvm(*this));
+		return ptr;
 	}
-	assert(ptr.v->getType() == type->llvm(*this));
-	return ptr;
 }
 
 Compiler::value Compiler::to_int(Compiler::value v) const {
@@ -262,6 +274,19 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	// std::cout << "convert " << v.t << " " << t->is_primitive() << " to " << t << " " << t->is_polymorphic() << std::endl;
 	// assert(v.t->llvm(*this) == v.v->getType());
 	if (!v.v) { return v; }
+	if (v.t->is_function()) {
+		if (t == Type::i8_ptr) {
+			return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
+		} else if (t->is_function_object()) {
+			auto f = insn_convert(v, Type::i8_ptr);
+			return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
+		}
+	}
+	if (v.t->is_function_pointer() and t->is_function_object()) {
+		// std::cout << "function pointer to function object" << std::endl;
+		auto f = insn_convert(v, Type::i8_ptr);
+		return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
+	}
 	if (v.t->fold()->is_polymorphic() and (t->is_polymorphic() or t->is_pointer())) {
 		auto rt = t;
 		// TODO temporary
@@ -368,7 +393,9 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 		insn_delete_temporary(bp);
 		return r;
 	}
-	if (a_type->is_mpz_ptr() and b_type->is_integer()) {
+	if (a_type->is_pointer() and b_type->is_pointer()) {
+		return insn_pointer_eq(a, b);
+	} else if (a_type->is_mpz_ptr() and b_type->is_integer()) {
 		auto r = insn_eq(insn_call(Type::boolean, {a, b}, "Number._mpz_cmp_si"), new_integer(0));
 		insn_delete_temporary(a);
 		return r;
@@ -507,8 +534,8 @@ Compiler::value Compiler::insn_ge(Compiler::value a, Compiler::value b) const {
 
 Compiler::value Compiler::insn_mul(Compiler::value a, Compiler::value b) const {
 	// std::cout << "insn_mul " << a.t << " " << b.t << " " << b.v->getType() << std::endl;
-	assert_value_ok(a);
-	assert_value_ok(b);
+	assert(check_value(a));
+	assert(check_value(b));
 	auto a_type = a.t->fold();
 	auto b_type = b.t->fold();
 	if (a_type->is_polymorphic() or b_type->is_polymorphic()) {
@@ -588,8 +615,8 @@ Compiler::value Compiler::insn_lshr(Compiler::value a, Compiler::value b) const 
 }
 
 Compiler::value Compiler::insn_mod(Compiler::value a, Compiler::value b) const {
-	assert_value_ok(a);
-	assert_value_ok(b);
+	assert(check_value(a));
+	assert(check_value(b));
 	insn_if(insn_eq(to_real(b), new_real(0)), [&]() {
 		insn_delete_temporary(a);
 		insn_delete_temporary(b);
@@ -799,6 +826,7 @@ Compiler::value Compiler::insn_abs(Compiler::value x) const {
 }
 
 Compiler::value Compiler::insn_to_any(Compiler::value v) const {
+	// std::cout << "to_any " << v.t << std::endl;
 	if (v.t->is_polymorphic()) {
 		return v; // already any
 	}
@@ -814,6 +842,8 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		} else {
 			return insn_call(Type::any, {insn_load(v)}, "Number.new.2");
 		}
+	} else if (v.t->is_function_pointer()) {
+		return new_function(v);
 	} else {
 		return insn_call(Type::any, {to_real(v)}, "Number.new");
 	}
@@ -837,7 +867,7 @@ Compiler::value Compiler::insn_to_bool(Compiler::value v) const {
 		// Always take LSArray<int>, but the array is not necessarily of this type
 		return insn_call(Type::boolean, {v}, "Array.to_bool");
 	}
-	if (v.t->is_function()) {
+	if (v.t->is_function() or v.t->is_function_pointer()) {
 		return new_bool(true);
 	}
 	if (v.t->is_mpz_ptr()) {
@@ -952,10 +982,10 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 }
 
 Compiler::value Compiler::insn_get_capture(int index, const Type* type) const {
-	// std::cout << "get_capture " << fun << " " << F->arg_size() << " " << type << " " << F->arg_begin()->getType() << " " << index << std::endl;
-	Compiler::value arg0 = {F->arg_begin(), Type::any};
-	auto jit_index = new_integer(index);
-	return insn_call(Type::any, {arg0, jit_index}, "Function.get_capture");
+	// std::cout << "get_capture " << fun->type << " " << fun->captures.size() << " captures " << F->arg_size() << " " << type << " " << index << std::endl;
+	assert(fun->captures.size() > 0);
+	Compiler::value closure = { F->arg_begin(), Type::any };
+	return insn_call(Type::any, {closure, new_integer(index)}, "Function.get_capture");
 }
 
 Compiler::value Compiler::insn_get_capture_l(int index, const Type* type) const {
@@ -1065,7 +1095,7 @@ Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previ
 }
 
 Compiler::value Compiler::insn_move(Compiler::value v) const {
-	assert_value_ok(v);
+	assert(check_value(v));
 	if (v.t->fold()->must_manage_memory() and !v.t->temporary and !v.t->reference) {
 		// TODO avoid conversions
 		return insn_convert(insn_call(Type::any, {insn_convert(v, Type::any)}, "Value.move"), v.t->fold());
@@ -1543,7 +1573,7 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* ou
 
 	// For arrays, if begin iterator is 0, jump to end directly
 	if (container.t->is_array()) {
-		auto empty_array = insn_pointer_eq(it, new_null_pointer());
+		auto empty_array = insn_pointer_eq(it, new_null_pointer(it.t));
 		insn_if_new(empty_array, &end_label, &cond_label);
 	} else {
 		insn_branch(&cond_label);
@@ -1665,7 +1695,7 @@ void Compiler::insn_branch(label* l) const {
 }
 
 void Compiler::insn_return(Compiler::value v) const {
-	assert_value_ok(v);
+	assert(check_value(v));
 	assert(v.v != nullptr);
 	builder.CreateRet(v.v);
 }
@@ -1701,7 +1731,7 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 	std::vector<llvm::Value*> llvm_args;
 	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert_value_ok(args[i]);
+		assert(check_value(args[i]));
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t->llvm(*this));
 	}
@@ -1724,54 +1754,44 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 		if (return_type->llvm(*this) != lambda->getReturnType()) {
 			result.v = builder.CreatePointerCast(r, return_type->llvm(*this));
 		}
-		assert_value_ok(result);
+		assert(check_value(result));
 		return result;
 	}
 }
 
-Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, Compiler::value func) const {
-	if (func.t->is_closure()) {
-		args.insert(args.begin(), func);
-	}
+Compiler::value Compiler::insn_call(Compiler::value fun, std::vector<Compiler::value> args) const {
+	// std::cout << "insn_call " << fun.t << " " << fun.v->getType() << std::endl;
 	std::vector<llvm::Value*> llvm_args;
-	std::vector<llvm::Type*> llvm_types;
-	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert(args[i].t->llvm(*this) == args[i].v->getType());
-		llvm_args.push_back(args[i].v);
-		llvm_types.push_back(args[i].t->llvm(*this));
+	if (fun.t->is_closure()) {
+		args.insert(args.begin(), fun);
 	}
-	auto convert_type = Type::fun(return_type, {});
-	auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type->llvm(*this));
-	auto f = builder.CreateStructGEP(convert_type->llvm(*this)->getPointerElementType(), fun_to_ptr, 5);
-	auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
-	auto function = builder.CreateLoad(f);
-	auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
-	auto r = builder.CreateCall(fun_type, fun_conv, llvm_args);
-	if (return_type->is_void()) {
-		return {};
-	} else {
-		value result = { r, return_type };
-		assert(result.t->llvm(*this) == result.v->getType());
-		return result;
-	}
-}
-
-Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, llvm::Function* fun) const {
-	// std::cout << "insn_call " << fun->getName().str() << std::endl;
-	std::vector<llvm::Value*> llvm_args;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
 		assert(args[i].t->llvm(*this) == args[i].v->getType());
 		llvm_args.push_back(args[i].v);
 	}
-	auto r = builder.CreateCall(fun, llvm_args);
-	if (return_type->is_void()) {
-		return {};
+	auto r = [&]() { if (dynamic_cast<const Function_object_type*>(fun.t)) {
+		auto convert_type = Type::fun_object(fun.t->return_type(), {});
+		auto fun_to_ptr = builder.CreatePointerCast(fun.v, convert_type->llvm(*this));
+		auto f = builder.CreateStructGEP(convert_type->llvm(*this)->getPointerElementType(), fun_to_ptr, 5);
+		auto fun_type = (llvm::FunctionType*) Type::fun(fun.t->return_type(), fun.t->arguments())->llvm(*this);
+		auto function = builder.CreateLoad(f);
+		auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
+		return builder.CreateCall(fun_type, fun_conv, llvm_args);
 	} else {
-		value result = { r, return_type };
-		if (return_type->llvm(*this) != fun->getReturnType()) {
-			result.v = builder.CreatePointerCast(r, return_type->llvm(*this));
+		if (fun.t->is_pointer()) {
+			return builder.CreateCall(fun.v, llvm_args);
+		} else {
+			return builder.CreateCall((llvm::Function*) fun.v, llvm_args);
 		}
-		assert(result.t->llvm(*this) == result.v->getType());
+	}}();
+	if (fun.t->return_type()->is_void()) {
+		return {};
+	} else {
+		value result = { r, fun.t->return_type() };
+		// if (fun.t->return_type()->llvm(*this) != ((llvm::Function*) fun.v)->getReturnType()) {
+		// 	result.v = builder.CreatePointerCast(r, fun.t->return_type()->llvm(*this));
+		// }
+		assert(check_value(result));
 		return result;
 	}
 }
@@ -1779,7 +1799,7 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert(args[i].t->llvm(*this) == args[i].v->getType());
+		assert(check_value(args[i]));
 		llvm_args.push_back(args[i].v);
 	}
 	llvm::Function* lambda;
@@ -1819,41 +1839,24 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 		llvm_args.push_back(args[i].v);
 		llvm_types.push_back(args[i].t->llvm(*this));
 	}
-	auto convert_type = Type::fun(return_type, {});
-	auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type->llvm(*this));
-	auto f = builder.CreateStructGEP(convert_type->llvm(*this)->getPointerElementType(), fun_to_ptr, 5);
-	auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
-	auto function = builder.CreateLoad(f);
-	auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
 	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
-	auto r = builder.CreateInvoke(fun_conv, continueBlock, fun->get_landing_pad(*this), llvm_args);
+	auto r = [&]() { if (dynamic_cast<const Function_object_type*>(func.t)) {
+		auto convert_type = (const Type*) Type::fun(return_type, {});
+		auto fun_to_ptr = builder.CreatePointerCast(func.v, convert_type->llvm(*this));
+		auto f = builder.CreateStructGEP(convert_type->llvm(*this)->getPointerElementType(), fun_to_ptr, 5);
+		auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
+		auto function = builder.CreateLoad(f);
+		auto fun_conv = builder.CreatePointerCast(function, fun_type->getPointerTo());
+		return builder.CreateInvoke(fun_conv, continueBlock, fun->get_landing_pad(*this), llvm_args);
+	} else {
+		return builder.CreateInvoke(func.v, continueBlock, fun->get_landing_pad(*this), llvm_args);
+	}}();
 	builder.SetInsertPoint(continueBlock);
 	if (return_type->is_void()) {
 		return {};
 	} else {
 		value result = { r, return_type };
-		assert_value_ok(result);
-		return result;
-	}
-}
-
-Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compiler::value> args, llvm::Function* function) const {
-	std::vector<llvm::Value*> llvm_args;
-	for (unsigned i = 0, e = args.size(); i != e; ++i) {
-		assert(args[i].t->llvm(*this) == args[i].v->getType());
-		llvm_args.push_back(args[i].v);
-	}
-	auto continueBlock = llvm::BasicBlock::Create(getContext(), "cont", F);
-	auto r = builder.CreateInvoke(function, continueBlock, fun->get_landing_pad(*this), llvm_args);
-	builder.SetInsertPoint(continueBlock);
-	if (return_type->is_void()) {
-		return {};
-	} else {
-		value result = { r, return_type };
-		if (return_type->llvm(*this) != function->getReturnType()) {
-			result.v = builder.CreatePointerCast(r, return_type->llvm(*this));
-		}
-		assert_value_ok(result);
+		assert(check_value(result));
 		return result;
 	}
 }
@@ -1861,6 +1864,8 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture) const {
 	assert(fun.t->llvm(*this) == fun.v->getType());
 	assert(capture.t->llvm(*this) == capture.v->getType());
+	assert(fun.t->is_closure());
+	assert(capture.t->is_polymorphic());
 	// std::cout << "add capture " << capture.t << std::endl;
 	insn_call(Type::void_, {fun, capture}, "Function.add_capture");
 }
@@ -2113,7 +2118,7 @@ void Compiler::insn_check_args(std::vector<Compiler::value> args, std::vector<LS
 	// TODO too much cheks sometimes
 	for (size_t i = 0; i < args.size(); ++i) {
 		auto arg = args[i];
-		assert(arg.t->llvm(*this) == arg.v->getType());
+		assert(check_value(arg));
 		auto type = types[i];
 		if (arg.t->is_polymorphic() and type != arg.t->id() and type != 0) {
 			auto type = types[i];
@@ -2143,11 +2148,15 @@ void Compiler::print_mpz(__mpz_struct value) {
 	std::cout << buff;
 }
 
-void Compiler::assert_value_ok(value v) const {
+bool Compiler::check_value(value v) const {
 	if (v.t->is_void()) {
-		assert(v.v == nullptr);
+		return v.v == nullptr;
 	} else {
-		assert(v.t->llvm(*this) == v.v->getType());
+		auto r = v.t->llvm(*this) == v.v->getType();
+		if (!r) {
+			std::cout << BOLD << "Wrong value type" << END_COLOR <<  ": " << v.t << " " << C_GREY << "ls " << END_COLOR << v.t->llvm(*this) << C_GREY << " llvm " << END_COLOR << v.v->getType() << std::endl;
+		}
+		return r;
 	}
 }
 

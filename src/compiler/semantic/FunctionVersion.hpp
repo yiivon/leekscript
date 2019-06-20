@@ -15,9 +15,9 @@ class FunctionVersion {
 public:
 	Function* parent;
 	std::unique_ptr<Block> body;
-	const Function_type* type = nullptr;
+	const Type* type;
 	llvm::BasicBlock* block = nullptr;
-	llvm::Function* f = nullptr;
+	Compiler::value fun;
 	Compiler::value value;
 	const Type* placeholder_type = nullptr;
 	bool recursive = false;
@@ -36,7 +36,7 @@ public:
 	void analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 
 	void create_function(Compiler& c);
-	void compile(Compiler& c, bool create_value = false, bool compile_body = true);
+	Compiler::value compile(Compiler& c, bool compile_body = true);
 	void compile_return(const Compiler& c, Compiler::value v, bool delete_variables = false) const;
 	llvm::BasicBlock* get_landing_pad(const Compiler& c);
 };

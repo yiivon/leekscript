@@ -10,6 +10,7 @@ public:
 	std::vector<const Type*> types;
 	Compound_type(std::set<const Type*> types, const Type* folded);
 	virtual int id() const { return 0; }
+	virtual const Type* pointed() const override;
 	virtual const std::string getName() const override;
 	virtual const std::string getJsonName() const { return "compound"; }
 	virtual bool operator == (const Type*) const override;

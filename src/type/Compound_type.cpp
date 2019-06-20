@@ -7,6 +7,9 @@ Compound_type::Compound_type(std::set<const Type*> list, const Type* folded) {
 	for (const auto& t : list) types.push_back(t);
 	this->folded = folded;
 }
+const Type* Compound_type::pointed() const {
+	return Type::void_;
+}
 bool Compound_type::operator == (const Type* type) const {
 	return false;
 }

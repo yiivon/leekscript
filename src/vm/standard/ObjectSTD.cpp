@@ -41,7 +41,7 @@ ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 	method("copy", {
 		{Type::object, {Type::object}, ValueSTD::copy}
 	});
-	auto map_fun_type = Type::fun(Type::any, {Type::any});
+	auto map_fun_type = Type::fun_object(Type::any, {Type::any});
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
 		{Type::tmp_object, {Type::object, map_fun_type}, (void*) map_fun}

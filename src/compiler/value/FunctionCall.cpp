@@ -109,13 +109,13 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 			int offset = call.object ? 1 : 0;
 			for (size_t a = 0; a < arguments.size(); ++a) {
 				auto argument_type = callable_version->type->argument(a + offset);
-				if (argument_type->is_function()) {
+				if (argument_type->is_function() or argument_type->is_function_object()) {
 					arguments.at(a)->will_take(analyzer, argument_type->arguments(), 1);
 					arguments.at(a)->set_version(analyzer, argument_type->arguments(), 1);
 				}
 			}
 			if (callable_version->value) {
-				function_type =  function->will_take(analyzer, arguments_types, 1);
+				function_type = function->will_take(analyzer, arguments_types, 1);
 				function->set_version(analyzer, arguments_types, 1);
 				type = function_type->return_type();
 				auto vv = dynamic_cast<VariableValue*>(function.get());
@@ -279,7 +279,10 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		if (i < arguments.size()) {
 			types.push_back((LSValueType) callable_version->type->argument(i + offset)->id());
 			auto arg = arguments.at(i)->compile(c);
-			if (arguments.at(i)->type->is_primitive()) {
+			if (arg.t->is_function_pointer()) {
+				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset)));
+				arguments.at(i)->compile_end(c);
+			} else if (arguments.at(i)->type->is_primitive()) {
 				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset)));
 				arguments.at(i)->compile_end(c);
 			} else if (arguments.at(i)->type->is_polymorphic() and callable_version->type->argument(i + offset)->is_primitive()) {

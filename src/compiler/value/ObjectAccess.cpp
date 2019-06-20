@@ -10,6 +10,7 @@
 #include "../../vm/Module.hpp"
 #include "../../compiler/semantic/Callable.hpp"
 #include "../semantic/Variable.hpp"
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
@@ -57,7 +58,7 @@ void ObjectAccess::set_version(SemanticAnalyzer* analyzer, const std::vector<con
 				return a->operator == (b);
 			});
 			if (equals) {
-				type = Type::fun(m->type->return_type(), v, (const Value*) this);
+				type = Type::fun(m->type->return_type(), v, (const Value*) this)->pointer();
 				version = v;
 				return;
 			}
@@ -75,7 +76,7 @@ const Type* ObjectAccess::version_type(std::vector<const Type*> args) const {
 				return a->operator == (b);
 			});
 			if (equals) {
-				return Type::fun(m->type->return_type(), args, (const Value*) this);
+				return Type::fun(m->type->return_type(), args, (const Value*) this)->pointer();
 			}
 		}
 	}
@@ -129,7 +130,7 @@ Call ObjectAccess::get_callable(SemanticAnalyzer* analyzer, int argument_count) 
 	if (not object->type->is_class()) {
 		std::ostringstream oss;
 		oss << object.get() << "." << field->content;
-		auto type = Type::fun(Type::any, {Type::any, Type::any});
+		auto type = Type::fun_object(Type::any, {Type::any, Type::any});
 		return { new Callable { new CallableVersion { oss.str(), type, this, {}, {}, true, true } }, object.get() };
 	}
 	return { (Callable*) nullptr };
@@ -172,7 +173,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 				versions.insert({m->type->arguments(), std_class->name + "." + field->content + "." + std::to_string(i)});
 				i++;
 			}
-			type = Type::fun(method.versions[0]->type->return_type(), method.versions[0]->type->arguments(), (ObjectAccess*) this);
+			type = Type::fun(method.versions[0]->type->return_type(), method.versions[0]->type->arguments(), (ObjectAccess*) this)->pointer();
 			default_version_fun = std_class->name + "." + field->content;
 			class_method = true;
 			call = new Call { &method };
@@ -239,7 +240,7 @@ void ObjectAccess::analyze(SemanticAnalyzer* analyzer) {
 						if (!m->addr) continue;
 						versions.insert({m->type->arguments(), object_class->name + "." + field->content});
 					}
-					type = i->second.versions[0]->type;
+					type = i->second.versions[0]->type->pointer();
 					default_version_fun = object_class->name + "." + field->content;
 					class_method = true;
 				} else {
@@ -297,7 +298,7 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 	// Class method : 12.abs
 	if (class_method || class_field) {
 		const auto& fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
-		return c.new_function(fun, type);
+		return c.get_symbol(fun, Type::fun(type->return_type(), type->arguments())->pointer());
 	}
 
 	// Default : object.attr
@@ -309,7 +310,8 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<const Type*> version) const {
 	if (class_method) {
-		return c.new_function(versions.at(version), Type::fun());
+		// Method symbol like "Number.abs"
+		return c.get_symbol(versions.at(version), Type::fun()->pointer());
 	}
 	assert(false && "ObjectAccess::compile_version must be on a class method.");
 }

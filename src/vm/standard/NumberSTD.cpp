@@ -247,7 +247,7 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, {Type::any}, (void*) exp_ptr},
 		{Type::real, {Type::real}, exp_real},
 	});
-	auto fold_fun_type = Type::fun(Type::any, {Type::any, Type::integer});
+	auto fold_fun_type = Type::fun_object(Type::any, {Type::any, Type::integer});
 	auto fold_fun = &LSNumber::ls_fold<LSFunction*>;
 	method("fold", {
 		{Type::any, {Type::any, fold_fun_type, Type::any}, (void*) fold_fun},

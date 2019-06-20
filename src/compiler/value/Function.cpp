@@ -19,6 +19,7 @@
 #include "../semantic/FunctionVersion.hpp"
 #include "../semantic/Variable.hpp"
 #include "../../util/Util.hpp"
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
@@ -80,13 +81,9 @@ void Function::create_default_version(SemanticAnalyzer* analyzer) {
 		}
 		args.push_back(default_version->placeholder_type);
 	}
-	type = Type::fun(Type::void_, args, this);
+	type = Type::fun(Type::any, args, this);
 
-	if (captures.size() or is_closure) {
-		default_version->type = Type::closure(default_version->getReturnType(), args, this);
-	} else {
-		default_version->type = Type::fun(default_version->getReturnType(), args, this);
-	}
+	default_version->type = Type::fun(default_version->getReturnType(), args, this);
 }
 
 void Function::pre_analyze(SemanticAnalyzer* analyzer) {
@@ -148,7 +145,7 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
 	analyzed = true;
 	default_version->analyze(analyzer, type->arguments());
-	type = default_version->type;
+	type = Type::fun_object(default_version->getReturnType(), default_version->type->arguments());
 }
 
 void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
@@ -157,6 +154,7 @@ void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<cons
 	// assert(args.size() >= arguments.size());
 	auto version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
 	version->parent = this;
+	// version->type = Type::fun(Type::any, args);
 	versions.insert({args, version});
 
 	version->pre_analyze(analyzer, args);
@@ -191,15 +189,16 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 				auto ret = f->will_take(analyzer, args, level - 1);
 				analyzer->leave_function();
 
-				if (captures.size() or is_closure) {
+				if (v->captures.size()) {
 					v->type = Type::closure(f->version_type(args), v->type->arguments(), this);
 				} else {
-					v->type = Type::fun(f->version_type(args), v->type->arguments(), this);
+					v->type = Type::fun(f->version_type(args), v->type->arguments(), this)->pointer();
 				}
 				return ret;
 			}
 		}
 	}
+	return default_version->type;
 }
 
 void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
@@ -262,26 +261,16 @@ Call Function::get_callable(SemanticAnalyzer*, int argument_count) const {
 Compiler::value Function::compile(Compiler& c) const {
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
 	((Function*) this)->compiler = &c;
-
-	for (const auto& cap : captures) {
-		if (cap->scope == VarScope::LOCAL or cap->scope == VarScope::PARAMETER) {
-			c.convert_var_to_poly(cap->name);
-		}
-	}
-
-	if (generate_default_version) {
-		default_version->compile(c, true);
-		return default_version->value;
-	}
-	if (is_main_function) {
-		default_version->compile(c);
-		return default_version->value;
-	}
 	if (has_version) {
 		return compile_version(c, version);
 	}
-	// Returns a default function value
-	return c.new_function(default_version->type);
+	// std::cout << "Function compile " << generate_default_version << std::endl;
+	if (is_main_function or generate_default_version) {
+		return default_version->compile(c);
+	}
+	// Create a null pointer of the correct function type
+	// std::cout << "compile null function" << std::endl;
+	return c.new_null_pointer(default_version->type->pointer());
 }
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> args) const {
@@ -300,14 +289,12 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> 
 	}
 	auto version = versions.at(full_args);
 	// Compile version if needed
-	version->compile(c, true);
-	return version->value;
+	return version->compile(c);
 }
 
 Compiler::value Function::compile_default_version(Compiler& c) const {
 	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
-	default_version->compile(c, true, false);
-	return default_version->value;
+	return default_version->compile(c, false);
 }
 
 void Function::export_context(const Compiler& c) const {
@@ -325,6 +312,7 @@ std::unique_ptr<Value> Function::clone() const {
 	f->name = name;
 	f->default_version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
 	f->default_version->parent = f.get();
+	f->default_version->type = default_version->type;
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}

@@ -185,7 +185,7 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 	});
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
-		{Type::tmp_string, {Type::string, Type::fun(Type::string, {Type::string})}, (void*) map_fun},
+		{Type::tmp_string, {Type::string, Type::fun_object(Type::string, {Type::string})}, (void*) map_fun},
 	});
 	method("sort", {
 		{Type::tmp_string, {Type::string}, (void*) &LSString::sort},
@@ -458,7 +458,7 @@ Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> ar
 	auto result = c.create_and_add_var("r", args[2].t);
 	c.insn_store(result, c.insn_move_inc(args[2]));
 	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function.t->return_type(), {c.insn_load(result), v}, function);
+		auto r = c.insn_call(function, {c.insn_load(result), v});
 		c.insn_delete(c.insn_load(result));
 		c.insn_store(result, c.insn_move_inc(r));
 		return {};
