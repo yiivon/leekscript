@@ -22,6 +22,7 @@ public:
 	const Type* placeholder_type = nullptr;
 	bool recursive = false;
 	std::unordered_map<std::string, Variable*> arguments;
+	std::vector<Variable*> captures;
 
 	FunctionVersion(std::unique_ptr<Block> body);
 
@@ -30,6 +31,7 @@ public:
 	void print(std::ostream& os, int indent, bool debug, bool condensed) const;
 
 	const Type* getReturnType();
+	int capture(SemanticAnalyzer* analyzer, Variable* var);
 	void pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 	void analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 

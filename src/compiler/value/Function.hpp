@@ -25,7 +25,6 @@ public:
 	std::vector<std::unique_ptr<Value>> defaultValues;
 	Block* body;
 
-	std::vector<Variable*> captures;
 	bool function_added;
 	Function* parent;
 	bool is_main_function = false;
@@ -36,19 +35,16 @@ public:
 	bool analyzed = false;
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
-	bool is_closure = false;
 
 	Function(std::shared_ptr<Token> token);
 	virtual ~Function();
 
 	void addArgument(Token* token, Value* defaultValue);
-	int capture(SemanticAnalyzer* analyzer, Variable* var);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
 	virtual void pre_analyze(SemanticAnalyzer*) override;
-	void will_be_closure();
 	void create_default_version(SemanticAnalyzer* analyzer);
 	void analyse_default_method(SemanticAnalyzer* analyzer);
 	const Type* will_take(SemanticAnalyzer*, const std::vector<const Type*>&, int level) override;

@@ -64,10 +64,6 @@ Location Function::location() const {
 	return default_version->body->location();
 }
 
-void Function::will_be_closure() {
-	is_closure = true;
-}
-
 void Function::create_default_version(SemanticAnalyzer* analyzer) {
 	if (default_version) return;
 
@@ -228,31 +224,6 @@ void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const T
 			}
 		}
 	}
-}
-
-int Function::capture(SemanticAnalyzer* analyzer, Variable* var) {
-	// std::cout << "Function::capture " << var->name << std::endl;
-	// Function become a closure
-	default_version->type = Type::closure(default_version->type->return_type(), default_version->type->arguments(), this);
-	for (auto& version : versions) {
-		version.second->type = Type::closure(version.second->type->return_type(), version.second->type->arguments(), this);
-	}
-	type = Type::closure(type->return_type(), type->arguments(), this);
-
-	for (size_t i = 0; i < captures.size(); ++i) {
-		if (captures[i]->name == var->name)
-			return i;
-	}
-	var = new Variable(*var);
-	captures.push_back(var);
-
-	if (var->function->parent != parent) {
-		auto new_var = new Variable(*var);
-		new_var->index = parent->capture(analyzer, new_var);
-		var->scope = VarScope::CAPTURE;
-		var->parent_index = new_var->index;
-	}
-	return captures.size() - 1;
 }
 
 const Type* Function::version_type(std::vector<const Type*> version) const {

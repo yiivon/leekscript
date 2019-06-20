@@ -21,11 +21,11 @@ bool FunctionVersion::is_compiled() const {
 }
 
 void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	if (parent->captures.size() > 0) {
+	if (captures.size() > 0) {
 		os << "[";
-		for (unsigned c = 0; c < parent->captures.size(); ++c) {
+		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << parent->captures[c]->name << " " << parent->captures[c]->type;
+			os << captures[c]->name << " " << captures[c]->type;
 		}
 		os << "] ";
 	}
@@ -100,10 +100,9 @@ void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<
 }
 
 void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
-
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
-	parent->captures.clear();
+	captures.clear();
 	parent->current_version = this;
 	analyzer->enter_function((FunctionVersion*) this);
 
@@ -163,6 +162,30 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	analyzer->leave_function();
 
 	// std::cout << "function analysed body : " << version->type << std::endl;
+}
+
+int FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
+	// std::cout << "Function::capture " << var->name << std::endl;
+
+	type = Type::closure(getReturnType(), type->arguments());
+
+	for (size_t i = 0; i < captures.size(); ++i) {
+		if (captures[i]->name == var->name)
+			return i;
+	}
+	var = new Variable(*var);
+	captures.push_back(var);
+
+	if (var->function->parent != parent->parent) {
+		// std::cout << "Capture by parent" << std::endl;
+		auto new_var = new Variable(*var);
+		// std::cout << "parents versions " << parent->parent->versions.size() << std::endl;
+		auto parent_version = parent->parent->versions.size() ? parent->parent->versions.begin()->second : parent->parent->default_version;
+		new_var->index = parent_version->capture(analyzer, new_var);
+		var->scope = VarScope::CAPTURE;
+		var->parent_index = new_var->index;
+	}
+	return captures.size() - 1;
 }
 
 void FunctionVersion::create_function(Compiler& c) {
