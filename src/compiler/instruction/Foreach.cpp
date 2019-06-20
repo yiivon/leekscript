@@ -8,6 +8,7 @@
 namespace ls {
 
 Foreach::Foreach() {
+	wrapper_block = std::make_unique<Block>();
 	key_var = nullptr;
 	value_var = nullptr;
 }
@@ -44,7 +45,7 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 		type = Type::void_;
 		body->is_void = true;
 	}
-	analyzer->enter_block();
+	analyzer->enter_block(wrapper_block.get());
 
 	container->analyze(analyzer);
 	throws = container->throws;

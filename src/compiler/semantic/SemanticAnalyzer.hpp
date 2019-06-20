@@ -20,6 +20,7 @@ class SemanticAnalyzer;
 class Token;
 class Callable;
 class Call;
+class Block;
 
 class SemanticAnalyzer {
 public:
@@ -38,7 +39,7 @@ public:
 
 	void enter_function(FunctionVersion*);
 	void leave_function();
-	void enter_block();
+	void enter_block(Block* block);
 	void leave_block();
 	void add_function(Function*);
 	FunctionVersion* current_function() const;

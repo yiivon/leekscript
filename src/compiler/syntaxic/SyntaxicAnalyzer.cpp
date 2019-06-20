@@ -1148,13 +1148,13 @@ Instruction* SyntaxicAnalyzer::eatFor() {
 
 	if (!is_foreach) {
 
-		std::vector<std::unique_ptr<Instruction>> inits;
+		auto init_block = new Block(false);
 		while (true) {
 			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::IN || t->type == TokenType::OPEN_BRACE) {
 				break;
 			}
 			auto ins = eatInstruction();
-			if (ins) inits.emplace_back(ins);
+			if (ins) init_block->instructions.emplace_back(ins);
 		}
 
 		// for inits; condition; increments { body }
@@ -1162,7 +1162,7 @@ Instruction* SyntaxicAnalyzer::eatFor() {
 		f->token.reset(for_token);
 
 		// init
-		f->inits = std::move(inits);
+		f->init = std::unique_ptr<Block>(init_block);
 		eat(TokenType::SEMICOLON);
 
 		// condition
@@ -1175,16 +1175,18 @@ Instruction* SyntaxicAnalyzer::eatFor() {
 		}
 
 		// increment
+		auto increment_block = new Block(false);
 		while (true) {
 			if (t->type == TokenType::FINISHED || t->type == TokenType::SEMICOLON || t->type == TokenType::DO || t->type == TokenType::OPEN_BRACE || t->type == TokenType::CLOSING_PARENTHESIS) {
 				break;
 			}
-			Instruction* ins = eatInstruction();
-			if (ins) f->increments.emplace_back(ins);
+			auto ins = eatInstruction();
+			if (ins) increment_block->instructions.emplace_back(ins);
 			if (t->type == TokenType::COMMA) {
 				eat(TokenType::COMMA);
 			}
 		}
+		f->increment = std::unique_ptr<Block>(increment_block);
 
 		if (parenthesis)
 			eat(TokenType::CLOSING_PARENTHESIS);

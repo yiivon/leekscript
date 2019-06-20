@@ -15,9 +15,9 @@ class For : public Instruction {
 public:
 
 	std::shared_ptr<Token> token;
-	std::vector<std::unique_ptr<Instruction>> inits;
+	std::unique_ptr<Block> init;
 	std::unique_ptr<Value> condition;
-	std::vector<std::unique_ptr<Instruction>> increments;
+	std::unique_ptr<Block> increment;
 	std::unique_ptr<Block> body;
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;

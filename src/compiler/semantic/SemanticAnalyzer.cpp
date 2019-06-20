@@ -50,7 +50,7 @@ void SemanticAnalyzer::leave_function() {
 	loops.pop();
 }
 
-void SemanticAnalyzer::enter_block() {
+void SemanticAnalyzer::enter_block(Block* block) {
 	variables.back().push_back({});
 }
 

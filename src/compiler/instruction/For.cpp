@@ -7,7 +7,7 @@ namespace ls {
 
 void For::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "for";
-	for (const auto& ins : inits) {
+	for (const auto& ins : init->instructions) {
 		os << " ";
 		ins->print(os, indent + 1, debug, condensed);
 	}
@@ -16,7 +16,7 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 		condition->print(os, indent + 1, debug);
 	}
 	os << ";";
-	for (const auto& ins : increments) {
+	for (const auto& ins : increment->instructions) {
 		os << " ";
 		ins->print(os, indent + 1, debug, condensed);
 	}
@@ -42,11 +42,11 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 		body->is_void = true;
 	}
 
-	analyzer->enter_block();
+	analyzer->enter_block(init.get());
 	throws = false;
 
 	// Init
-	for (const auto& ins : inits) {
+	for (const auto& ins : init->instructions) {
 		ins->analyze(analyzer);
 		throws |= ins->throws;
 		if (ins->may_return) {
@@ -79,8 +79,8 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	analyzer->leave_loop();
 
 	// Increment
-	analyzer->enter_block();
-	for (const auto& ins : increments) {
+	analyzer->enter_block(increment.get());
+	for (const auto& ins : increment->instructions) {
 		ins->is_void = true;
 		ins->analyze(analyzer);
 		throws |= ins->throws;
@@ -116,7 +116,7 @@ Compiler::value For::compile(Compiler& c) const {
 	auto inc_label = c.insn_init_label("inc");
 
 	// Init
-	for (const auto& ins : inits) {
+	for (const auto& ins : init->instructions) {
 		ins->compile(c);
 		if (dynamic_cast<Return*>(ins.get())) {
 			auto return_v = c.clone(output_v);
@@ -153,7 +153,7 @@ Compiler::value For::compile(Compiler& c) const {
 	// Inc
 	c.insn_label(&inc_label);
 	c.enter_block();
-	for (auto& ins : increments) {
+	for (auto& ins : increment->instructions) {
 		auto r = ins->compile(c);
 		if (dynamic_cast<Return*>(ins.get())) {
 			return r;
@@ -172,13 +172,9 @@ Compiler::value For::compile(Compiler& c) const {
 std::unique_ptr<Instruction> For::clone() const {
 	auto f = std::make_unique<For>();
 	f->token = token;
-	for (const auto& i : inits) {
-		f->inits.push_back(i->clone());
-	}
+	f->init = unique_static_cast<Block>(init->clone());
 	f->condition = condition->clone();
-	for (const auto& i : increments) {
-		f->increments.push_back(i->clone());
-	}
+	f->increment = unique_static_cast<Block>(increment->clone());
 	f->body = unique_static_cast<Block>(body->clone());
 	return f;
 }

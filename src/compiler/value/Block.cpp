@@ -36,7 +36,7 @@ Location Block::location() const {
 }
 
 void Block::pre_analyze(SemanticAnalyzer* analyzer) {
-	analyzer->enter_block();
+	analyzer->enter_block(this);
 	for (const auto& instruction : instructions) {
 		instruction->pre_analyze(analyzer);
 	}
@@ -46,7 +46,7 @@ void Block::pre_analyze(SemanticAnalyzer* analyzer) {
 void Block::analyze(SemanticAnalyzer* analyzer) {
 	// std::cout << "Block::analyze() " << is_void << std::endl;
 
-	analyzer->enter_block();
+	analyzer->enter_block(this);
 	throws = false;
 
 	type = Type::void_;
