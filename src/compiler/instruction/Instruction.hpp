@@ -29,7 +29,7 @@ public:
 	virtual void pre_analyze(SemanticAnalyzer* analyzer);
 	virtual void analyze(SemanticAnalyzer* analyzer, const Type* type = Type::any) = 0;
 
-	virtual Compiler::value compile(Compiler&) const;
+	virtual Compiler::value compile(Compiler&) const = 0;
 
 	virtual std::unique_ptr<Instruction> clone() const = 0;
 
