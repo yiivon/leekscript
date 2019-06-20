@@ -14,7 +14,7 @@ Function_type::Function_type(const Type* ret, const std::vector<const Type*>& ar
 	Type::integer, // refs
 	Type::boolean, // native
 	Type::long_->pointer() // pointer to the function
-}), true), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
+}), true), _return_type(ret), _arguments(args), _function(function) {}
 
 bool Function_type::operator == (const Type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
@@ -31,11 +31,10 @@ int Function_type::distance(const Type* type) const {
 		for (size_t i = 0; i < _arguments.size(); ++i) {
 			d += _arguments.at(i)->distance(fun->_arguments.at(i)->not_temporary());
 		}
-		int d2 = (_closure != fun->_closure) ? 1 : 0;
 		if (d == 0) {
-			return d2 + _return_type->distance(fun->_return_type);
+			return _return_type->distance(fun->_return_type);
 		} else {
-			return d + d2;
+			return d;
 		}
 	}
 	return -1;
@@ -57,7 +56,7 @@ std::string Function_type::class_name() const {
 	return "Function";
 }
 std::ostream& Function_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << (_closure ? "closure(" : "fun(") << END_COLOR;
+	os << BLUE_BOLD << "fun(" << END_COLOR;
 	for (unsigned t = 0; t < _arguments.size(); ++t) {
 		if (t > 0) os << ", ";
 		os << _arguments[t];
@@ -66,7 +65,7 @@ std::ostream& Function_type::print(std::ostream& os) const {
 	return os;
 }
 Type* Function_type::clone() const {
-	return new Function_type { _return_type, _arguments, _closure, _function };
+	return new Function_type { _return_type, _arguments, false, _function };
 }
 
 }

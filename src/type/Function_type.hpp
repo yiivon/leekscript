@@ -11,11 +11,10 @@ class Value;
 class Function_type : public Pointer_type {
 	const Type* const _return_type;
 	std::vector<const Type*> _arguments;
-	bool _closure;
 	const Value* _function;
 public:
 	Function_type(const Type*, const std::vector<const Type*>&, bool closure = false, const Value* function = nullptr);
-	bool closure() const { return _closure; }
+	bool closure() const { return false; }
 	const Value* function() const override { return _function; }
 	virtual int id() const override { return 9; }
 	virtual const std::string getName() const override { return "function"; }
