@@ -1879,9 +1879,6 @@ void Compiler::enter_block() {
 void Compiler::leave_block(bool delete_vars) {
 	if (delete_vars) {
 		delete_variables_block(1);
-		// for (const auto& var : variables.back()) {
-		// 	remove_function_var(var.second);
-		// }
 	}
 	variables.pop_back();
 	if (!loops_blocks.empty()) {
