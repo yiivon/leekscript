@@ -11,6 +11,7 @@
 #include "Array_type.hpp"
 #include "Set_type.hpp"
 #include "Function_type.hpp"
+#include "Function_object_type.hpp"
 #include "Class_type.hpp"
 #include "Object_type.hpp"
 #include "Class_type.hpp"
@@ -49,6 +50,7 @@ const std::vector<const Type*> Type::empty_types;
 std::map<std::set<const Type*>, const Type*> Type::compound_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::closure_types;
+std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_object_types;
 std::unordered_map<const Type*, const Type*> Type::array_types;
 std::unordered_map<const Type*, const Type*> Type::const_array_types;
 std::unordered_map<const Type*, const Type*> Type::tmp_array_types;
@@ -448,6 +450,21 @@ const Type* Type::fun(const Type* return_type, std::vector<const Type*> argument
 		return type;
 	} else {
 		auto t = new Function_type(return_type, arguments, false, function);
+		t->constant = true;
+		return t;
+	}
+}
+const Type* Type::fun_object(const Type* return_type, std::vector<const Type*> arguments, const Value* function) {
+	if (function == nullptr) {
+		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
+		auto i = function_object_types.find(key);
+		if (i != function_object_types.end()) return i->second;
+		auto type = new Function_object_type(return_type, arguments);
+		type->constant = true;
+		function_object_types.insert({ key, type });
+		return type;
+	} else {
+		auto t = new Function_object_type(return_type, arguments, false, function);
 		t->constant = true;
 		return t;
 	}
