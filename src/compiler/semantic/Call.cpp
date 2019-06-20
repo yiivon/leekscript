@@ -3,9 +3,9 @@
 #include "Callable.hpp"
 #include "../../vm/Module.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
-#include "../../type/Function_type.hpp"
 #include "../value/LeftValue.hpp"
 #include "CallableVersion.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
