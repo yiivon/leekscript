@@ -38,6 +38,7 @@ public:
 	virtual const Type* element() const { return Type::any; }
 	virtual const Type* key() const { return Type::any; }
 	virtual const Type* member(int) const { return Type::any; }
+	virtual const Value* function() const { return nullptr; }
 
 	void toJson(std::ostream&) const;
 	virtual const std::string getJsonName() const = 0;

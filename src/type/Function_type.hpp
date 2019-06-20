@@ -16,7 +16,7 @@ class Function_type : public Pointer_type {
 public:
 	Function_type(const Type*, const std::vector<const Type*>&, bool closure = false, const Value* function = nullptr);
 	bool closure() const { return _closure; }
-	const Value* function() const { return _function; }
+	const Value* function() const override { return _function; }
 	virtual int id() const override { return 9; }
 	virtual const std::string getName() const override { return "function"; }
 	virtual const std::string getJsonName() const { return "function"; }

@@ -82,19 +82,16 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		// std::cout << "Resolved version = " << version_type << std::endl;
 	}
 
-	auto fun = dynamic_cast<const Function_type*>(type);
-	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
+	auto f = type->function();
 	bool valid = true;
 	for (size_t i = 0; i < new_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
 			const auto& a = arguments.at(i);
 			const auto implem_arg = new_version->type->argument(i);
-			if (auto fun = dynamic_cast<const Function_type*>(a)) {
-				if (fun->function() and implem_arg->is_function()) {
-					arguments.at(i) = ((Value*) fun->function())->will_take(analyzer, implem_arg->arguments(), 1);
-				}
+			if (a->function() and implem_arg->is_function()) {
+				arguments.at(i) = ((Function*) a->function())->will_take(analyzer, implem_arg->arguments(), 1);
 			}
-		} else if (f and f->defaultValues.at(i)) {
+		} else if (f and ((Function*) f)->defaultValues.at(i)) {
 			// Default argument
 		} else {
 			valid = false;
@@ -108,8 +105,8 @@ std::pair<int, const CallableVersion*> CallableVersion::get_score(SemanticAnalyz
 		for (size_t i = 0; i < new_version->type->arguments().size(); ++i) {
 			auto type = [&]() { if (i < arguments.size()) {
 				return arguments.at(i);
-			} else if (f and f->defaultValues.at(i)) {
-				return f->defaultValues.at(i)->type;
+			} else if (f and ((Function*) f)->defaultValues.at(i)) {
+				return ((Function*) f)->defaultValues.at(i)->type;
 			} else {
 				assert(false);
 			}}();
@@ -139,14 +136,11 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 		solve(analyzer, t1->element(), t2->element());
 	}
 	else if (t1->is_function() and t2->is_function()) {
-		auto fun = dynamic_cast<const Function_type*>(t2);
-		if (fun) {
-			auto f = (Value*) fun->function();
-			if (f) {
-				auto t1_args = build(t1)->arguments();
-				auto type = f->will_take(analyzer, t1_args, 1);
-				solve(analyzer, t1->return_type(), type->return_type());
-			}
+		auto f = t2->function();
+		if (f) {
+			auto t1_args = build(t1)->arguments();
+			auto type = ((Function*) f)->will_take(analyzer, t1_args, 1);
+			solve(analyzer, t1->return_type(), type->return_type());
 		}
 	}
 }
