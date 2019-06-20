@@ -17,7 +17,6 @@
 #include "VariableValue.hpp"
 #include "../semantic/Callable.hpp"
 #include "../semantic/FunctionVersion.hpp"
-#include "../../type/Function_type.hpp"
 #include "../semantic/Variable.hpp"
 
 namespace ls {
@@ -255,9 +254,7 @@ void FunctionCall::set_version(SemanticAnalyzer* analyzer, const std::vector<con
 const Type* FunctionCall::version_type(std::vector<const Type*> version) const {
 	// std::cout << "FunctionCall " << this << " ::version_type(" << version << ") " << std::endl;
 	auto function_type = function->version_type(function->version);
-	auto ft = dynamic_cast<const Function_type*>(function_type->return_type());
-	assert(ft != nullptr);
-	return ft->function()->version_type(version);
+	return function_type->return_type()->function()->version_type(version);
 }
 
 Compiler::value FunctionCall::compile(Compiler& c) const {
@@ -276,8 +273,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 
 	int offset = call.object ? 1 : 0;
-	auto fun = dynamic_cast<const Function_type*>(callable_version->type);
-	auto f = fun ? dynamic_cast<const Function*>(fun->function()) : nullptr;
+	auto f = callable_version->type->function();
 
 	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
@@ -293,9 +289,9 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 				args.push_back(arg);
 				arguments.at(i)->compile_end(c);
 			}
-		} else if (f and f->defaultValues.at(i)) {
-			types.push_back((LSValueType) f->defaultValues.at(i)->type->id());
-			args.push_back(f->defaultValues.at(i)->compile(c));
+		} else if (f and ((Function*) f)->defaultValues.at(i)) {
+			types.push_back((LSValueType) ((Function*) f)->defaultValues.at(i)->type->id());
+			args.push_back(((Function*) f)->defaultValues.at(i)->compile(c));
 		}
 	}
 	// Check arguments
