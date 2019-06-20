@@ -1778,15 +1778,17 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 
 Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
-	std::vector<llvm::Type*> llvm_types;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
 		assert(args[i].t->llvm(*this) == args[i].v->getType());
 		llvm_args.push_back(args[i].v);
-		llvm_types.push_back(args[i].t->llvm(*this));
 	}
 	llvm::Function* lambda;
 	auto p = mappings.find(name);
 	if (p == mappings.end()) {
+		std::vector<llvm::Type*> llvm_types;
+		for (unsigned i = 0, e = args.size(); i != e; ++i) {
+			llvm_types.push_back(args[i].t->llvm(*this));
+		}
 		auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
 		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
 		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
