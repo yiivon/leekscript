@@ -1,6 +1,5 @@
 #include "CallableVersion.hpp"
 #include "../../type/Template_type.hpp"
-#include "../../type/Function_type.hpp"
 #include "../../type/Meta_mul_type.hpp"
 #include "../../type/Meta_baseof_type.hpp"
 #include "../../vm/Module.hpp"
