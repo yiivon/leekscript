@@ -316,7 +316,7 @@ bool Type::is_array() const { return is_type<Array_type>(); }
 bool Type::is_set() const { return is_type<Set_type>(); }
 bool Type::is_interval() const { return folded == Type::interval or folded == Type::tmp_interval or folded == Type::const_interval; }
 bool Type::is_map() const { return is_type<Map_type>(); }
-bool Type::is_function() const { return is_type<Function_type>(); }
+bool Type::is_function() const { return is_type<Function_type>() or is_type<Function_object_type>(); }
 bool Type::is_object() const { return folded == Type::object; }
 bool Type::is_never() const { return folded == Type::never; }
 bool Type::is_null() const { return folded == Type::null; }
@@ -325,6 +325,9 @@ bool Type::is_pointer() const { return is_type<Pointer_type>(); }
 bool Type::is_struct() const { return is_type<Struct_type>(); }
 bool Type::is_closure() const {
 	if (auto f = dynamic_cast<const Function_type*>(folded)) {
+		return f->closure();
+	}
+	if (auto f = dynamic_cast<const Function_object_type*>(folded)) {
 		return f->closure();
 	}
 	return false;
@@ -338,6 +341,7 @@ bool Type::is_polymorphic() const {
 		or dynamic_cast<const Interval_type*>(folded) != nullptr
 		or dynamic_cast<const Any_type*>(folded) != nullptr
 		or dynamic_cast<const Function_type*>(folded) != nullptr
+		or dynamic_cast<const Function_object_type*>(folded) != nullptr
 		or dynamic_cast<const Class_type*>(folded) != nullptr
 		or dynamic_cast<const Object_type*>(folded) != nullptr
 		or dynamic_cast<const Null_type*>(folded) != nullptr;
@@ -474,12 +478,12 @@ const Type* Type::closure(const Type* return_type, std::vector<const Type*> argu
 		std::pair<const Type*, std::vector<const Type*>> key { return_type, arguments };
 		auto i = closure_types.find(key);
 		if (i != closure_types.end()) return i->second;
-		auto type = new Function_type(return_type, arguments, true);
+		auto type = new Function_object_type(return_type, arguments, true);
 		type->constant = true;
 		closure_types.insert({ key, type });
 		return type;
 	} else {
-		auto t = new Function_type(return_type, arguments, true, function);
+		auto t = new Function_object_type(return_type, arguments, true, function);
 		t->constant = true;
 		return t;
 	}
