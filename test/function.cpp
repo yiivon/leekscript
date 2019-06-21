@@ -135,7 +135,7 @@ void Test::test_functions() {
 	code("!(x -> x)").equals("false");
 
 	section("Function.operator ~");
-	code("~(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("~(x -> x)").error(ls::Error::NO_SUCH_OPERATOR, {"~", "x => x"});
 
 	section("Function.operator ++x");
 	code("++(x -> x)").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });

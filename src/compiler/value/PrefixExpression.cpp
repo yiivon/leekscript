@@ -38,6 +38,9 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 	throws = expression->throws;
 
 	if (operatorr->type == TokenType::TILDE) {
+		if (expression->type->is_function()) {
+			analyzer->add_error({ Error::Type::NO_SUCH_OPERATOR, location(), location(), { "~", expression->to_string() } });
+		}
 		type = expression->type;
 		throws |= expression->type->is_polymorphic();
 		if (type->is_bool()) {
