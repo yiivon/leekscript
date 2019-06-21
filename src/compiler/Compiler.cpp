@@ -393,9 +393,10 @@ Compiler::value Compiler::insn_eq(Compiler::value a, Compiler::value b) const {
 		insn_delete_temporary(bp);
 		return r;
 	}
-	if (a_type->is_pointer() and b_type->is_pointer()) {
-		return insn_pointer_eq(a, b);
-	} else if (a_type->is_pointer() or b_type->is_pointer()) {
+	if (a_type->is_pointer() or b_type->is_pointer()) {
+		if (a_type->is_pointer() and b_type->is_pointer()) {
+			return insn_pointer_eq(a, b);
+		}
 		return new_bool(false);
 	} else if (a_type->is_mpz_ptr() and b_type->is_integer()) {
 		auto r = insn_eq(insn_call(Type::boolean, {a, b}, "Number._mpz_cmp_si"), new_integer(0));
