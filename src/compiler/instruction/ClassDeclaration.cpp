@@ -17,6 +17,7 @@ void ClassDeclaration::print(std::ostream& os, int indent, bool debug, bool cond
 		os << std::endl;
 	}
 	os << tabs(indent) << "}";
+	if (debug) os << " " << type;
 }
 
 Location ClassDeclaration::location() const {
