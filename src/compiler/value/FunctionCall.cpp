@@ -217,7 +217,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 		}
 		a++;
 	}
-	if (function->type->is_function() and !arguments_valid) {
+	if ((function->type->is_function() or function->type->is_function_pointer()) and !arguments_valid) {
 		analyzer->add_error({Error::Type::WRONG_ARGUMENT_COUNT,	location(), location(), {
 			function->to_string(),
 			std::to_string(function->type->arguments().size()),
