@@ -43,13 +43,6 @@ const Type* build(const Type* type) {
 		}
 		return Type::fun(build(type->return_type()), args);
 	}
-	if (type->is_function_pointer()) {
-		std::vector<const Type*> args;
-		for (const auto& t : type->arguments()) {
-			args.push_back(build(t));
-		}
-		return Type::fun(build(type->return_type()), args)->pointer();
-	}
 	if (type->is_function_object()) {
 		std::vector<const Type*> args;
 		for (const auto& t : type->arguments()) {
