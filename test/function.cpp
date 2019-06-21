@@ -290,7 +290,7 @@ void Test::test_functions() {
 	code("let f = (x = [1, 2, 3]) -> x.size() f('bonjour')").equals("7");
 
 	section("Default arguments : expert");
-	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
+	DISABLED_code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
 	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
