@@ -7,6 +7,8 @@
 
 namespace ls {
 
+class Variable;
+
 class Block : public Value {
 public:
 
@@ -15,6 +17,7 @@ public:
 	bool temporary_mpz = false;
 	bool mpz_pointer = false;
 	bool was_reference = false;
+	std::unordered_map<std::string, Variable*> variables;
 
 	Block(bool is_function_block = false);
 

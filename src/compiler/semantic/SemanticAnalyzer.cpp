@@ -21,6 +21,7 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 
 	program->main->create_default_version(this);
 	enter_function(program->main->default_version);
+	enter_block(program->main->default_version->body.get());
 
 	// Add context variables
 	if (context) {
@@ -29,33 +30,35 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 			add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr);
 		}
 	}
+	leave_block();
+	leave_function();
+
 	program->analyze(this);
 	program->functions = functions;
 }
 
 void SemanticAnalyzer::enter_function(FunctionVersion* f) {
-
-	// Create function scope
-	variables.push_back({});
-	// First function block
-	variables.back().push_back({});
-
+	// std::cout << "enter function" << std::endl;
+	blocks.push_back({});
 	loops.push(0);
 	functions_stack.push_back(f);
 }
 
 void SemanticAnalyzer::leave_function() {
-	variables.pop_back();
+	// std::cout << "leave function" << std::endl;
+	blocks.pop_back();
 	functions_stack.pop_back();
 	loops.pop();
 }
 
 void SemanticAnalyzer::enter_block(Block* block) {
-	variables.back().push_back({});
+	// std::cout << "enter block" << std::endl;
+	blocks.back().push_back(block);
 }
 
 void SemanticAnalyzer::leave_block() {
-	variables.back().pop_back();
+	// std::cout << "leave block" << std::endl;
+	blocks.back().pop_back();
 }
 
 FunctionVersion* SemanticAnalyzer::current_function() const {
@@ -98,10 +101,10 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 		}
 
 		// Search in the local variables of the function
-		const auto& fvars = variables[f];
+		const auto& fvars = blocks[f];
 		int b = fvars.size() - 1;
 		while (b >= 0) {
-			const auto& vars = fvars[b];
+			const auto& vars = fvars[b]->variables;
 			auto i = vars.find(v->content);
 			if (i != vars.end()) {
 				return i->second;
@@ -114,23 +117,25 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 }
 
 Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value) {
+	// std::cout << "SemanticAnalyzer::add_var " << v->content << " " << type << std::endl;
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
-	if (variables.back().back().find(v->content) != variables.back().back().end()) {
+	if (blocks.back().back()->variables.find(v->content) != blocks.back().back()->variables.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
 	}
-	variables.back().back().insert(std::pair<std::string, Variable*>(
+	blocks.back().back()->variables.insert(std::pair<std::string, Variable*>(
 		v->content,
 		new Variable(v->content, VarScope::LOCAL, type, 0, value, current_function(), nullptr)
 	));
-	return variables.back().back().at(v->content);
+	return blocks.back().back()->variables.at(v->content);
 }
 
 Variable* SemanticAnalyzer::add_global_var(Token* v, const Type* type, Value* value) {
-	auto& vars = *variables.begin()->begin();
+	// std::cout << "blocks " << blocks.size() << std::endl;
+	auto& vars = (*blocks.begin()->begin())->variables;
 	if (vars.find(v->content) != vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;
@@ -160,9 +165,9 @@ Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 			params.at(var->name) = new_var;
 		}
 		// Search in the local variables of the function
-		int b = variables.at(f).size() - 1;
+		int b = blocks.at(f).size() - 1;
 		while (b >= 0) {
-			auto& vars = variables.at(f).at(b);
+			auto& vars = blocks.at(f).at(b)->variables;
 			if (vars.find(var->name) != vars.end()) {
 				vars.at(var->name) = new_var;
 			}

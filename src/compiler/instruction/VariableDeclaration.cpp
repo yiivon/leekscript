@@ -41,11 +41,15 @@ void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 		auto var = variables.at(0);
 		const auto& expr = expressions.at(0);
 		auto v = analyzer->add_global_var(var.get(), (const Type*) Type::fun(), expr.get());
-		vars.insert({var->content, v});
-	}
-	for (unsigned i = 0; i < variables.size(); ++i) {
-		if (expressions[i] != nullptr) {
-			expressions[i]->pre_analyze(analyzer);
+		vars.insert({ var->content, v });
+	} else {
+		for (unsigned i = 0; i < variables.size(); ++i) {
+			auto& var = variables.at(i);
+			auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i).get());
+			if (v) vars.insert({ var->content, v });
+			if (expressions[i] != nullptr) {
+				expressions[i]->pre_analyze(analyzer);
+			}
 		}
 	}
 }
@@ -55,14 +59,12 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	type = Type::void_;
 	throws = false;
 
-	vars.clear();
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i).get());
-		if (v == nullptr) {
-			continue;
-		}
-		if (expressions[i] != nullptr) {
+		auto vi = vars.find(var->content);
+		if (vi == vars.end()) continue;
+		auto v = vi->second;
+		if (expressions[i]) {
 			if (Function* f = dynamic_cast<Function*>(expressions[i].get())) {
 				f->name = var->content;
 			}

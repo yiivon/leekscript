@@ -87,17 +87,17 @@ void Function::create_default_version(SemanticAnalyzer* analyzer) {
 }
 
 void Function::pre_analyze(SemanticAnalyzer* analyzer) {
-	parent = analyzer->current_function()->parent;
+	// std::cout << "Function " << name << "::pre_analyze" << std::endl;
+	if (is_main_function) {
+		parent = this;
+	} else {
+		parent = analyzer->current_function()->parent;
+	}
 
 	create_default_version(analyzer);
 
-	// captures.clear();
 	current_version = default_version;
-	analyzer->enter_function(default_version);
-
 	default_version->pre_analyze(analyzer, default_version->type->arguments());
-
-	analyzer->leave_function();
 }
 
 /*
@@ -127,8 +127,6 @@ r2(12)
 r2('hello')
  */
 void Function::analyze(SemanticAnalyzer* analyzer) {
-
-	parent = analyzer->current_function()->parent;
 
 	if (!function_added) {
 		analyzer->add_function(this);

@@ -4,6 +4,7 @@
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSSet.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 
@@ -34,7 +35,14 @@ Location Foreach::location() const {
 }
 
 void Foreach::pre_analyze(SemanticAnalyzer* analyzer) {
+	analyzer->enter_block(wrapper_block.get());
+	container->pre_analyze(analyzer);
+	if (key != nullptr) {
+		key_var = analyzer->add_var(key.get(), Type::void_, nullptr);
+	}
+	value_var = analyzer->add_var(value.get(), Type::void_, nullptr);
 	body->pre_analyze(analyzer);
+	analyzer->leave_block();
 }
 
 void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
@@ -58,9 +66,9 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	key_type = container->type->key();
 	value_type = container->type->element();
 	if (key != nullptr) {
-		key_var = analyzer->add_var(key.get(), key_type, nullptr);
+		key_var->type = key_type;
 	}
-	value_var = analyzer->add_var(value.get(), value_type, nullptr);
+	value_var->type = value_type;
 
 	analyzer->enter_loop();
 	body->analyze(analyzer);

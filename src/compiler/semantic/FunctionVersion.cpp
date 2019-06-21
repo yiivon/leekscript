@@ -89,6 +89,8 @@ const Type* FunctionVersion::getReturnType() {
 }
 
 void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
+	if (pre_analyzed) return;
+	pre_analyzed = true;
 	analyzer->enter_function((FunctionVersion*) this);
 	// Create arguments
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
