@@ -274,6 +274,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	// std::cout << "convert " << v.t << " " << t->is_primitive() << " to " << t << " " << t->is_polymorphic() << std::endl;
 	// assert(v.t->llvm(*this) == v.v->getType());
 	if (!v.v) { return v; }
+	if (v.t == t) return v;
 	if (v.t->is_function()) {
 		if (t == Type::i8_ptr) {
 			return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
@@ -283,22 +284,17 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		}
 	}
 	if (v.t->is_function_pointer() and t->is_function_object()) {
-		// std::cout << "function pointer to function object" << std::endl;
 		auto f = insn_convert(v, Type::i8_ptr);
 		return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
 	}
-	if (v.t->fold()->is_polymorphic() and (t->is_polymorphic() or t->is_pointer())) {
-		auto rt = t;
-		// TODO temporary
-		return { builder.CreatePointerCast(v.v, t->llvm(*this)), rt };
+	if (v.t->fold()->is_polymorphic()) {
+		if (t->is_polymorphic() or t->is_pointer()) {
+			// TODO temporary
+			return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
+		}
+	} else if (t->is_polymorphic()) {
+		return insn_to_any(v);
 	}
-	if (not v.t->fold()->is_polymorphic() && t->is_polymorphic()) {
-		auto r = insn_to_any(v);
-		// TODO
-		// r = { builder.CreatePointerCast(r.v, t->llvm(*this)), t };
-		return r;
-	}
-	if (v.t->not_temporary() == t->not_temporary()) return v;
 	if (t->is_real()) {
 		return to_real(v, delete_temporary);
 	} else if (t->is_integer()) {
