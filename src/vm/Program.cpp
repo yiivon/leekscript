@@ -132,7 +132,7 @@ VM::Result Program::compile_ir_file(VM& vm) {
 	closure = (void*) cantFail(symbol.getAddress());
 
 	if (llvm_type->isPointerTy() and llvm_type->getPointerElementType()->isFunctionTy()) {
-		type = (const Type*) Type::fun();
+		type = Type::fun();
 	} else if (llvm_type->isPointerTy()) {
 		type = Type::any;
 	} else if (llvm_type->isStructTy()) {

@@ -148,11 +148,8 @@ void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
 
 void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 	// std::cout << "Function::create_version(" << args << ")" << std::endl;
-	// TODO should be ==
-	// assert(args.size() >= arguments.size());
 	auto version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
 	version->parent = this;
-	// version->type = Type::fun(Type::any, args);
 	versions.insert({args, version});
 
 	version->pre_analyze(analyzer, args);

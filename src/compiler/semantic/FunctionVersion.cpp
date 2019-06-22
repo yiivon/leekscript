@@ -111,7 +111,6 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	analyzer->enter_function((FunctionVersion*) this);
 
 	// Prepare the placeholder return type for recursive functions
-	// std::cout << "Create version type " << getReturnType() << std::endl;
 	type = Type::fun(getReturnType(), args, parent)->pointer();
 
 	std::vector<const Type*> arg_types;
@@ -208,7 +207,6 @@ void FunctionVersion::create_function(Compiler& c) {
 	auto function_type = Type::fun(type->return_type(), args);
 	auto fun_name = parent->is_main_function ? "main" : parent->name;
 	auto f = llvm::Function::Create((llvm::FunctionType*) function_type->llvm(c), llvm::Function::InternalLinkage, fun_name, c.program->module);
-	// std::cout << "f->getType() " << f->getType() << std::endl;
 	fun = { f, function_type->pointer() };
 	assert(c.check_value(fun));
 

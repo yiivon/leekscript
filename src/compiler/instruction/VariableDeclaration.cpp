@@ -40,7 +40,7 @@ void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
 		const auto& expr = expressions.at(0);
-		auto v = analyzer->add_global_var(var.get(), (const Type*) Type::fun(), expr.get());
+		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr.get());
 		vars.insert({ var->content, v });
 	} else {
 		for (unsigned i = 0; i < variables.size(); ++i) {
