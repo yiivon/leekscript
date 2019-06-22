@@ -33,6 +33,12 @@ Location Match::location() const {
 
 void Match::pre_analyze(ls::SemanticAnalyzer* analyzer) {
 	value->pre_analyze(analyzer);
+	for (auto& ps : pattern_list) {
+		for (Pattern& p : ps) {
+			if (p.begin) p.begin->pre_analyze(analyzer);
+			if (p.end) p.end->pre_analyze(analyzer);
+		}
+	}
 }
 
 void Match::analyze(ls::SemanticAnalyzer* analyzer) {
