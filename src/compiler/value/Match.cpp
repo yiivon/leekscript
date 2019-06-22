@@ -56,20 +56,6 @@ void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 			has_default = has_default || p.is_default();
 		}
 	}
-	if (any_pointer) {
-		for (auto& ps : pattern_list) {
-			for (Pattern& p : ps) {
-				if (p.begin) {
-					p.begin->analyze(analyzer);
-					throws |= p.begin->throws;
-				}
-				if (p.end) {
-					p.end->analyze(analyzer);
-					throws |= p.end->throws;
-				}
-			}
-		}
-	}
 	if (!has_default) {
 		// Return type is always pointer because in the default case, null is return
 		type = Type::any;
