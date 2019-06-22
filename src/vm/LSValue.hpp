@@ -149,6 +149,7 @@ public:
 
 	static void free(const LSValue*);
 	static void delete_ref(LSValue* value);
+	static void delete_ref2(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
 	static void delete_not_temporary(LSValue* value);
 };
@@ -192,6 +193,13 @@ inline LSValue* LSValue::move_inc() {
 inline void LSValue::delete_ref(LSValue* value) {
 	if (value->native) return;
 	if (value->refs == 0 || --value->refs == 0) {
+		delete value;
+	}
+}
+inline void LSValue::delete_ref2(LSValue* value) {
+	if (value->native) return;
+	if (value->refs == 0) return;
+	if (--value->refs == 0) {
 		delete value;
 	}
 }

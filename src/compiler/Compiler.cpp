@@ -938,15 +938,15 @@ void Compiler::insn_delete(Compiler::value v) const {
 	// std::cout << "insn_delete " << v.t << " " << v.v->getType() << std::endl;
 	assert(v.t->llvm(*this) == v.v->getType());
 	if (v.t->must_manage_memory()) {
-		// insn_call(Type::void_, {v}, "Value.dec_refs");
-		insn_if_not(insn_native(v), [&]() {
-			auto refs = insn_refs(v);
-			insn_if(insn_refs(v), [&]() {
-				insn_if_not(insn_dec_refs(v, refs), [&]() {
-					insn_call(Type::void_, {v}, "Value.delete");
-				});
-			});
-		});
+		insn_call(Type::void_, {v}, "Value.delete_ref");
+		// insn_if_not(insn_native(v), [&]() {
+		// 	auto refs = insn_refs(v);
+		// 	insn_if(insn_refs(v), [&]() {
+		// 		insn_if_not(insn_dec_refs(v, refs), [&]() {
+		// 			insn_call(Type::void_, {v}, "Value.delete");
+		// 		});
+		// 	});
+		// });
 	} else if (v.t->is_mpz_ptr()) {
 		insn_delete_mpz(v);
 	}
