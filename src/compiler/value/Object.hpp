@@ -10,7 +10,7 @@ namespace ls {
 class Object : public Value {
 public:
 
-	std::vector<std::shared_ptr<Token>> keys;
+	std::vector<Token*> keys;
 	std::vector<std::unique_ptr<Value>> values;
 
 	Object();

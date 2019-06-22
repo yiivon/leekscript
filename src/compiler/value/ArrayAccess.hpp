@@ -15,8 +15,8 @@ public:
 	std::unique_ptr<Value> array;
 	std::unique_ptr<Value> key;
 	std::unique_ptr<Value> key2;
-	std::shared_ptr<Token> open_bracket;
-	std::shared_ptr<Token> close_bracket;
+	Token* open_bracket;
+	Token* close_bracket;
 	const Type* map_key_type = Type::void_;
 	Compiler::value compiled_array;
 

@@ -117,7 +117,6 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 }
 
 Variable* SemanticAnalyzer::add_var(Token* v, const Type* type, Value* value) {
-	// std::cout << "SemanticAnalyzer::add_var " << v->content << " " << type << std::endl;
 	if (vm->internal_vars.find(v->content) != vm->internal_vars.end()) {
 		add_error({Error::Type::VARIABLE_ALREADY_DEFINED, v->location, v->location, {v->content}});
 		return nullptr;

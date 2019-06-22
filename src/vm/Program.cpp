@@ -55,8 +55,8 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 		return result;
 	}
 
-	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
-	this->main = std::make_unique<Function>(token);
+	auto token = new Token(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	this->main = std::make_unique<Function>(std::move(token));
 	this->main->body = block;
 	this->main->is_main_function = true;
 
@@ -198,14 +198,14 @@ Variable* Program::get_operator(const std::string& name) {
 	auto o = std::find(ops.begin(), ops.end(), name);
 	if (o == ops.end()) return nullptr;
 
-	auto token = std::make_shared<Token>(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	auto token = new Token(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
 	auto f = new Function(token);
 	f->addArgument(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"), nullptr);
 	f->addArgument(new Token(TokenType::IDENT, main_file,2, 1, 2, "y"), nullptr);
 	f->body = new Block(true);
 	auto ex = std::make_unique<Expression>();
-	ex->v1 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 0, 1, 0, "x"));
-	ex->v2 = std::make_unique<VariableValue>(std::make_shared<Token>(TokenType::IDENT, main_file, 2, 1, 2, "y"));
+	ex->v1 = std::make_unique<VariableValue>(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"));
+	ex->v2 = std::make_unique<VariableValue>(new Token(TokenType::IDENT, main_file, 2, 1, 2, "y"));
 	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
 	f->body->instructions.emplace_back(new ExpressionInstruction(std::move(ex)));
 	auto type = Type::fun(Type::any, {Type::any, Type::any});

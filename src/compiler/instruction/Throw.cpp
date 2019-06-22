@@ -5,7 +5,7 @@
 
 namespace ls {
 
-Throw::Throw(std::shared_ptr<Token> token, std::unique_ptr<Value> v) : token(token), expression(std::move(v)) {
+Throw::Throw(Token* token, std::unique_ptr<Value> v) : token(token), expression(std::move(v)) {
 	throws = true;
 }
 

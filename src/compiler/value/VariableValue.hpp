@@ -16,7 +16,7 @@ class VariableValue : public LeftValue {
 public:
 
 	std::string name;
-	std::shared_ptr<Token> token;
+	Token* token;
 	Variable* var;
 	int capture_index = 0;
 	VarScope scope;
@@ -24,7 +24,7 @@ public:
 	bool class_method = false;
 	LSFunction* ls_function = nullptr;
 
-	VariableValue(std::shared_ptr<Token> token);
+	VariableValue(Token* token);
 
 	virtual bool isLeftValue() const override;
 

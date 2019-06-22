@@ -10,7 +10,7 @@ namespace ls {
 class Break : public Instruction {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 	int deepness;
 
 	Break();

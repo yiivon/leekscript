@@ -20,8 +20,8 @@ public:
 	std::string name;
 	std::string internal_name;
 	bool lambda = false;
-	std::shared_ptr<Token> token;
-	std::vector<std::shared_ptr<Token>> arguments;
+	Token* token;
+	std::vector<Token*> arguments;
 	std::vector<std::unique_ptr<Value>> defaultValues;
 	Block* body;
 
@@ -36,7 +36,7 @@ public:
 	Compiler* compiler = nullptr;
 	int default_values_count = 0;
 
-	Function(std::shared_ptr<Token> token);
+	Function(Token* token);
 	virtual ~Function();
 
 	void addArgument(Token* token, Value* defaultValue);

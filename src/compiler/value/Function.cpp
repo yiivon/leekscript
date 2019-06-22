@@ -25,7 +25,7 @@ namespace ls {
 
 int Function::id_counter = 0;
 
-Function::Function(std::shared_ptr<Token> token) : token(token) {
+Function::Function(Token* token) : token(token) {
 	parent = nullptr;
 	constant = true;
 	function_added = false;
@@ -42,7 +42,7 @@ Function::~Function() {
 }
 
 void Function::addArgument(Token* name, Value* defaultValue) {
-	arguments.push_back(std::unique_ptr<Token> { name });
+	arguments.push_back(name);
 	defaultValues.emplace_back(defaultValue);
 	if (defaultValue) default_values_count++;
 }

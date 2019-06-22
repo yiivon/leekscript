@@ -40,12 +40,12 @@ void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) {
 		auto var = variables.at(0);
 		const auto& expr = expressions.at(0);
-		auto v = analyzer->add_global_var(var.get(), Type::fun(), expr.get());
+		auto v = analyzer->add_global_var(var, Type::fun(), expr.get());
 		vars.insert({ var->content, v });
 	} else {
 		for (unsigned i = 0; i < variables.size(); ++i) {
 			auto& var = variables.at(i);
-			auto v = analyzer->add_var(var.get(), Type::any, expressions.at(i).get());
+			auto v = analyzer->add_var(var, Type::any, expressions.at(i).get());
 			if (v) vars.insert({ var->content, v });
 			if (expressions[i] != nullptr) {
 				expressions[i]->pre_analyze(analyzer);
@@ -72,7 +72,7 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 			v->value = expressions[i].get();
 			throws |= expressions[i]->throws;
 		} else {
-			v->value = new Nulll(std::shared_ptr<Token>(nullptr));
+			v->value = new Nulll(nullptr);
 		}
 		if (v->value->type->is_void()) {
 			analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});

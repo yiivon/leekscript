@@ -10,9 +10,9 @@ namespace ls {
 class Nulll : public Value {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 
-	Nulll(std::shared_ptr<Token> token);
+	Nulll(Token* token);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

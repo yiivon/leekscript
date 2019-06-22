@@ -15,7 +15,7 @@ class ObjectAccess : public LeftValue {
 public:
 
 	std::unique_ptr<Value> object;
-	std::shared_ptr<Token> field;
+	Token* field;
 	std::string object_class_name;
 	std::string class_name;
 	bool class_method = false;
@@ -29,7 +29,7 @@ public:
 	const Type* field_type;
 	LSFunction* ls_function = nullptr;
 
-	ObjectAccess(std::shared_ptr<Token> token);
+	ObjectAccess(Token* token);
 	virtual ~ObjectAccess();
 
 	virtual bool isLeftValue() const override;

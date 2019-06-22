@@ -13,7 +13,7 @@ public:
 
 	std::unique_ptr<Value> condition;
 	std::unique_ptr<Block> body;
-	std::shared_ptr<Token> token;
+	Token* token;
 
 	While();
 

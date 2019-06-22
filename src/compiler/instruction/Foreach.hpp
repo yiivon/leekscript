@@ -11,8 +11,8 @@ namespace ls {
 class Foreach : public Instruction {
 public:
 	std::unique_ptr<Block> wrapper_block;
-	std::shared_ptr<Token> key;
-	std::shared_ptr<Token> value;
+	Token* key = nullptr;
+	Token* value = nullptr;
 	std::unique_ptr<Value> container;
 	std::unique_ptr<Block> body;
 	

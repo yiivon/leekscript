@@ -12,13 +12,13 @@ class Variable;
 class VariableDeclaration : public Instruction {
 public:
 
+	Token* keyword;
 	bool global;
 	bool constant;
 	bool function;
-	std::vector<std::shared_ptr<Token>> variables;
+	std::vector<Token*> variables;
 	std::vector<std::unique_ptr<Value>> expressions;
 	std::map<std::string, Variable*> vars;
-	std::shared_ptr<Token> keyword;
 
 	VariableDeclaration();
 

@@ -14,7 +14,7 @@
 
 namespace ls {
 
-VariableValue::VariableValue(std::shared_ptr<Token> token) : token(token) {
+VariableValue::VariableValue(Token* token) : token(token) {
 	this->name = token->content;
 	this->var = nullptr;
 	constant = false;
@@ -134,7 +134,7 @@ Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 }
 
 void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
-	var = analyzer->get_var(token.get());
+	var = analyzer->get_var(token);
 	if (var != nullptr) {
 		// std::cout << "pre analyze var " << var->name << " " << (void*) var->function << " <=> " << (void*) analyzer->current_function() << " " << (int) var->scope << std::endl;
 		if (var->scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
@@ -148,7 +148,7 @@ void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 
-	var = analyzer->get_var(token.get());
+	var = analyzer->get_var(token);
 
 	if (var != nullptr) {
 		auto function_object = dynamic_cast<Function*>(var->value);

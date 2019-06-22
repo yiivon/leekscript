@@ -2,7 +2,6 @@
 #define CLASSDECLARATION_HPP
 
 #include <vector>
-
 #include "Instruction.hpp"
 #include "VariableDeclaration.hpp"
 #include "../lexical/Ident.hpp"
@@ -14,12 +13,12 @@ class LSClass;
 class ClassDeclaration : public Instruction {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 	std::string name;
 	std::vector<std::unique_ptr<VariableDeclaration>> fields;
 	Variable* var;
 
-	ClassDeclaration(std::shared_ptr<Token> token);
+	ClassDeclaration(Token* token);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;

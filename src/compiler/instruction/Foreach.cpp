@@ -38,9 +38,9 @@ void Foreach::pre_analyze(SemanticAnalyzer* analyzer) {
 	analyzer->enter_block(wrapper_block.get());
 	container->pre_analyze(analyzer);
 	if (key != nullptr) {
-		key_var = analyzer->add_var(key.get(), Type::void_, nullptr);
+		key_var = analyzer->add_var(key, Type::void_, nullptr);
 	}
-	value_var = analyzer->add_var(value.get(), Type::void_, nullptr);
+	value_var = analyzer->add_var(value, Type::void_, nullptr);
 	body->pre_analyze(analyzer);
 	analyzer->leave_block();
 }

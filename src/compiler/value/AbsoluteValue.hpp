@@ -11,8 +11,8 @@ class AbsoluteValue : public Value {
 public:
 
 	std::unique_ptr<Value> expression;
-	std::shared_ptr<Token> open_pipe;
-	std::shared_ptr<Token> close_pipe;
+	Token* open_pipe;
+	Token* close_pipe;
 
 	AbsoluteValue();
 

@@ -5,7 +5,7 @@
 
 namespace ls {
 
-Number::Number(std::string value, std::shared_ptr<Token> token) : token(token), value(value) {
+Number::Number(std::string value, Token* token) : token(token), value(value) {
 	constant = true;
 }
 

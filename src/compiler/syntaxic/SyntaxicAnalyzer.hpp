@@ -30,7 +30,6 @@ class Continue;
 class SyntaxicAnalyzer {
 
 	Resolver* resolver;
-	std::vector<Token*> tokens;
 	Token* t;
 	int last_character = 0;
 	size_t last_line = 0;

@@ -11,8 +11,8 @@ namespace ls {
 class Interval : public Value {
 public:
 
-	std::shared_ptr<Token> opening_bracket;
-	std::shared_ptr<Token> closing_bracket;
+	Token* opening_bracket;
+	Token* closing_bracket;
 	std::unique_ptr<Value> start;
 	std::unique_ptr<Value> end;
 

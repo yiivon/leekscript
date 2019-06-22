@@ -21,7 +21,7 @@
 
 namespace ls {
 
-FunctionCall::FunctionCall(std::shared_ptr<Token> t) : token(t) {
+FunctionCall::FunctionCall(Token* t) : token(t) {
 	std_func = nullptr;
 	this_ptr = nullptr;
 	constant = false;

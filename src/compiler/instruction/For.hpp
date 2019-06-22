@@ -14,7 +14,7 @@ class Variable;
 class For : public Instruction {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 	std::unique_ptr<Block> init;
 	std::unique_ptr<Value> condition;
 	std::unique_ptr<Block> increment;

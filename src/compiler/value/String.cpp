@@ -5,7 +5,7 @@
 
 namespace ls {
 
-String::String(std::shared_ptr<Token> token) : token(token) {
+String::String(Token* token) : token(token) {
 	type = Type::tmp_string;
 	constant = true;
 }

@@ -14,10 +14,10 @@ class CallableVersion;
 
 class FunctionCall : public Value {
 public:
-	std::shared_ptr<Token> token;
+	Token* token;
 	std::unique_ptr<Value> function;
 	std::vector<std::unique_ptr<Value>> arguments;
-	std::shared_ptr<Token> closing_parenthesis;
+	Token* closing_parenthesis;
 	bool is_native = false;
 	const Type* return_type;
 	void* std_func;
@@ -32,7 +32,7 @@ public:
 	Call call;
 	const CallableVersion* callable_version;
 
-	FunctionCall(std::shared_ptr<Token> t);
+	FunctionCall(Token* t);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
