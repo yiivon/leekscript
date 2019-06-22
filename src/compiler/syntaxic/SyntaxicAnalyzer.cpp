@@ -55,11 +55,10 @@ Block* SyntaxicAnalyzer::analyze(File* file) {
 	this->file = file;
 
 	// Call the lexical analyzer to parse tokens
-	auto tokens = LexicalAnalyzer().analyze(file);
+	file->tokens = LexicalAnalyzer().analyze(file);
 
-	this->tokens = tokens;
-	this->t = tokens.at(0);
-	this->nt = tokens.size() > 1 ? tokens.at(1) : nullptr;
+	this->t = &file->tokens.at(0);
+	this->nt = file->tokens.size() > 1 ? &file->tokens.at(1) : nullptr;
 	this->i = 0;
 
 	return eatMain(file);
@@ -72,7 +71,6 @@ Block* SyntaxicAnalyzer::eatMain(File* file) {
 	while (true) {
 		if (t->type == TokenType::FINISHED) {
 			eat();
-			delete t;
 			break;
 		} else if (t->type == TokenType::SEMICOLON) {
 			eat();
@@ -390,7 +388,7 @@ int SyntaxicAnalyzer::findNextClosingParenthesis() {
 int SyntaxicAnalyzer::findNextArrow() {
 	int p = i;
 	while (true) {
-		auto t = tokens.at(p++)->type;
+		auto t = file->tokens.at(p++).type;
 		if (t == TokenType::FINISHED) return -1;
 		if (t == TokenType::ARROW) break;
 	}
@@ -400,7 +398,7 @@ int SyntaxicAnalyzer::findNextArrow() {
 int SyntaxicAnalyzer::findNextColon() {
 	int p = i;
 	while (true) {
-		auto t = tokens.at(p++)->type;
+		auto t = file->tokens.at(p++).type;
 		if (t == TokenType::FINISHED) return -1;
 		if (t == TokenType::COLON) break;
 	}
@@ -408,11 +406,11 @@ int SyntaxicAnalyzer::findNextColon() {
 }
 
 void SyntaxicAnalyzer::splitCurrentOrInTwoPipes() {
-	tokens.erase(tokens.begin() + i);
-	tokens.insert(tokens.begin() + i, new Token(TokenType::PIPE, file, t->location.end.raw, t->location.start.line, t->location.end.column, "|"));
-	tokens.insert(tokens.begin() + i + 1, new Token(TokenType::PIPE, file, t->location.end.raw + 1, t->location.start.line, t->location.end.column + 1, "|"));
-	t = tokens.at(i);
-	nt = tokens.at(i + 1);
+	file->tokens.erase(file->tokens.begin() + i);
+	file->tokens.insert(file->tokens.begin() + i, { TokenType::PIPE, file, t->location.end.raw, t->location.start.line, t->location.end.column, "|" });
+	file->tokens.insert(file->tokens.begin() + i + 1, { TokenType::PIPE, file, t->location.end.raw + 1, t->location.start.line, t->location.end.column + 1, "|" });
+	t = &file->tokens.at(i);
+	nt = &file->tokens.at(i + 1);
 }
 
 Value* SyntaxicAnalyzer::eatSimpleExpression(bool pipe_opened, bool set_opened, bool comma_list, Value* initial) {
@@ -477,7 +475,6 @@ Value* SyntaxicAnalyzer::eatSimpleExpression(bool pipe_opened, bool set_opened, 
 					auto plus = eat_get(); // eat the +
 
 					if (beginingOfExpression(t->type)) {
-						delete plus;
 						e = eatExpression(pipe_opened);
 					} else {
 						// No expression after the +, so it's the variable '+'
@@ -795,7 +792,6 @@ Value* SyntaxicAnalyzer::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			eat();
 			if (t->type == TokenType::ARROW) {
 				// (var = <ex>) ->  [lambda]
-				delete eq;
 				return eatLambdaContinue(false, ident, ex, comma_list);
 			} else {
 				// (var = <ex>) <token ?>	[expression]
@@ -808,7 +804,6 @@ Value* SyntaxicAnalyzer::eatLambdaOrParenthesisExpression(bool pipe_opened, bool
 			}
 		} else if (t->type == TokenType::COMMA or t->type == TokenType::ARROW) {
 			// var = <ex> ,|->  [lambda]
-			delete eq;
 			return eatLambdaContinue(parenthesis, ident, ex, comma_list);
 		} else {
 			// var = <ex> <?>
@@ -1337,11 +1332,7 @@ void SyntaxicAnalyzer::eat() {
 }
 
 void SyntaxicAnalyzer::eat(TokenType type) {
-	auto old = t;
 	eat_get(type);
-	if (old != nullptr) {
-		delete old;
-	}
 }
 
 Token* SyntaxicAnalyzer::eat_get() {
@@ -1355,12 +1346,12 @@ Token* SyntaxicAnalyzer::eat_get(TokenType type) {
 	last_character = t->location.start.column;
 	last_line = t->location.start.line;
 	last_size = t->size;
-	if (i < tokens.size() - 1) {
-		t = tokens[++i];
+	if (i < file->tokens.size() - 1) {
+		t = &file->tokens[++i];
 	} else {
 		t = new Token(TokenType::FINISHED, file, 0, 0, 0, "");
 	}
-	nt = i < tokens.size() - 1 ? tokens[i + 1] : nullptr;
+	nt = i < file->tokens.size() - 1 ? &file->tokens[i + 1] : nullptr;
 
 	if (type != TokenType::DONT_CARE && eaten->type != type) {
 		file->errors.push_back(Error(Error::Type::UNEXPECTED_TOKEN, eaten, {eaten->content}));
@@ -1371,8 +1362,8 @@ Token* SyntaxicAnalyzer::eat_get(TokenType type) {
 }
 
 Token* SyntaxicAnalyzer::nextTokenAt(int pos) {
-	if (i + pos < tokens.size())
-		return tokens[i + pos];
+	if (i + pos < file->tokens.size())
+		return &file->tokens[i + pos];
 	else
 		return new Token(TokenType::FINISHED, file, 0, 0, 0, "");
 }

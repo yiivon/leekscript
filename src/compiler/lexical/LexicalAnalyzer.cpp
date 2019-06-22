@@ -118,17 +118,17 @@ bool LexicalAnalyzer::isToken(const std::string& word) {
 	return token_map.find(word) != token_map.end();
 }
 
-std::vector<Token*> LexicalAnalyzer::analyze(File* file) {
+std::vector<Token> LexicalAnalyzer::analyze(File* file) {
 
 	this->file = file;
 	auto tokens = LexicalAnalyzer::parseTokens(file->code + " ");
 
-	tokens.push_back(new Token(TokenType::FINISHED, file, 0, 0, 1, ""));
+	tokens.push_back({ TokenType::FINISHED, file, 0, 0, 1, "" });
 
 	for (size_t i = 0; i < tokens.size(); ++i) {
-		if (i + 1 < tokens.size() && tokens[i]->content == "is" && tokens[i + 1]->content == "not") {
-			tokens[i]->type = TokenType::DIFFERENT;
-			tokens[i]->content = "is not";
+		if (i + 1 < tokens.size() && tokens[i].content == "is" && tokens[i + 1].content == "not") {
+			tokens[i].type = TokenType::DIFFERENT;
+			tokens[i].content = "is not";
 			tokens.erase(tokens.begin() + i + 1);
 		}
 	}
@@ -136,10 +136,10 @@ std::vector<Token*> LexicalAnalyzer::analyze(File* file) {
 	return tokens;
 }
 
-std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
+std::vector<Token> LexicalAnalyzer::parseTokens(const std::string& code) {
 
 	const char* string_chars = code.c_str();
-	std::vector<Token*> tokens;
+	std::vector<Token> tokens;
 
 	int line = 1;
 	int character = 0;
@@ -185,13 +185,13 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 			} else if (comment == 0) {
 				if (type == LetterType::WHITE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::IDENT), file, i, line, character, word });
 						ident = false;
 					} else if (number) {
 						if ((bin || hex) && word.size() == 2) {
 							file->errors.push_back({Error::Type::NUMBER_INVALID_REPRESENTATION, file, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+						tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 						number = bin = hex = false;
 					} else if (string1 || string2) {
 						if (escape) {
@@ -200,7 +200,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						}
 						word += code.substr(h, i - h);
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 						other = false;
 					}
 				} else if (type == LetterType::LETTER) {
@@ -232,26 +232,26 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 							word += code.substr(h, i - h);
 						} else if (c == 'l' or c == 'L') {
 							word += "l";
-							tokens.push_back(new Token(TokenType::NUMBER, file, i + 1, line, character + 1, word));
+							tokens.push_back({ TokenType::NUMBER, file, i + 1, line, character + 1, word });
 							number = bin = hex = false;
 							word = "";
 						} else if (c == 'm' or c == 'M') {
 							word += "m";
-							tokens.push_back(new Token(TokenType::NUMBER, file, i + 1, line, character + 1, word));
+							tokens.push_back({ TokenType::NUMBER, file, i + 1, line, character + 1, word });
 							number = bin = hex = false;
 							word = "";
 						} else if (c == '$') {
-							tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+							tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 							number = bin = hex = false;
 							word = "";
-							tokens.push_back(new Token(TokenType::STAR, file, i, line, character, code.substr(h, i - h)));
+							tokens.push_back({ TokenType::STAR, file, i, line, character, code.substr(h, i - h) });
 						} else {
 							file->errors.push_back({Error::Type::NUMBER_INVALID_REPRESENTATION, file, line, character});
-							tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+							tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 							number = bin = hex = false;
 						}
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 						other = false;
 						ident = true;
 						word = code.substr(h, i - h);
@@ -273,7 +273,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						}
 						word += code.substr(h, i - h);
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 						other = false;
 						number = true;
 						word = code.substr(h, i - h);
@@ -283,7 +283,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 					}
 				} else if (type == LetterType::QUOTE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::IDENT), file, i, line, character, word });
 						ident = false;
 						string1 = true;
 						word = "";
@@ -291,7 +291,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						if ((bin || hex) && word.size() == 2) {
 							file->errors.push_back({Error::Type::NUMBER_INVALID_REPRESENTATION, file, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+						tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 						number = bin = hex = false;
 						string1 = true;
 						word = "";
@@ -299,10 +299,10 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						escape = false;
 						word += code.substr(h, i - h);
 					} else if (string1) {
-						tokens.push_back(new Token(TokenType::STRING, file, i, line, character, word));
+						tokens.push_back({ TokenType::STRING, file, i, line, character, word });
 						string1 = false;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 						other = false;
 						string1 = true;
 						word = "";
@@ -312,7 +312,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 					}
 				} else if (type == LetterType::DOUBLE_QUOTE) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::IDENT), file, i, line, character, word });
 						ident = false;
 						string2 = true;
 						word = "";
@@ -320,7 +320,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						if ((bin || hex) && word.size() == 2) {
 							file->errors.push_back({Error::Type::NUMBER_INVALID_REPRESENTATION, file, line, character});
 						}
-						tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+						tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 						number = bin = hex = false;
 						string2 = true;
 						word = "";
@@ -334,10 +334,10 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 						escape = false;
 						word += code.substr(h, i - h);
 					} else if (string2) {
-						tokens.push_back(new Token(TokenType::STRING, file, i, line, character, word));
+						tokens.push_back({ TokenType::STRING, file, i, line, character, word });
 						string2 = false;
 					} else if (other) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 						other = false;
 						string2 = true;
 						word = "";
@@ -347,7 +347,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 					}
 				} else if (type == LetterType::OTHER) {
 					if (ident) {
-						tokens.push_back(new Token(getTokenType(word, TokenType::IDENT), file, i, line, character, word));
+						tokens.push_back({ getTokenType(word, TokenType::IDENT), file, i, line, character, word });
 						ident = false;
 						other = true;
 						word = code.substr(h, i - h);
@@ -358,7 +358,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 							if ((bin || hex) && word.size() == 2) {
 								file->errors.push_back({Error::Type::NUMBER_INVALID_REPRESENTATION, file, line, character});
 							}
-							tokens.push_back(new Token(TokenType::NUMBER, file, i, line, character, word));
+							tokens.push_back({ TokenType::NUMBER, file, i, line, character, word });
 							number = bin = hex = false;
 							other = true;
 							word = code.substr(h, i - h);
@@ -377,7 +377,7 @@ std::vector<Token*> LexicalAnalyzer::parseTokens(const std::string& code) {
 					} else if (other) {
 						auto buff = code.substr(h, i - h);
 						if ((c == '!' and word == "!") or not isToken(word + buff)) {
-							tokens.push_back(new Token(getTokenType(word, TokenType::UNKNOW), file, i, line, character, word));
+							tokens.push_back({ getTokenType(word, TokenType::UNKNOW), file, i, line, character, word });
 							word = buff;
 						} else {
 							word += buff;

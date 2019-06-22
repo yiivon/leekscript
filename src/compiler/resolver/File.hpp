@@ -12,6 +12,7 @@ public:
 	std::string code;
 	FileContext* context;
 	std::vector<Error> errors;
+	std::vector<Token> tokens;
 
 	File(std::string path, std::string code, FileContext* context) {
 		this->path = path;

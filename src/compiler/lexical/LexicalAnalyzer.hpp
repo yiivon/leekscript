@@ -23,9 +23,9 @@ public:
 	LetterType getLetterType(unsigned char c, unsigned char nc);
 	bool isToken(const std::string& word);
 	TokenType getTokenType(const std::string& word, TokenType by_default);
-	std::vector<Token*> parseTokens(const std::string& code);
+	std::vector<Token> parseTokens(const std::string& code);
 
-	std::vector<Token*> analyze(File* file);
+	std::vector<Token> analyze(File* file);
 };
 
 }
