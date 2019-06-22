@@ -960,9 +960,10 @@ void Compiler::insn_delete_temporary(Compiler::value v) const {
 		if (v.t->temporary) {
 			insn_call(Type::void_, {v}, "Value.delete");
 		} else {
-			insn_if_not(insn_refs(v), [&]() {
-				insn_call(Type::void_, {v}, "Value.delete");
-			});
+			insn_call(Type::void_, {v}, "Value.delete_tmp");
+			// insn_if_not(insn_refs(v), [&]() {
+			// 	insn_call(Type::void_, {v}, "Value.delete");
+			// });
 		}
 	}
 }

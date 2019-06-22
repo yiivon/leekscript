@@ -211,6 +211,9 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 	method("delete", {
 		{Type::void_, {Type::const_any}, (void*) &LSValue::free}
 	});
+	method("delete_tmp", {
+		{Type::void_, {Type::const_any}, (void*) &LSValue::delete_temporary}
+	});
 	method("dec_refs", {
 		{Type::void_, {Type::const_any}, (void*) &LSValue::delete_ref}
 	});
