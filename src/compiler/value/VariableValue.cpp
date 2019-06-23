@@ -147,9 +147,6 @@ void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
 }
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
-
-	var = analyzer->get_var(token);
-
 	if (var != nullptr) {
 		auto function_object = dynamic_cast<Function*>(var->value);
 		if (var->value && function_object) {
