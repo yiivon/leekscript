@@ -52,9 +52,8 @@ Call ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
 
 void ArrayAccess::pre_analyze(SemanticAnalyzer* analyzer) {
 	array->pre_analyze(analyzer);
-	if (key) {
-		key->pre_analyze(analyzer);
-	}
+	if (key) key->pre_analyze(analyzer);
+	if (key2) key2->pre_analyze(analyzer);
 }
 
 void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
