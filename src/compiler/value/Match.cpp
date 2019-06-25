@@ -43,7 +43,6 @@ void Match::pre_analyze(ls::SemanticAnalyzer* analyzer) {
 
 void Match::analyze(ls::SemanticAnalyzer* analyzer) {
 
-	bool any_pointer = false;
 	bool has_default = false;
 
 	value->analyze(analyzer);
