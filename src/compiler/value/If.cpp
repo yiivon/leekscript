@@ -85,12 +85,13 @@ Compiler::value If::compile(Compiler& c) const {
 	auto label_end = c.insn_init_label("end");
 	Compiler::value then_v;
 	Compiler::value else_v;
+	bool compile_elze = elze != nullptr or not type->is_void();
 
 	auto cond = condition->compile(c);
 	condition->compile_end(c);
 	auto cond_boolean = c.insn_to_bool(cond);
 	c.insn_delete_temporary(cond);
-	c.insn_if_new(cond_boolean, &label_then, &label_else);
+	c.insn_if_new(cond_boolean, &label_then, compile_elze ? &label_else : &label_end);
 
 	c.insn_label(&label_then);
 
@@ -101,17 +102,19 @@ Compiler::value If::compile(Compiler& c) const {
 	c.insn_branch(&label_end);
 	label_then.block = c.builder.GetInsertBlock();
 
-	c.insn_label(&label_else);
+	if (compile_elze) {
+		c.insn_label(&label_else);
 
-	if (elze != nullptr) {
-		else_v = c.insn_convert(elze->compile(c), type->fold());
-		elze->compile_end(c);
-	} else if (not type->is_void()) {
-		else_v = c.insn_convert(c.new_null(), type->fold());
+		if (elze != nullptr) {
+			else_v = c.insn_convert(elze->compile(c), type->fold());
+			elze->compile_end(c);
+		} else if (not type->is_void()) {
+			else_v = c.insn_convert(c.new_null(), type->fold());
+		}
+
+		c.insn_branch(&label_end);
+		label_else.block = c.builder.GetInsertBlock();
 	}
-
-	c.insn_branch(&label_end);
-	label_else.block = c.builder.GetInsertBlock();
 
 	c.insn_label(&label_end);
 	
