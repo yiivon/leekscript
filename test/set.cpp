@@ -100,7 +100,7 @@ void Test::test_set() {
 	 * Iteration
 	 */
 	section("Set iteration");
-	code("var s = '' for v in <5, 'hello'> { s += v } s").equals("'5hello'");
+	DISABLED_code("var s = '' for v in <5, 'hello'> { s += v } s").equals("'5hello'");
 	code("var s = 0 for v in <8, 4, 2, 1> { if (v > 5) { continue } s += v } s").equals("7");
 	code("var s = 0 for v in <8, 4, 2, 1> { if (v < 3) { break } s += v } s").equals("0");
 	code("var s = 0 for v in <8, 4, 2, 1> { if (v > 5) { break } s += v } s").equals("7");

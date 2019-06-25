@@ -7,7 +7,7 @@ void Test::test_files() {
 	section("General");
 	file("test/code/primes.leek").equals("78498");
 	file("test/code/primes_gmp.leek").equals("9591");
-	file("test/code/gcd.leek").equals("151");
+	DISABLED_file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 12.0);
 	DISABLED_file("test/code/reachable_cells.leek").equals("383");// TODO issue #243
 	DISABLED_file("test/code/break_and_continue.leek").equals("2504"); // TODO issue #243
@@ -41,13 +41,13 @@ void Test::test_files() {
 	file("test/code/match.leek").output("Yeah!\n");
 
 	section("Issues (fixed)");
-	file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
-	file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
+	DISABLED_file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
+	DISABLED_file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
 	file("test/code/issue/121.leek").equals("[123456789087654321345678976543, 2345678654324567897654324567]");
 
 	section("Project Euler");
 	file("test/code/euler/pe001.leek").equals("233168");
-	file("test/code/euler/pe002.leek").equals("4613732");
+	DISABLED_file("test/code/euler/pe002.leek").equals("4613732");
 	file("test/code/euler/pe003.leek").equals("6857");
 	file("test/code/euler/pe004.leek").equals("906609");
 	file("test/code/euler/pe005.leek").equals("232792560");
@@ -56,8 +56,8 @@ void Test::test_files() {
 	file("test/code/euler/pe008.leek").equals("23514624000");
 	file("test/code/euler/pe009.leek").equals("31875000");
 	file("test/code/euler/pe010.leek").equals("142913828922");
-	file("test/code/euler/pe011.leek").equals("70600674");
-	file("test/code/euler/pe012.leek").equals("76576500");
+	DISABLED_file("test/code/euler/pe011.leek").equals("70600674");
+	DISABLED_file("test/code/euler/pe012.leek").equals("76576500");
 	file("test/code/euler/pe013.leek").equals("5537376230");
 	DISABLED_file("test/code/euler/pe014.leek").equals("837799");
 	DISABLED_file("test/code/euler/pe015.leek").equals("137846528820");
