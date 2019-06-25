@@ -207,8 +207,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 	}
 	type = type->not_temporary();
 
-	// std::cout << "VV " << name << " : " << type << std::endl;
-	// std::cout << "var scope : " << (int)var->scope << std::endl;
+	// if (var) std::cout << "VV " << var << " : " << type << " " << (int)var->scope << std::endl;
 }
 
 const Type* VariableValue::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
