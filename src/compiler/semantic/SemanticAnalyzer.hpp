@@ -43,6 +43,7 @@ public:
 	void leave_block();
 	void add_function(Function*);
 	FunctionVersion* current_function() const;
+	Block* current_block() const;
 
 	void enter_loop();
 	void leave_loop();

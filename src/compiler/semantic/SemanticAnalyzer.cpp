@@ -64,6 +64,9 @@ void SemanticAnalyzer::leave_block() {
 FunctionVersion* SemanticAnalyzer::current_function() const {
 	return functions_stack.back();
 }
+Block* SemanticAnalyzer::current_block() const {
+	return blocks.back().back();
+}
 
 void SemanticAnalyzer::enter_loop() {
 	loops.top()++;
