@@ -133,6 +133,9 @@ void Function::analyze(SemanticAnalyzer* analyzer) {
 		function_added = true;
 	}
 	create_default_version(analyzer);
+	if (is_main_function) {
+		default_version->analyze_global_functions(analyzer);
+	}
 	pre_analyze(analyzer);
 	if (is_main_function) {
 		analyse_default_method(analyzer);

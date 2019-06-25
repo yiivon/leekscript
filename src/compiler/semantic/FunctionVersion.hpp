@@ -33,6 +33,7 @@ public:
 
 	const Type* getReturnType();
 	int capture(SemanticAnalyzer* analyzer, Variable* var);
+	void analyze_global_functions(SemanticAnalyzer* analyzer);
 	void pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 	void analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args);
 

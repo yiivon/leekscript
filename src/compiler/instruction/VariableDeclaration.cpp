@@ -36,20 +36,23 @@ Location VariableDeclaration::location() const {
 	return {keyword->location.file, keyword->location.start, end};
 }
 
-void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
+void VariableDeclaration::analyze_global_functions(SemanticAnalyzer* analyzer) const {
 	if (global && function) {
 		auto var = variables.at(0);
 		const auto& expr = expressions.at(0);
 		auto v = analyzer->add_global_var(var, Type::fun(), expr.get());
-		vars.insert({ var->content, v });
-	} else {
-		for (unsigned i = 0; i < variables.size(); ++i) {
-			auto& var = variables.at(i);
-			auto v = analyzer->add_var(var, Type::any, expressions.at(i).get());
-			if (v) vars.insert({ var->content, v });
-			if (expressions[i] != nullptr) {
-				expressions[i]->pre_analyze(analyzer);
-			}
+		((VariableDeclaration*) this)->vars.insert({ var->content, v });
+	}
+}
+
+void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
+	if (global && function) return;
+	for (unsigned i = 0; i < variables.size(); ++i) {
+		auto& var = variables.at(i);
+		auto v = analyzer->add_var(var, Type::any, expressions.at(i).get());
+		if (v) vars.insert({ var->content, v });
+		if (expressions[i] != nullptr) {
+			expressions[i]->pre_analyze(analyzer);
 		}
 	}
 }

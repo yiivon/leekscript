@@ -88,6 +88,12 @@ const Type* FunctionVersion::getReturnType() {
 	}
 }
 
+void FunctionVersion::analyze_global_functions(SemanticAnalyzer* analyzer) {
+	analyzer->enter_function((FunctionVersion*) this);
+	body->analyze_global_functions(analyzer);
+	analyzer->leave_function();
+}
+
 void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 	if (pre_analyzed) return;
 	pre_analyzed = true;

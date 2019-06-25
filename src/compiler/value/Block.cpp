@@ -35,6 +35,16 @@ Location Block::location() const {
 	return {instructions.at(0)->location().file, start, end};
 }
 
+void Block::analyze_global_functions(SemanticAnalyzer* analyzer) {
+	analyzer->enter_block(this);
+	for (const auto& instruction : instructions) {
+		if (auto vd = dynamic_cast<const VariableDeclaration*>(instruction.get())) {
+			vd->analyze_global_functions(analyzer);
+		}
+	}
+	analyzer->leave_block();
+}
+
 void Block::pre_analyze(SemanticAnalyzer* analyzer) {
 	analyzer->enter_block(this);
 	for (const auto& instruction : instructions) {
