@@ -547,6 +547,16 @@ LSArray<T>* LSArray<T>::ls_random(int n) {
 }
 
 template <typename T>
+LSArray<LSValue*>* LSArray<T>::to_any_array() const {
+	auto result = new LSArray<LSValue*>();
+	result->reserve(this->size());
+	for (const auto& e : *this) {
+		result->emplace_back(ls::convert<LSValue*>(e));
+	}
+	return result;
+}
+
+template <typename T>
 inline LSArray<T>* LSArray<T>::ls_reverse() {
 	if (refs == 0) {
 		for (size_t i = 0, j = this->size(); i < j; ++i, --j) {

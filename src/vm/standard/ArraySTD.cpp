@@ -365,6 +365,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::boolean, {Type::array(), Type::any}, (void*) &LSArray<double>::ls_remove_element},
 		{Type::boolean, {Type::array(), Type::any}, (void*) &LSArray<int>::ls_remove_element},
 	});
+	method("int_to_any", {
+		{Type::array(Type::any), {Type::array(Type::integer)}, (void*) &LSArray<int>::to_any_array}
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, bool) {

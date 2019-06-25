@@ -79,6 +79,7 @@ public:
 	template <class T2>
 	LSValue* add_set(LSSet<T2>* set);
 	LSArray<T>* ls_random(int n);
+	LSArray<LSValue*>* to_any_array() const;
 
 	/*
 	 * LSValue methods
