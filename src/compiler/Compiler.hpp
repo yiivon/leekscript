@@ -231,6 +231,7 @@ public:
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
+	void  insn_delete_variable(value v) const;
 	void  insn_delete_temporary(value v) const;
 	value insn_get_capture(int index, const Type* type) const;
 	value insn_get_capture_l(int index, const Type* type) const;

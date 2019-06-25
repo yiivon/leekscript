@@ -948,6 +948,15 @@ void Compiler::insn_delete(Compiler::value v) const {
 	}
 }
 
+void Compiler::insn_delete_variable(Compiler::value v) const {
+	assert(check_value(v));
+	if (v.t->is_mpz_ptr()) {
+		insn_delete_mpz(v);
+	} else {
+		insn_delete(insn_load(v));
+	}
+}
+
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
 	if (v.t == Type::tmp_mpz_ptr) {
