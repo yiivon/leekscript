@@ -37,6 +37,7 @@ public:
 	Call call;
 	Compiler::value val;
 	Compiler::value init_value;
+	Compiler::value addr_val;
 	int id = 0;
 	int generator = 0;
 	Variable* parent = nullptr;
@@ -48,6 +49,7 @@ public:
 
 	Compiler::value get_value(Compiler& c) const;
 	void create_entry(Compiler& c);
+	void create_addr_entry(Compiler& c, Compiler::value);
 	void store_value(Compiler& c, Compiler::value);
 
 	static Variable* new_temporary(std::string name, const Type* type);

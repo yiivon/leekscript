@@ -27,6 +27,12 @@ void Variable::create_entry(Compiler& c) {
 	auto t = get_entry_type();
 	val = c.create_entry(name, t);
 }
+void Variable::create_addr_entry(Compiler& c, Compiler::value value) {
+	// std::cout << "create_entry " << this << std::endl;
+	auto t = get_entry_type()->pointer();
+	addr_val = c.create_entry(name + "_addr", t);
+	c.insn_store(addr_val, value);
+}
 
 void Variable::store_value(Compiler& c, Compiler::value value) {
 	if (value.t->is_mpz_ptr()) {

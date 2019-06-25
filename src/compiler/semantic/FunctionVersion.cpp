@@ -206,9 +206,10 @@ Variable* FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
 		converted_var->scope = VarScope::CAPTURE;
 		captures.push_back(converted_var);
 		captures_map.insert({ var->name, converted_var });
-		auto capture = new Variable(*converted_var);
-		// capture->scope = VarScope::CAPTURE;
-		// std::cout << "Capture " << converted_var << " " << (void*) converted_var << " parent " << converted_var->parent << " " << (void*) converted_var->parent << std::endl;
+		auto capture = new Variable(*converted_var); // Copy : one var outside the function, one inside
+		capture->scope = VarScope::CAPTURE;
+		captures_inside.push_back(capture);
+		// std::cout << "Capture " << capture << " " << (void*) capture << " parent " << capture->parent << " " << (void*) capture->parent << " " << (int) capture->scope << std::endl;
 		return capture;
 	} else {
 		// Capture from parent of parent
@@ -317,6 +318,13 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 				}
 			}
 			index++;
+		}
+
+		// Create captures variables
+		for (const auto& capture : captures_inside) {
+			capture->create_entry(c);
+			capture->store_value(c, c.insn_get_capture(capture->index, Type::any));
+			capture->create_addr_entry(c, c.insn_get_capture_l(capture->index, Type::any));
 		}
 
 		if (compile_body) {

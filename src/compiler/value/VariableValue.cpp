@@ -291,7 +291,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
-		v = c.insn_get_capture(capture_index, type);
+		v = var->get_value(c);
 	} else if (scope == VarScope::INTERNAL) {
 		auto f = dynamic_cast<Function*>(var->value);
 		if (f) {
@@ -346,7 +346,7 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::LOCAL) {
 		v = var->val;
 	} else if (scope == VarScope::CAPTURE) {
-		v = c.insn_get_capture_l(capture_index, type);
+		v = c.insn_load(var->addr_val);
 	} else if (scope == VarScope::INTERNAL) {
 		v = c.get_symbol(name, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
