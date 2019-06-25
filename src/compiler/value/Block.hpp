@@ -18,6 +18,11 @@ public:
 	bool mpz_pointer = false;
 	bool was_reference = false;
 	std::unordered_map<std::string, Variable*> variables;
+	llvm::BasicBlock* block;
+	Block* branch = nullptr;
+	std::vector<std::pair<Variable*, Variable*>> assignments;
+	std::vector<Variable*> temporary_variables;
+	std::vector<Compiler::value> temporary_values;
 
 	Block(bool is_function_block = false);
 
@@ -25,7 +30,9 @@ public:
 	virtual Location location() const override;
 
 	void analyze_global_functions(SemanticAnalyzer* analyzer);
+	void setup_branch(SemanticAnalyzer* analyzer);
 	virtual void pre_analyze(SemanticAnalyzer* analyzer) override;
+	void create_assignments(SemanticAnalyzer* analyzer);
 	virtual void analyze(SemanticAnalyzer* analyzer) override;
 
 	Compiler::value compile(Compiler&) const override;

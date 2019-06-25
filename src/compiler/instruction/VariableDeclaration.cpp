@@ -20,7 +20,12 @@ void VariableDeclaration::print(std::ostream& os, int indent, bool debug, bool c
 
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto name = variables.at(i)->content;
-		os << name;
+		auto v = vars.find(name);
+		if (v != vars.end()) {
+			os << v->second;
+		} else {
+			os << name;
+		}
 		if (expressions[i] != nullptr) {
 			os << " = ";
 			expressions.at(i)->print(os, indent, debug);
@@ -80,8 +85,7 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 		if (v->value->type->is_void()) {
 			analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), var->location, {var->content}});
 		} else {
-			v->type = v->value->type;
-			if (v->type->is_mpz()) v->type = v->type->not_temporary()->pointer();
+			v->type = Variable::get_type_for_variable_from_expression(v->value->type);
 			if (constant) v->type = v->type->add_constant();
 		}
 		vars.insert({var->content, v});
@@ -89,36 +93,26 @@ void VariableDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 }
 
 Compiler::value VariableDeclaration::compile(Compiler& c) const {
-
 	for (unsigned i = 0; i < variables.size(); ++i) {
-
 		const auto& name = variables[i]->content;
-
+		const auto& variable = vars.at(name);
 		if (expressions[i] != nullptr) {
-
 			const auto& ex = expressions[i];
-
 			if (dynamic_cast<Function*>(ex.get()) and not ex->type->is_closure()) {
 				continue;
 			}
 			auto val = ex->compile(c);
 			ex->compile_end(c);
 
-			auto val_type = ex->type;
-			if (val_type->is_mpz_ptr()) val_type = Type::mpz;
-			auto var = c.create_and_add_var(name, val_type->not_temporary());
+			variable->create_entry(c);
 
 			if (!val.t->reference) {
 				val = c.insn_move_inc(val);
 			}
-
-			if (ex->type->is_mpz_ptr()) {
-				val = c.insn_load(val);
-			}
-			c.insn_store(var, val);
+			variable->store_value(c, val);
 		} else {
-			auto var = c.create_and_add_var(name, Type::null);
-			c.insn_store(var, c.new_null());
+			variable->create_entry(c);
+			variable->store_value(c, c.new_null());
 		}
 	}
 	return {};

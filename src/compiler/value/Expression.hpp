@@ -18,6 +18,7 @@ public:
 	std::shared_ptr<Operator> op;
 	int operations;
 	const CallableVersion* callable_version = nullptr;
+	Variable* previous_var = nullptr;
 
 	Expression(Value* = nullptr);
 

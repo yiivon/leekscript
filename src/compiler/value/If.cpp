@@ -5,6 +5,8 @@
 #include "../instruction/Break.hpp"
 #include "../instruction/Continue.hpp"
 #include "../../vm/LSValue.hpp"
+#include "../semantic/Variable.hpp"
+#include "Phi.hpp"
 
 namespace ls {
 
@@ -35,6 +37,9 @@ void If::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	if (debug) {
 		os << " " << type;
 	}
+	for (const auto& phi : phis) {
+		os << std::endl << tabs(indent) << phi->variable << " = phi(" << phi->variable1 << " " << phi->variable1->type << ", " << phi->variable2 << " " << phi->variable2->type << ") " << phi->variable->type;
+	}
 }
 
 Location If::location() const {
@@ -43,9 +48,16 @@ Location If::location() const {
 
 void If::pre_analyze(SemanticAnalyzer* analyzer) {
 	condition->pre_analyze(analyzer);
+	then->branch = then.get();
 	then->pre_analyze(analyzer);
 	if (elze != nullptr) {
+		elze->branch = elze.get();
 		elze->pre_analyze(analyzer);
+	}
+	if (elze) {
+		phis = Phi::build_phis(analyzer, then.get(), elze.get());
+	} else {
+		phis = Phi::build_phis(analyzer, analyzer->current_block(), then.get());
 	}
 }
 
@@ -76,9 +88,20 @@ void If::analyze(SemanticAnalyzer* analyzer) {
 	may_return = then->may_return or (elze != nullptr and elze->may_return);
 	return_type = return_type->operator + (then->return_type);
 	if (elze != nullptr) return_type = return_type->operator + (elze->return_type);
+
+	for (const auto& phi : phis) {
+		phi->variable->type = Type::compound({ phi->variable1->type, phi->variable2->type });
+	}
 }
 
 Compiler::value If::compile(Compiler& c) const {
+	
+	for (const auto& phi : phis) {
+		if (phi->variable1->block->branch != then->branch) {
+			// std::cout << "Variable export last value for phi " << phi->variable1 << std::endl;
+			phi->variable1->init_value = c.insn_convert(c.insn_load(phi->variable1->val), phi->variable->type);
+		}
+	}
 
 	auto label_then = c.insn_init_label("then");
 	auto label_else = c.insn_init_label("else");
@@ -118,11 +141,24 @@ Compiler::value If::compile(Compiler& c) const {
 
 	c.insn_label(&label_end);
 	
-	if (type->is_void()) {
+	auto r = [&]() -> Compiler::value { if (type->is_void()) {
 		return {};
 	} else {
 		return c.insn_phi(type, then_v, label_then, else_v, label_else);
+	}}();
+
+	for (const auto& phi : phis) {
+		// std::cout << "phi variable " << phi.variable << " " << phi.variable->type << std::endl;
+		// std::cout << "value 1 " << phi.variable1 << " " << phi.variable1->type << " " << phi.variable1->val.t << std::endl;
+		// std::cout << "value 2 " << phi.variable2 << " " << phi.variable2->type << " " << phi.variable2->val.t << std::endl;
+		// auto phi_node = c.insn_phi(phi->variable->type, phi->variable1->init_value, phi->block1, phi->variable2->init_value, phi->block2);
+		auto phi_node = c.insn_phi(phi->variable->type, c.insn_convert(phi->variable1->init_value, phi->variable->type), phi->block1, c.insn_convert(phi->variable2->init_value, phi->variable->type), phi->block2);
+		// auto phi_node = c.insn_phi(phi.variable->type, c.insn_convert(c.insn_load(phi.variable1->val), type), phi.block1, c.insn_convert(c.insn_load(phi.variable2->val), type), phi.block2);
+		phi->variable->val = c.create_entry(phi->variable->name, phi->variable->type);
+		c.insn_store(phi->variable->val, phi_node);
 	}
+
+	return r;
 }
 
 std::unique_ptr<Value> If::clone() const {

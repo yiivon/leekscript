@@ -9,6 +9,7 @@
 #include "../value/LSArray.hpp"
 #include "../VM.hpp"
 #include "../../type/Type.hpp"
+#include "../../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
@@ -455,15 +456,20 @@ long string_number(const LSString* s) {
 
 Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move_inc(args[2]));
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function, {c.insn_load(result), v});
-		c.insn_delete(c.insn_load(result));
-		c.insn_store(result, c.insn_move_inc(r));
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.add_temporary_variable(result);
+	c.insn_store(result->val, c.insn_move_inc(args[2]));
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.add_temporary_variable(v);
+	c.insn_foreach(args[0], Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		auto r = c.insn_call(function, {c.insn_load(result->val), v});
+		c.insn_delete(c.insn_load(result->val));
+		c.insn_store(result->val, c.insn_move_inc(r));
 		return {};
 	});
-	return c.insn_load(result);
+	return c.insn_load(result->val);
 }
 
 LSValue* StringSTD::string_right(LSString* string, int pos) {

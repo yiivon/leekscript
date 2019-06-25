@@ -38,6 +38,7 @@ CLOC_EXCLUDED := .git,lib,build,doxygen
 
 .PHONY: test
 
+all: FLAGS += -DDEBUG_LEAKS
 all: build/leekscript
 
 clang: COMPILER=clang++
@@ -112,6 +113,7 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 	@echo "--------------------------"
 
 # Run tests
+test: FLAGS += -DDEBUG_LEAKS
 test: build/leekscript-test
 	@build/leekscript-test
 

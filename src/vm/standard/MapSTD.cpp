@@ -1,6 +1,7 @@
 #include "MapSTD.hpp"
 #include "../value/LSMap.hpp"
 #include "../../type/Type.hpp"
+#include "../../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
@@ -277,29 +278,51 @@ Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, boo
 
 Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move(args[2]));
-	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function, {c.insn_load(result), k, v}));
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.insn_store(result->val, c.insn_move(args[2]));
+	c.add_temporary_variable(result);
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	auto k = Variable::new_temporary("k", args[0].t->key());
+	v->create_entry(c);
+	k->create_entry(c);
+	c.add_temporary_variable(v);
+	c.add_temporary_variable(k);
+	c.insn_foreach(args[0], Type::void_, v, k, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		c.insn_store(result->val, c.insn_call(function, {c.insn_load(result->val), k, v}));
 		return {};
 	});
-	return c.insn_load(result);
+	return c.insn_load(result->val);
 }
 
 Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move(args[2]));
-	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function, {k, v, c.insn_load(result)}));
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.insn_store(result->val, c.insn_move(args[2]));
+	c.add_temporary_variable(result);
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	auto k = Variable::new_temporary("k", args[0].t->key());
+	v->create_entry(c);
+	k->create_entry(c);
+	c.add_temporary_variable(v);
+	c.add_temporary_variable(k);
+	c.insn_foreach(args[0], Type::void_, v, k, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		c.insn_store(result->val, c.insn_call(function, {k, v, c.insn_load(result->val)}));
 		return {};
 	}, true);
-	return c.insn_load(result);
+	return c.insn_load(result->val);
 }
 
 Compiler::value MapSTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	c.insn_foreach(args[0], Type::void_, "v", "k", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	auto k = Variable::new_temporary("k", args[0].t->key());
+	v->create_entry(c);
+	k->create_entry(c);
+	c.add_temporary_variable(v);
+	c.add_temporary_variable(k);
+	c.insn_foreach(args[0], Type::void_, v, k, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		return c.insn_call(function, {k, v});
 	});
 	return {};

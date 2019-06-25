@@ -1,6 +1,7 @@
 #include "ClassDeclaration.hpp"
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSClass.hpp"
+#include "../semantic/Variable.hpp"
 
 namespace ls {
 
@@ -39,9 +40,7 @@ void ClassDeclaration::analyze(SemanticAnalyzer* analyzer, const Type*) {
 }
 
 Compiler::value ClassDeclaration::compile(Compiler& c) const {
-
 	auto clazz = c.new_class(name);
-
 	for (const auto& vd : fields) {
 		for (size_t i = 0; i < vd->variables.size(); ++i) {
 			// std::cout << "Compile class field '" << vd->variables.at(i)->content << "' type " << vd->expressions.at(i)->type << std::endl;
@@ -51,9 +50,8 @@ Compiler::value ClassDeclaration::compile(Compiler& c) const {
 			c.insn_call(Type::void_, {clazz, field_name, default_value}, "Class.add_field");
 		}
 	}
-
-	c.add_var(name, clazz);
-
+	var->create_entry(c);
+	var->store_value(c, clazz);
 	return clazz;
 }
 

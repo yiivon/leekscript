@@ -16,6 +16,7 @@ class Token;
 class VariableDeclaration;
 class Callable;
 class Call;
+class Phi;
 
 enum class VarScope {
 	INTERNAL, LOCAL, PARAMETER, CAPTURE
@@ -23,21 +24,41 @@ enum class VarScope {
 
 class Variable {
 public:
-	std::string name;
+	const std::string name;
 	VarScope scope;
 	int index;
 	int parent_index;
 	Value* value;
-	FunctionVersion* function; // In which function the variable is declared
+	FunctionVersion* function;
+	Block* block;
 	const Type* type;
 	std::vector<const Type*> version;
 	LSValue* lsvalue = nullptr;
 	Call call;
+	Compiler::value val;
+	Compiler::value init_value;
+	int id = 0;
+	int generator = 0;
+	Variable* parent = nullptr;
+	Phi* phi = nullptr;
 
-	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, LSValue* lsvalue, Call call = {}) :
-		name(name), scope(scope), index(index), parent_index(0), value(value), function(function), type(type), lsvalue(lsvalue), call(call) {}
+	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, Block* block, LSValue* lsvalue, Call call = {});
+
+	const Type* get_entry_type() const;
+
+	Compiler::value get_value(Compiler& c) const;
+	void create_entry(Compiler& c);
+	void store_value(Compiler& c, Compiler::value);
+
+	static Variable* new_temporary(std::string name, const Type* type);
+	static const Type* get_type_for_variable_from_expression(const Type* value_type);
 };
 
+}
+
+namespace ls {
+	std::ostream& operator << (std::ostream& os, const Variable&);
+	std::ostream& operator << (std::ostream& os, const Variable*);
 }
 
 #endif

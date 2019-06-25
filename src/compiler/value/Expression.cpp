@@ -93,6 +93,13 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 	} else {
 		v1->pre_analyze(analyzer);
 		v2->pre_analyze(analyzer);
+		if (op->type == TokenType::EQUAL) {
+			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+				// std::cout << "Pre-analyze update var " << vv->var << std::endl;
+				previous_var = vv->var;
+				vv->var = analyzer->update_var(vv->var);
+			}
+		}
 	}
 }
 
@@ -128,6 +135,18 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		or op->type == TokenType::DIVIDE_EQUAL or op->type == TokenType::MODULO_EQUAL
 		or op->type == TokenType::BIT_AND_EQUALS or op->type == TokenType::BIT_OR_EQUALS or op->type == TokenType::BIT_XOR_EQUALS
 		or op->type == TokenType::POWER_EQUAL or op->type == TokenType::INT_DIV_EQUAL) {
+		// Change the type of x for operator =
+		if (op->type == TokenType::EQUAL) {
+			if (v2->type->is_void()) {
+				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
+			}
+			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
+			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
+				vv->var->type = vv->var->parent->type;
+				v1->type = vv->var->type;
+			}
+		}
 		// TODO other operators like |= ^= &=
 		if (v1->type->constant) {
 			analyzer->add_error({Error::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});
@@ -140,11 +159,11 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		}
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
-			if (v2->type->is_void()) {
-				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
-			}
-			if (v1->type->not_temporary() != v2->type->not_temporary()) {
-				((LeftValue*) v1.get())->change_value(analyzer, v2.get());
+			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
+			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
+				vv->var->type = v2->type->not_temporary();
+				v1->type = vv->var->type;
 			}
 		}
 	}
@@ -273,6 +292,14 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
 	}
 
+	// if (op->type == TokenType::PLUS_EQUAL) {
+	// 	auto vv = dynamic_cast<VariableValue*>(v1.get());
+	// 	if (vv != nullptr) {
+	// 		vv->var->create_entry(c);
+	// 		vv->var->store_value(c, c.insn_convert(c.insn_load(previous_var->val), vv->var->type));
+	// 	}
+	// }
+
 	if (callable_version) {
 		std::vector<Compiler::value> args;
 		args.push_back([&](){ if (callable_version->v1_addr) {
@@ -322,14 +349,16 @@ Compiler::value Expression::compile(Compiler& c) const {
 			y = c.insn_move_inc(y);
 			y.t = y.t->not_temporary();
 			// Delete previous variable reference
-			if (x_addr.t->is_mpz_ptr()) {
-				c.insn_delete_mpz(x_addr);
+			if (previous_var) {
+				c.insn_delete_variable(previous_var->val);
 			} else {
-				c.insn_delete(c.insn_load(x_addr));
+				c.insn_delete_variable(x_addr);
 			}
 			// Create the new variable
-			if (vv != nullptr && vv->scope != VarScope::PARAMETER) {
-				c.update_var(vv->name, y);
+			if (vv != nullptr) {
+				// std::cout << "expression = entry" << std::endl;
+				vv->var->create_entry(c);
+				vv->var->store_value(c, y);
 			} else {
 				c.insn_store(x_addr, y);
 			}

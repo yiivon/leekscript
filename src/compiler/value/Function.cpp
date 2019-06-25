@@ -55,7 +55,9 @@ void Function::print(std::ostream& os, int indent, bool debug, bool condensed) c
 			if (i++ > 0) os << std::endl << tabs(indent);
 			v.second->print(os, indent, debug, condensed);
 		}
-	} else {
+	}
+	if ((debug or versions.size() == 0) and default_version) {
+		if (versions.size() > 0) os << std::endl << tabs(indent);
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
 	}
@@ -183,7 +185,7 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0].get())) {
 			if (auto f = dynamic_cast<Function*>(ei->value.get())) {
 
-				analyzer->enter_function(this->default_version);
+				analyzer->enter_function(v);
 				auto ret = f->will_take(analyzer, args, level - 1);
 				analyzer->leave_function();
 
@@ -297,11 +299,11 @@ Compiler::value Function::compile_default_version(Compiler& c) const {
 
 void Function::export_context(const Compiler& c) const {
 	int deepness = c.get_current_function_blocks();
-	for (int i = c.variables.size() - 1; i >= (int) c.variables.size() - deepness; --i) {
-		for (auto v = c.variables[i].begin(); v != c.variables[i].end(); ++v) {
-			c.export_context_variable(v->first, c.insn_load(v->second));
-		}
-	}
+	// for (int i = c.variables.size() - 1; i >= (int) c.variables.size() - deepness; --i) {
+	// 	for (auto v = c.variables[i].begin(); v != c.variables[i].end(); ++v) {
+	// 		c.export_context_variable(v->first, c.insn_load(v->second->val));
+	// 	}
+	// }
 }
 
 std::unique_ptr<Value> Function::clone() const {

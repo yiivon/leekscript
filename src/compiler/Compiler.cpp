@@ -27,6 +27,7 @@
 #include "semantic/FunctionVersion.hpp"
 #include "../type/Function_type.hpp"
 #include "../type/Function_object_type.hpp"
+#include "semantic/Variable.hpp"
 
 namespace ls {
 
@@ -201,6 +202,7 @@ Compiler::value Compiler::new_array(const Type* element_type, std::vector<Compil
 }
 
 Compiler::value Compiler::create_entry(const std::string& name, const Type* type) const {
+	// std::cout << "create_entry " << type << std::endl;
 	return { CreateEntryBlockAlloca(name, type->llvm((Compiler&) *this)), type->pointer() };
 }
 
@@ -899,7 +901,8 @@ void Compiler::insn_store(Compiler::value x, Compiler::value y) const {
 	// std::cout << "insn_store " << x.t << " " << x.v->getType() << " " << y.t << std::endl;
 	assert(x.t->llvm(*this) == x.v->getType());
 	// assert(y.t->llvm(*this) == y.v->getType());
-	// assert(x.t->pointed().fold().not_temporary() == y.t->fold().not_temporary());
+	// std::cout << x.t->pointed()->fold() << " = " << y.t->fold()->not_temporary() << std::endl;
+	// assert(x.t->pointed()->fold() == y.t->fold()->not_temporary());
 	builder.CreateStore(y.v, x.v);
 }
 void Compiler::insn_store_member(Compiler::value x, int pos, Compiler::value y) const {
@@ -949,6 +952,7 @@ void Compiler::insn_delete(Compiler::value v) const {
 }
 
 void Compiler::insn_delete_variable(Compiler::value v) const {
+	// std::cout << "delete variable " << v.t << std::endl;
 	assert(check_value(v));
 	if (v.t->is_mpz_ptr()) {
 		insn_delete_mpz(v);
@@ -1120,10 +1124,6 @@ Compiler::value Compiler::insn_native(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
 	assert(v.t->is_polymorphic());
 	return insn_load_member(v, 4);
-}
-
-Compiler::value Compiler::insn_get_argument(const std::string& name) const {
-	return arguments.top().at(name);
 }
 
 Compiler::value Compiler::iterator_begin(Compiler::value v) const {
@@ -1542,32 +1542,34 @@ void Compiler::iterator_rincrement(const Type* collectionType, Compiler::value i
 	assert(false);
 }
 
-Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* output, const std::string var, const std::string key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed) {
+Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* output, Variable* var, Variable* key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed) {
 	
-	enter_block(); // { for x in [1, 2] {} }<-- this block
+	enter_block(new Block()); // { for x in [1, 2] {} }<-- this block
 
 	// Potential output [for ...]
 	Compiler::value output_v;
 	if (not output->is_void()) {
 		output_v = new_array(output, {});
 		insn_inc_refs(output_v);
-		add_var("{output}", output_v); // Why create variable? in case of `break 2` the output must be deleted
+		add_temporary_value(output_v); // Why create variable? in case of `break 2` the output must be deleted
 	}
 	
 	insn_inc_refs(container);
-	add_var("{array}", container);
+	add_temporary_value(container);
 
 	// Create variables
-	auto value_var = create_and_add_var(var, container.t->element());
+	auto value_var = var->val;
 	if (container.t->element()->is_polymorphic()) {
 		insn_store(value_var, new_null());
+		add_temporary_variable(var);
 	}
 
 	Compiler::value key_var;
-	if (key.size()) {
-		key_var = create_and_add_var(key, container.t->key());
+	if (key) {
+		key_var = key->val;
 		if (container.t->key()->is_polymorphic()) {
 			insn_store(key_var, new_null());
+			add_temporary_variable(key);
 		}
 	}
 
@@ -1599,11 +1601,11 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* ou
 	// Get Value
 	insn_store(value_var, reversed ? iterator_rget(container.t, it, insn_load(value_var)) : iterator_get(container.t, it, insn_load(value_var)));
 	// Get Key
-	if (key.size()) {
+	if (key) {
 		insn_store(key_var, reversed ? iterator_rkey(container, it, insn_load(key_var)) : iterator_key(container, it, insn_load(key_var)));
 	}
 	// Body
-	auto body_v = body(insn_load(value_var), key.size() ? insn_load(key_var) : value());
+	auto body_v = body(insn_load(value_var), key ? insn_load(key_var) : value());
 	if (body_v.v) {
 		if (output_v.v) {
 			insn_push_array(output_v, body_v);
@@ -1735,6 +1737,25 @@ Compiler::value Compiler::insn_phi(const Type* type, Compiler::value v1, Compile
 	return {phi, folded_type};
 }
 
+Compiler::value Compiler::insn_phi(const Type* type, Compiler::value v1, Block* b1, Compiler::value v2, Block* b2) const {
+	if (!v2.v) return v1;
+	if (!v1.v) return v2;
+	const auto folded_type = type->fold();
+	const auto llvm_type = folded_type->llvm(*this);
+	auto phi = Compiler::builder.CreatePHI(llvm_type, 2, "phi");
+	if (v1.v) {
+		// std::cout << "v1 type " << v1.t << ", " << folded_type << ", " << type << std::endl;
+		// assert(v1.t == folded_type);
+		phi->addIncoming(v1.v, b1->block);
+	}
+	if (v2.v) {
+		// std::cout << "v2 type " << v2.t << ", " << folded_type << ", " << type << std::endl;
+		// assert(v2.t == folded_type);
+		phi->addIncoming(v2.v, b2->block);
+	}
+	return {phi, folded_type};
+}
+
 // Call functions
 Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compiler::value> args, std::string name) const {
 	std::vector<llvm::Value*> llvm_args;
@@ -1788,6 +1809,7 @@ Compiler::value Compiler::insn_call(Compiler::value fun, std::vector<Compiler::v
 		return builder.CreateCall(fun_type, fun_conv, llvm_args);
 	} else {
 		if (fun.t->is_pointer()) {
+			// std::cout << "CreateCall fun.v " << fun.v->getType() << std::endl;
 			return builder.CreateCall(fun.v, llvm_args);
 		} else {
 			return builder.CreateCall((llvm::Function*) fun.v, llvm_args);
@@ -1882,8 +1904,8 @@ void Compiler::function_add_capture(Compiler::value fun, Compiler::value capture
 void Compiler::log(const std::string&& str) const { assert(false); }
 
 // Blocks
-void Compiler::enter_block() {
-	variables.push_back({});
+void Compiler::enter_block(Block* block) {
+	blocks.back().push_back(block);
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()++;
 	}
@@ -1894,7 +1916,7 @@ void Compiler::leave_block(bool delete_vars) {
 	if (delete_vars) {
 		delete_variables_block(1);
 	}
-	variables.pop_back();
+	blocks.back().pop_back();
 	if (!loops_blocks.empty()) {
 		loops_blocks.back()--;
 	}
@@ -1902,20 +1924,31 @@ void Compiler::leave_block(bool delete_vars) {
 	catchers.back().pop_back();
 }
 void Compiler::delete_variables_block(int deepness) {
-	for (int i = variables.size() - 1; i >= (int) variables.size() - deepness; --i) {
-		for (auto it = variables[i].begin(); it != variables[i].end(); ++it) {
-			// std::cout << "delete variable block " << it->first << " " << it->second.t << " " << it->second.v->getType() << std::endl;
-			if (it->second.t->is_mpz_ptr()) {
-				insn_delete_mpz(it->second);
-			} else if (it->second.t->pointed()->must_manage_memory()) {
-				insn_delete(insn_load(it->second));
-			} 
+	// std::cout << "blocks " << blocks.size() << std::endl;
+	for (int i = blocks.back().size() - 1; i >= (int) blocks.back().size() - deepness; --i) {
+		auto& variables = blocks.back()[i]->variables;
+		for (auto it = variables.begin(); it != variables.end(); ++it) {
+			// std::cout << "delete variable block " << it->second << " " << it->second->type << " " << it->second->val.v << " scope " << (int)it->second->scope << std::endl;
+			if (it->second->phi or not it->second->val.v or it->second->scope == VarScope::CAPTURE) continue;
+			if (it->second->type->is_mpz_ptr()) {
+				insn_delete_mpz(it->second->val);
+			} else if (it->second->type->must_manage_memory()) {
+				insn_delete(insn_load(it->second->val));
+			}
+		}
+		auto& temporary_values = blocks.back()[i]->temporary_values;
+		for (const auto& value : temporary_values) {
+			insn_delete(value);
+		}
+		auto& temporary_variables = blocks.back()[i]->temporary_variables;
+		for (const auto& variable : temporary_variables) {
+			insn_delete_variable(variable->val);
 		}
 	}
 }
 
 void Compiler::enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun) {
-	variables.push_back({});
+	blocks.push_back({});
 	functions.push(F);
 	functions2.push(fun);
 	functions_blocks.push_back(0);
@@ -1931,17 +1964,15 @@ void Compiler::enter_function(llvm::Function* F, bool is_closure, FunctionVersio
 	for (unsigned i = 0; i < fun->parent->arguments.size(); ++i) {
 		args.push_back(fun->parent->arguments.at(i)->content);
 	}
-	arguments.push({});
 }
 
 void Compiler::leave_function() {
-	variables.pop_back();
+	blocks.pop_back();
 	functions.pop();
 	functions2.pop();
 	functions_blocks.pop_back();
 	catchers.pop_back();
 	function_is_closure.pop();
-	arguments.pop();
 	exception_line.pop();
 	this->F = functions.top();
 	this->fun = functions2.top();
@@ -1964,26 +1995,11 @@ void Compiler::insert_new_generation_block() const {
 }
 
 // Variables
-Compiler::value Compiler::add_var(const std::string& name, Compiler::value value) {
-	assert((value.v != nullptr) && "value must not be null");
-	assert(value.t->llvm(*this) == value.v->getType());
-	auto var = create_entry(name, value.t);
-	insn_store(var, value);
-	variables.back()[name] = var;
-	return var;
-}
 
-Compiler::value Compiler::add_external_var(const std::string& name, const Type* type) {
-	auto var = get_symbol("ctx." + name, type->pointer());
-	variables.back()[name] = var;
-	return var;
-}
-
-Compiler::value Compiler::create_and_add_var(const std::string& name, const Type* type) {
-	// std::cout << "Compiler::create_and_add_var(" << name << ", " << type << ")" << std::endl;
-	auto var = create_entry(name, type->not_temporary());
-	variables.back()[name] = var;
-	return var;
+Compiler::value Compiler::add_external_var(Variable* variable) {
+	// variable->val = get_symbol("ctx." + variable->name, variable->type->pointer());
+	// variables.back()[variable->name] = variable;
+	// return variable->val;
 }
 
 void Compiler::export_context_variable(const std::string& name, Compiler::value v) const {
@@ -1996,61 +2012,11 @@ void Compiler::export_context_variable(const std::string& name, Compiler::value 
 	insn_call(Type::void_, {new_const_string(name), v}, f);
 }
 
-void Compiler::convert_var_to_poly(const std::string& name) {
-	// std::cout << "Compiler::convert_var_to_any(" << name << ")" << std::endl;
-	bool is_argument = false;
-	auto& var = [&]() -> Compiler::value& {
-		if (arguments.top().find(name) != arguments.top().end()) {
-			is_argument = true;
-			return arguments.top().at(name);
-		}
-		for (int i = variables.size() - 1; i >= 0; --i) {
-			if (variables[i].find(name) != variables[i].end()) {
-				return variables[i].at(name);
-			}
-		}
-		assert(false);
-	}();
-	if (var.t->pointed()->is_polymorphic()) return;
-	auto new_var = CreateEntryBlockAlloca(name, Type::any->llvm(*this));
-	auto new_val = insn_to_any(insn_load(var));
-	if (!is_argument) {
-		insn_inc_refs(new_val);
-	}
-	insn_store({new_var, Type::any->pointer()}, new_val);
-	var.v = new_var;
-	var.t = Type::any->pointer();
+void Compiler::add_temporary_variable(Variable* variable) {
+	blocks.back().back()->temporary_variables.push_back(variable);
 }
-
-Compiler::value Compiler::get_var(const std::string& name) {
-	for (int i = variables.size() - 1; i >= 0; --i) {
-		auto it = variables[i].find(name);
-		if (it != variables[i].end()) {
-			return it->second;
-		}
-	}
-	std::cout << "var '" << name << "' not found !" << std::endl;
-	assert(false && "var not found!");
-}
-
-void Compiler::update_var(std::string& name, Compiler::value v) {
-	// std::cout << v.t->llvm(*this) << " " << v.v->getType() << std::endl;
-	assert(v.t->llvm(*this) == v.v->getType());
-	for (int i = variables.size() - 1; i >= 0; --i) {
-		if (variables[i].find(name) != variables[i].end()) {
-			auto& var = variables[i].at(name);
-			bool is_mpz = v.t->is_mpz_ptr();
-			if (var.t != v.t->pointer()) {
-				var.t = is_mpz ? v.t : v.t->pointer();
-				auto var_type = is_mpz ? Type::mpz : v.t;
-				var.v = CreateEntryBlockAlloca(name, var_type->llvm(*this));
-			}
-			if (is_mpz) {
-				v = insn_load(v);
-			}
-			insn_store(var, v);
-		}
-	}
+void Compiler::add_temporary_value(Compiler::value value) {
+	blocks.back().back()->temporary_values.push_back(value);
 }
 
 // Loops

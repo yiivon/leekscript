@@ -22,11 +22,15 @@ bool FunctionVersion::is_compiled() const {
 }
 
 void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool condensed) const {
+	for (const auto& capture : captures) {
+		os << "[" << capture << " = any(" << capture->parent << ")] ";
+	}
 	if (captures.size() > 0) {
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << captures[c]->name << " " << captures[c]->type;
+			os << captures[c] << " " << captures[c]->type;
+			os << " " << (void*) captures[c];
 		}
 		os << "] ";
 	}
@@ -35,7 +39,12 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	}
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		if (i > 0) os << ", ";
-		os << parent->arguments.at(i)->content;
+		if (debug and arguments.find(parent->arguments.at(i)->content) != arguments.end()) {
+			os << arguments.at(parent->arguments.at(i)->content);
+			os << " " << (void*)arguments.at(parent->arguments.at(i)->content);
+		} else {
+			os << parent->arguments.at(i)->content;
+		}
 		if (debug)
 			os << " " << this->type->arguments().at(i);
 
@@ -97,22 +106,25 @@ void FunctionVersion::analyze_global_functions(SemanticAnalyzer* analyzer) {
 void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 	if (pre_analyzed) return;
 	pre_analyzed = true;
+	// std::cout << "FunctionVersion " << body.get() << " ::pre_analyze " << args << std::endl;
 	analyzer->enter_function((FunctionVersion*) this);
 	// Create arguments
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
 		auto name = parent->arguments.at(i)->content;
-		auto arg = new Variable(name, VarScope::PARAMETER, type, i, nullptr, (FunctionVersion*) this, nullptr);
+		auto arg = new Variable(name, VarScope::PARAMETER, type, i, nullptr, analyzer->current_function(), nullptr, nullptr);
+		initial_arguments.insert({ name, arg });
 		arguments.insert({ name, arg });
 	}
+	body->branch = body.get();
 	body->pre_analyze(analyzer);
+
 	analyzer->leave_function();
 }
 
 void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
 	// std::cout << "Function::analyse_body(" << args << ")" << std::endl;
 
-	captures.clear();
 	parent->current_version = this;
 	analyzer->enter_function((FunctionVersion*) this);
 
@@ -176,28 +188,44 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	// std::cout << "function analysed body : " << version->type << std::endl;
 }
 
-int FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
-	// std::cout << "Function::capture " << var->name << std::endl;
+Variable* FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
+	// std::cout << "Function::capture " << var << std::endl;
 
+	// the function becomes a closure
 	type = Type::closure(getReturnType(), type->arguments());
-
+	// Already exists?
 	for (size_t i = 0; i < captures.size(); ++i) {
 		if (captures[i]->name == var->name)
-			return i;
+			return captures[i];
 	}
-	var = new Variable(*var);
-	captures.push_back(var);
 
-	if (var->function->parent != parent->parent) {
+	// Capture from direct parent
+	// std::cout << "var->function->parent " << var->function->parent << " parent->parent " << parent->parent << std::endl;
+	if (var->function->parent == parent->parent) {
+		auto converted_var = analyzer->update_var(var);
+		converted_var->scope = VarScope::CAPTURE;
+		captures.push_back(converted_var);
+		captures_map.insert({ var->name, converted_var });
+		auto capture = new Variable(*converted_var);
+		// capture->scope = VarScope::CAPTURE;
+		// std::cout << "Capture " << converted_var << " " << (void*) converted_var << " parent " << converted_var->parent << " " << (void*) converted_var->parent << std::endl;
+		return capture;
+	} else {
+		// Capture from parent of parent
+		// std::cout << "var->function->parent " << var->function->parent << std::endl << "parent->parent " << parent->parent << std::endl << std::endl; 
 		// std::cout << "Capture by parent" << std::endl;
-		auto new_var = new Variable(*var);
 		// std::cout << "parents versions " << parent->parent->versions.size() << std::endl;
-		auto parent_version = parent->parent->versions.size() ? parent->parent->versions.begin()->second : parent->parent->default_version;
-		new_var->index = parent_version->capture(analyzer, new_var);
-		var->scope = VarScope::CAPTURE;
-		var->parent_index = new_var->index;
+		auto parent_version = parent->parent->current_version ? parent->parent->current_version : parent->parent->default_version;
+		analyzer->enter_function(parent_version);
+		analyzer->enter_block(parent_version->body.get());
+		auto capture_in_parent = parent_version->capture(analyzer, var);
+		analyzer->leave_block();
+		analyzer->leave_function();
+		// std::cout << "capture in parent : " << capture_in_parent << std::endl;
+		auto c = capture(analyzer, capture_in_parent);
+		c->parent_index = capture_in_parent->index;
+		return c;
 	}
-	return captures.size() - 1;
 }
 
 void FunctionVersion::create_function(Compiler& c) {
@@ -234,9 +262,11 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 
 	if (not is_compiled()) {
 
-		for (const auto& cap : captures) {
-			if (cap->scope == VarScope::LOCAL or cap->scope == VarScope::PARAMETER) {
-				c.convert_var_to_poly(cap->name);
+		for (const auto& capture : captures) {
+			// std::cout << "Convert capture " << capture << " " << (void*) capture << " " << (int)capture->scope << " parent " << capture->parent << " " << capture->parent->val.v << " " << capture->parent->val.t << " " << (void*) capture->parent << std::endl;
+			if (capture->parent->val.v) {
+				capture->val = c.create_entry(capture->name, Type::any);
+				c.insn_store(capture->val, c.insn_convert(c.insn_load(capture->parent->val), Type::any));
 			}
 		}
 		std::vector<llvm::Type*> args;
@@ -257,7 +287,7 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 		if (parent->is_main_function and c.vm->context) {
 			for (const auto& var : c.vm->context->vars) {
 				// std::cout << "Main function compile context var " << var.first << std::endl;
-				c.add_external_var(var.first, var.second.type);
+				c.add_external_var(Variable::new_temporary(var.first, var.second.type));
 			}
 		}
 
@@ -269,22 +299,22 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 				arg.setName("closure");
 			} else if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
+				const auto& argument = initial_arguments.at(name);
+				// std::cout << "create entry of argument " << argument << " " << (void*)argument << std::endl;
 				const auto type = this->type->arguments().at(offset + index)->not_temporary();
 				arg.setName(name);
-				auto var_type = type->is_mpz_ptr() ? Type::mpz : type;
-				auto var = c.create_entry(name, var_type);
+				argument->create_entry(c);
 				if (type->is_mpz_ptr()) {
-					c.insn_store(var, c.insn_load({&arg, type}));
+					c.insn_store(argument->val, c.insn_load({&arg, type}));
 				} else {
 					if (this->type->arguments().at(offset + index)->temporary) {
 						Compiler::value a = {&arg, type};
 						c.insn_inc_refs(a);
-						c.insn_store(var, a);
+						c.insn_store(argument->val, a);
 					} else {
-						c.insn_store(var, {&arg, type});
+						c.insn_store(argument->val, {&arg, type});
 					}
 				}
-				c.arguments.top()[name] = var;
 			}
 			index++;
 		}
@@ -306,23 +336,20 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 	if (captures.size()) {
 		std::vector<Compiler::value> captures;
 		if (!parent->is_main_function) {
-			for (const auto& cap : this->captures) {
+			for (const auto& capture : this->captures) {
 				Compiler::value jit_cap;
-				if (cap->scope == VarScope::LOCAL) {
-					auto f = dynamic_cast<Function*>(cap->value);
+				// std::cout << "Compile capture " << capture << " " << (int) capture->scope << std::endl;
+				if (capture->parent->scope == VarScope::LOCAL) {
+					auto f = dynamic_cast<Function*>(capture->value);
 					if (f) {
-						jit_cap = f->compile_version(c, cap->version);
+						jit_cap = f->compile_version(c, capture->version);
 					} else {
-						if (cap->type->is_mpz_ptr()) {
-							jit_cap = c.get_var(cap->name);
-						} else {
-							jit_cap = c.insn_load(c.get_var(cap->name));
-						}
+						jit_cap = capture->get_value(c);
 					}
-				} else if (cap->scope == VarScope::CAPTURE) {
-					jit_cap = c.insn_get_capture(cap->parent_index, cap->type);
+				} else if (capture->parent->scope == VarScope::CAPTURE) {
+					jit_cap = c.insn_get_capture(capture->parent_index, capture->type);
 				} else {
-					jit_cap = c.insn_load(c.insn_get_argument(cap->name));
+					jit_cap = capture->get_value(c);
 				}
 				assert(jit_cap.t->is_polymorphic());
 				captures.push_back(jit_cap);
@@ -345,12 +372,12 @@ void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool 
 	// Delete temporary mpz arguments
 	for (size_t i = 0; i < type->arguments().size(); ++i) {
 		const auto& name = parent->arguments.at(i)->content;
-		const auto& arg = ((Compiler&) c).arguments.top().at(name);
+		const auto& arg = arguments.at(name);
 		if (type->argument(i) == Type::tmp_mpz_ptr) {
 			// std::cout << "delete tmp arg " << name << " " << type->argument(i) << std::endl;
-			c.insn_delete_mpz(arg);
+			c.insn_delete_mpz(arg->val);
 		} else if (type->argument(i)->temporary) {
-			c.insn_delete(c.insn_load(arg));
+			c.insn_delete(c.insn_load(arg->val));
 		}
 	}
 	// Delete function variables if needed

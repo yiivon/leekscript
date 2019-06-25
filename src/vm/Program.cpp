@@ -75,6 +75,8 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 		return result;
 	}
 
+	print(std::cout, true); std::cout << std::endl;
+
 	// Compilation
 	vm.internals.clear();
 	vm.compiler.program = this;

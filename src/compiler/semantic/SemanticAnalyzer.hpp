@@ -51,9 +51,9 @@ public:
 
 	Variable* add_var(Token*, const Type*, Value*);
 	Variable* add_global_var(Token*, const Type*, Value*);
-
 	Variable* get_var(Token* name);
 	Variable* convert_var_to_any(Variable* var);
+	Variable* update_var(Variable* variable);
 
 	void add_error(Error ex);
 

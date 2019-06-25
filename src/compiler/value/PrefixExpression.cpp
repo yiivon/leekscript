@@ -29,6 +29,7 @@ Location PrefixExpression::location() const {
 }
 
 void PrefixExpression::pre_analyze(SemanticAnalyzer* analyzer) {
+	// std::cout << "PrefixExpression pre_analyze" << std::endl;
 	expression->pre_analyze(analyzer);
 }
 
@@ -137,6 +138,7 @@ Compiler::value PrefixExpression::compile(Compiler& c) const {
 		}
 		case TokenType::NOT: {
 			if (expression->type->is_primitive()) {
+				// std::cout << "PreExpr compile expr " << std::endl;
 				auto x = expression->compile(c);
 				assert(x.t->llvm(c) == x.v->getType());
 				return c.insn_not_bool(x);

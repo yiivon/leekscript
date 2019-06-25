@@ -28,7 +28,11 @@ bool VariableValue::isLeftValue() const {
 }
 
 void VariableValue::print(std::ostream& os, int, bool debug, bool condensed) const {
-	os << token->content;
+	if (var != nullptr and debug) {
+		os << var;
+	} else {
+		os << token->content;
+	}
 	if (debug) {
 		os << " ";
 		if (has_version && var != nullptr && var->value != nullptr)
@@ -136,11 +140,12 @@ Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
 	var = analyzer->get_var(token);
 	if (var != nullptr) {
+		// std::cout << "VV pre_analyze variable = " << var << std::endl;
 		// std::cout << "pre analyze var " << var->name << " " << (void*) var->function << " <=> " << (void*) analyzer->current_function() << " " << (int) var->scope << std::endl;
 		if (var->scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
 			if (not var->type->is_function()) {
-				// capture_index = analyzer->current_function()->parent->capture(analyzer, var);
-				// analyzer->current_function()->parent->will_be_closure();
+				// std::cout << "VV " << var << " capture " << std::endl;
+				var = analyzer->current_function()->capture(analyzer, var);
 			}
 		}
 	}
@@ -159,11 +164,11 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 		scope = var->scope;
 		if (scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
 			if (not var->type->is_function()) {
-				if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
-					var = analyzer->convert_var_to_any(var);
-					type = var->type;
-				}
-				capture_index = analyzer->current_function()->capture(analyzer, var);
+				// if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
+				// 	var = analyzer->convert_var_to_any(var);
+				// 	type = var->type;
+				// }
+				// capture_index = analyzer->current_function()->capture(analyzer, var);
 				var->index = capture_index;
 				scope = VarScope::CAPTURE;
 			}
@@ -314,18 +319,10 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (vv && has_version) {
 			return var->value->compile_version(c, version);
 		}
-		if (type->is_mpz_ptr()) {
-			v = c.get_var(name);
-		} else {
-			v = c.insn_load(c.get_var(name));
-		}
+		v = var->get_value(c);
 	} else if (scope == VarScope::PARAMETER) {
-		if (type->is_mpz_ptr()) {
-			v = c.insn_get_argument(name);
-		} else {
-			v = c.insn_load(c.insn_get_argument(name));
-		}
-		// v = c.insn_get_argument(name);
+		// std::cout << "compile argument " << var << std::endl;
+		v = var->get_value(c);
 	} else {
 		assert(false);
 	}
@@ -341,24 +338,20 @@ Compiler::value VariableValue::compile_version(Compiler& c, std::vector<const Ty
 	if (f) {
 		return f->compile_version(c, version);
 	}
-	if (type->is_mpz_ptr()) {
-		return c.get_var(name);
-	} else {
-		return c.insn_load(c.get_var(name));
-	}
+	return var->get_value(c);
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
-		v = c.get_var(name);
+		v = var->val;
 	} else if (scope == VarScope::CAPTURE) {
 		v = c.insn_get_capture_l(capture_index, type);
 	} else if (scope == VarScope::INTERNAL) {
 		v = c.get_symbol(name, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
-		v = c.insn_get_argument(name);
+		v = var->val;
 	}
 	return v;
 }

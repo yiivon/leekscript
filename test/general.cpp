@@ -89,6 +89,7 @@ void Test::test_general() {
 	code("let a = 2 let a = 5").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"a"});
 	code("let Number = 2").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
 
+	section("Sub-blocks");
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
@@ -192,4 +193,16 @@ void Test::test_general() {
 	code("{}.copy()").equals("{}");
 	code("(x -> x).copy()").equals("<function>");
 	code("Number.copy()").equals("<class Number>");
+
+	section("Assignments");
+	code("var b = 0 { b = 12 } b").equals("12");
+	code("var i = 12 { i = 'salut' } i").equals("'salut'");
+	code("var b = 5 if 1 { b = 'salut' } b").equals("'salut'");
+	code("var b = 5 if 0 { b = 'salut' } b").equals("5");
+	code("var a = 12 if 1 { a = 5 a++ } else { a = 3 } a").equals("6");
+	code("var a = 12 if 0 { a = 5 a++ } else { a = 5.5 } a").equals("5.5");
+	code("var a = 12 if 0 { a = 5 a++ } else { a = 7l } a").equals("7");
+
+	section("Assignments with +=");
+	code("var a = 10 a += 0.5 a").equals("10.5");
 }

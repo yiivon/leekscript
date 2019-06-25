@@ -6,6 +6,8 @@
 
 namespace ls {
 
+class Phi;
+
 class If : public Value {
 public:
 
@@ -13,6 +15,7 @@ public:
 	std::unique_ptr<Block> then;
 	std::unique_ptr<Block> elze;
 	bool ternary;
+	std::vector<Phi*> phis;
 
 	If(bool ternary = false);
 

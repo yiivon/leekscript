@@ -49,6 +49,8 @@ class VM;
 class Function;
 class Type;
 class FunctionVersion;
+class Variable;
+class Block;
 
 class Compiler {
 public:
@@ -84,12 +86,11 @@ public:
 	std::stack<FunctionVersion*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
-	std::stack<std::unordered_map<std::string, value>> arguments;
 	std::stack<llvm::BasicBlock*> function_llvm_blocks;
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;
-	std::vector<std::unordered_map<std::string, value>> variables;
+	std::vector<std::vector<Block*>> blocks;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
 	std::unordered_map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
@@ -138,8 +139,7 @@ public:
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
 	llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) const {
-		auto function = builder.GetInsertBlock()->getParent();
-		llvm::IRBuilder<> builder(&function->getEntryBlock(), function->getEntryBlock().begin());
+		llvm::IRBuilder<> builder(&F->getEntryBlock(), F->getEntryBlock().begin());
 		return builder.CreateAlloca(type, nullptr, VarName);
 	}
 
@@ -243,7 +243,6 @@ public:
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;
-	value insn_get_argument(const std::string& name) const;
 
 	// Arrays
 	value new_array(const Type* type, std::vector<value> elements) const;
@@ -263,7 +262,7 @@ public:
 	value iterator_rkey(value v, value it, value previous) const;
 	void iterator_increment(const Type* collectionType, value it) const;
 	void iterator_rincrement(const Type* collectionType, value it) const;
-	value insn_foreach(value v, const Type* output, const std::string var, const std::string key, std::function<value(value, value)>, bool reversed = false);
+	value insn_foreach(value v, const Type* output, Variable* var, Variable* key, std::function<value(value, value)>, bool reversed = false);
 
 	// Controls
 	label insn_init_label(std::string name) const;
@@ -277,6 +276,7 @@ public:
 	void insn_return(value v) const;
 	void insn_return_void() const;
 	value insn_phi(const Type* type, value v1, label l1, value v2, label l2) const;
+	value insn_phi(const Type* type, value v1, Block* b1, value v2, Block* b2) const;
 
 	// Call functions
 	value insn_invoke(const Type* return_type, std::vector<value> args, std::string name) const;
@@ -287,7 +287,7 @@ public:
 	void log(const std::string&& str) const;
 
 	// Blocks
-	void enter_block();
+	void enter_block(Block* block);
 	void leave_block(bool delete_vars = true);
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
 	void enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun);
@@ -298,14 +298,10 @@ public:
 	void insert_new_generation_block() const;
 
 	// Variables
-	value add_var(const std::string& name, value value);
-	value add_external_var(const std::string& name, const Type* type);
-	value create_and_add_var(const std::string& name, const Type* type);
+	value add_external_var(Variable*);
 	void export_context_variable(const std::string& name, Compiler::value v) const;
-	void convert_var_to_poly(const std::string& name);
-
-	value get_var(const std::string& name);
-	void update_var(std::string& name, value value);
+	void add_temporary_variable(Variable* variable);
+	void add_temporary_value(value container);
 
 	// Loops
 	void enter_loop(label*, label*);

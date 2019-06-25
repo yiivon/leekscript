@@ -6,6 +6,9 @@
 #include "../instruction/VariableDeclaration.hpp"
 #include "Function.hpp"
 #include "../semantic/FunctionVersion.hpp"
+#include "../semantic/Variable.hpp"
+#include "../instruction/ExpressionInstruction.hpp"
+#include "../value/Phi.hpp"
 
 namespace ls {
 
@@ -26,6 +29,18 @@ void Block::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 		os << " " << type;
 		if (may_return) os << " ==>" << return_type;
 	}
+	if (variables.size()) {
+		os << " vars: [";
+		int i = 0;
+		for (const auto& variable : variables) {
+			if (i++ > 0) os << ", ";
+			os << variable.second;
+		}
+		os << "]";
+	}
+	// for (const auto& assignment : assignments) {
+	// 	os << std::endl << tabs(indent) << assignment.first << " = " << assignment.second;
+	// }
 }
 
 Location Block::location() const {
@@ -45,12 +60,32 @@ void Block::analyze_global_functions(SemanticAnalyzer* analyzer) {
 	analyzer->leave_block();
 }
 
+void Block::setup_branch(SemanticAnalyzer* analyzer) {
+	if (!branch) {
+		branch = analyzer->current_function()->body.get() == this ? this : analyzer->current_block()->branch;
+	}
+}
+
 void Block::pre_analyze(SemanticAnalyzer* analyzer) {
+	setup_branch(analyzer);
 	analyzer->enter_block(this);
 	for (const auto& instruction : instructions) {
 		instruction->pre_analyze(analyzer);
 	}
 	analyzer->leave_block();
+	create_assignments(analyzer);
+}
+
+void Block::create_assignments(SemanticAnalyzer* analyzer) {
+	if (not is_function_block) {
+		for (const auto& variable : variables) {
+			std::cout << "Block update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
+			if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch) {
+				auto new_var = analyzer->update_var(variable.second->parent);
+				assignments.push_back({ new_var, variable.second });
+			}
+		}
+	}
 }
 
 void Block::analyze(SemanticAnalyzer* analyzer) {
@@ -97,13 +132,18 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 		type = Type::tmp_mpz;
 		mpz_pointer = true;
 	}
+	
+	for (const auto& assignment : assignments) {
+		assignment.first->type = assignment.second->type;
+	}
 }
 
 Compiler::value Block::compile(Compiler& c) const {
 
 	// std::cout << "Compile block " << type << std::endl;
 
-	c.enter_block();
+	c.enter_block((Block*) this);
+	((Block*) this)->block = c.builder.GetInsertBlock();
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 
@@ -137,6 +177,22 @@ Compiler::value Block::compile(Compiler& c) const {
 			}();
 			if (is_function_block and c.vm->context) {
 				c.fun->parent->export_context(c);
+			}
+			// Load the value of variable needed for phi nodes after the block
+			if (not is_function_block) {
+				for (const auto& variable : variables) {
+					if (variable.second->parent) {
+						if (variable.second->phi) {
+							// std::cout << "Variable export last value for phi " << variable.second << " " << variable.second->type << std::endl;
+							variable.second->init_value = c.insn_convert(c.insn_load(variable.second->val), variable.second->phi->variable->type);
+						}
+					}
+				}
+			}
+			for (const auto& assignment : assignments) {
+				// std::cout << "Store variable " << assignment.first << " = " << assignment.second << std::endl;
+				assignment.first->val = c.create_entry(assignment.first->name, assignment.first->type);
+				c.insn_store(assignment.first->val, c.insn_move(c.insn_load(assignment.second->val)));
 			}
 			c.leave_block();
 			if (is_function_block) {

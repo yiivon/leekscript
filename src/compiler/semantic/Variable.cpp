@@ -1,5 +1,72 @@
 #include "Variable.hpp"
+#include "../../colors.h"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
+Variable::Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, Block* block, LSValue* lsvalue, Call call) : name(name), scope(scope), index(index), parent_index(0), value(value), function(function), block(block), type(type), lsvalue(lsvalue), call(call) {
+}
+
+const Type* Variable::get_entry_type() const {
+	if (type->is_mpz_ptr()) {
+		return Type::mpz;
+	}
+	return type->not_temporary();
+}
+
+Compiler::value Variable::get_value(Compiler& c) const {
+	// std::cout << "get_value " << this << std::endl;
+	if (type->is_mpz_ptr()) {
+		return val; // mpz values are passed by pointer so we don't load the value
+	}
+	return c.insn_load(val);
+}
+
+void Variable::create_entry(Compiler& c) {
+	// std::cout << "create_entry " << this << std::endl;
+	auto t = get_entry_type();
+	val = c.create_entry(name, t);
+}
+
+void Variable::store_value(Compiler& c, Compiler::value value) {
+	if (value.t->is_mpz_ptr()) {
+		auto v = c.insn_load(value);
+		c.insn_store(val, v);
+		init_value = v;
+	} else {
+		c.insn_store(val, value);
+		init_value = value;
+	}
+}
+
+Variable* Variable::new_temporary(std::string name, const Type* type) {
+	return new Variable(name, VarScope::LOCAL, type, 0, nullptr, nullptr, nullptr, nullptr);
+}
+
+const Type* Variable::get_type_for_variable_from_expression(const Type* expression_type) {
+	if (expression_type->is_mpz() or expression_type->is_mpz_ptr()) {
+		return Type::mpz_ptr;
+	}
+	return expression_type->not_temporary();
+}
+
+}
+
+namespace ls {
+	std::ostream& operator << (std::ostream& os, const Variable& variable) {
+		os << BOLD << variable.name << END_COLOR;
+		std::string versions;
+		auto v = &variable;
+		while (v and v->id != 0) {
+			versions = C_GREY + std::string(".") + std::to_string(v->id) + END_COLOR + versions;
+			v = v->parent;
+		}
+		os << versions;
+		// os << "." << (int) variable.scope;
+		return os;
+	}
+	std::ostream& operator << (std::ostream& os, const Variable* variable) {
+		os << *variable;
+		return os;
+	}
 }

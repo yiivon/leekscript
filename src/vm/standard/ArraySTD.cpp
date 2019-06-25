@@ -5,6 +5,7 @@
 #include "ValueSTD.hpp"
 #include "../TypeMutator.hpp"
 #include "../../type/Type.hpp"
+#include "../../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
@@ -216,7 +217,6 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	template_(pT, pE).
 	method("push", {
 		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(Type::never), pT}, push, 0, {new WillStoreMutator()}},
 		{Type::array(pT), {Type::array(pT), pE}, push, 0, {new WillStoreMutator()}},
 	});
 
@@ -439,32 +439,45 @@ Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, 
 }
 
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto array = args[0];
 	auto function = args[1];
-	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move_inc(args[2]));
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		auto r = c.insn_call(function, {c.insn_load(result), v});
-		c.insn_delete(c.insn_load(result));
-		c.insn_store(result, c.insn_move_inc(r));
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.add_temporary_variable(result);
+	c.insn_store(result->val, c.insn_move_inc(args[2]));
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.add_temporary_variable(v);
+	c.insn_foreach(array, Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		auto r = c.insn_call(function, {c.insn_load(result->val), v});
+		c.insn_delete(c.insn_load(result->val));
+		c.insn_store(result->val, c.insn_move_inc(r));
 		return {};
 	});
-	return c.insn_load(result);
+	return c.insn_load(result->val);
 }
 
 Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	auto result = c.create_and_add_var("r", args[2].t);
-	c.insn_store(result, c.insn_move(args[2]));
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
-		c.insn_store(result, c.insn_call(function, {v, c.insn_load(result)}));
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.add_temporary_variable(result);
+	c.insn_store(result->val, c.insn_move(args[2]));
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.insn_foreach(args[0], Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		c.insn_store(result->val, c.insn_call(function, {v, c.insn_load(result->val)}));
 		return {};
 	}, true);
-	return c.insn_load(result);
+	return c.insn_load(result->val);
 }
 
 Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.add_temporary_variable(v);
+	c.insn_foreach(args[0], Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		return c.insn_call(function, {v});
 	});
 	return {};
@@ -497,7 +510,9 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	auto function = args[1];
 	auto array_true = c.new_array(array.t->element(), {});
 	auto array_false = c.new_array(array.t->element(), {});
-	c.insn_foreach(array, Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+	auto v = Variable::new_temporary("v", array.t->element());
+	v->create_entry(c);
+	c.insn_foreach(array, Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto r = c.insn_call(function, {v});
 		c.insn_if(r, [&]() {
 			c.insn_push_array(array_true, v);
@@ -514,7 +529,9 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bo
 	auto array = args[0];
 	auto function = args[1];
 	auto result = no_return ? Compiler::value() : c.new_array(function.t->return_type(), {});
-	c.insn_foreach(array, Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+	auto v = Variable::new_temporary("v", array.t->element());
+	v->create_entry(c);
+	c.insn_foreach(array, Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function, {x});
@@ -583,7 +600,9 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, b
 Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto function = args[1];
 	auto result = c.new_array(args[0].t->element(), {});
-	c.insn_foreach(args[0], Type::void_, "v", "", [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.insn_foreach(args[0], Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto r = c.insn_call(function, {v});
 		c.insn_if(r, [&]() {
 			c.insn_push_array(result, c.clone(v));

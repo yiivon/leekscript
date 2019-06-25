@@ -6,6 +6,7 @@
 #include "../Compiler.hpp"
 #include "../lexical/Location.hpp"
 #include "../semantic/Call.hpp"
+#include "../semantic/Assignment.hpp"
 
 namespace ls {
 

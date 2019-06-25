@@ -82,7 +82,9 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 
 Compiler::value Foreach::compile(Compiler& c) const {
 	auto container_v = container->compile(c);
-	return c.insn_foreach(container_v, type->element(), value->content, key ? key->content : "", [&](Compiler::value value, Compiler::value key) {
+	value_var->create_entry(c);
+	if (key_var) key_var->create_entry(c);
+	return c.insn_foreach(container_v, type->element(), value_var, key_var, [&](Compiler::value value, Compiler::value key) {
 		return body->compile(c);
 	});
 }
