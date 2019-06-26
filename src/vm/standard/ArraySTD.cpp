@@ -33,8 +33,12 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	operator_("+", {
 		{Type::const_array(), Type::const_any, Type::array(Type::any), op_add},
 	});
+
+	auto pqT = Type::template_("T");
+	auto pqE = Type::template_("E");
+	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::array(), Type::const_any, Type::array(), array_add_eq, 0, {new WillStoreMutator()}, true},
+		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, {}, true},
 	});
 
 	auto ttE = Type::template_("E");
