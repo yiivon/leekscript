@@ -73,6 +73,7 @@ namespace ls {
 	}
 	std::ostream& operator << (std::ostream& os, const Variable* variable) {
 		os << *variable;
+		// os << " " << (void*) variable;
 		return os;
 	}
 }
