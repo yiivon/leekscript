@@ -276,6 +276,16 @@ bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 	return j != set->end();
 }
 
+
+template <typename T>
+LSSet<LSValue*>* LSSet<T>::to_any_set() const {
+	auto result = new LSSet<LSValue*>();
+	for (const auto& e : *this) {
+		result->emplace(ls::convert<LSValue*>(e));
+	}
+	return result;
+}
+
 template <>
 inline bool LSSet<LSValue*>::lt(const LSValue* v) const {
 	if (auto set = dynamic_cast<const LSSet<LSValue*>*>(v)) {

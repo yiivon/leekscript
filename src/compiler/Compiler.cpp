@@ -296,6 +296,17 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		auto f = insn_convert(v, Type::i8_ptr);
 		return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
 	}
+	if (v.t->is_set() and t->is_set() and t->element()->is_polymorphic()) {
+		if (v.t->element() == Type::integer) {
+			auto r = insn_call(t, {v}, "Set.int_to_any");
+			if (delete_temporary) insn_delete(v);
+			return r;
+		} else if (v.t->element() == Type::real) {
+			auto r = insn_call(t, {v}, "Set.real_to_any");
+			if (delete_temporary) insn_delete(v);
+			return r;
+		}
+	}
 	if (v.t->fold()->is_polymorphic()) {
 		if (t->is_polymorphic() or t->is_pointer()) {
 			// TODO temporary

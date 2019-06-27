@@ -33,11 +33,12 @@ public:
 	bool ls_contains(T value);
 	template <class T2>
 	bool set_lt(const LSSet<T2>* set) const;
+	LSSet<LSValue*>* to_any_set() const;
 
 	/*
 	 * LSValue methods
 	 */
- 	virtual bool to_bool() const override;
+	virtual bool to_bool() const override;
 	virtual bool ls_not() const override;
 	virtual LSValue* add_eq(LSValue* v) override;
 	LSValue* add_eq_int(int v);

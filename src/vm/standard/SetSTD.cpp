@@ -89,6 +89,12 @@ SetSTD::SetSTD(VM* vm) : Module(vm, "Set") {
 		{Type::boolean, {Type::const_set(Type::real), Type::real}, (void*) &LSSet<double>::ls_insert},
 		{Type::boolean, {Type::const_set(Type::integer), Type::integer}, (void*) &LSSet<int>::ls_insert},
 	});
+	method("int_to_any", {
+		{Type::set(Type::any), {Type::set(Type::integer)}, (void*) &LSSet<int>::to_any_set}
+	});
+	method("real_to_any", {
+		{Type::set(Type::any), {Type::set(Type::real)}, (void*) &LSSet<double>::to_any_set}
+	});
 }
 
 Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
