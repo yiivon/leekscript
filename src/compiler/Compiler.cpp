@@ -76,14 +76,21 @@ Compiler::Compiler(VM* vm) : vm(vm),
 			llvm::WriteBitcodeToFile(*m, bitcode);
 			bitcode.flush();
 		}
+		if (this->export_optimized_ir) {
+			std::error_code EC2;
+			llvm::raw_fd_ostream ir(m->getName().str() + "-opti.ll", EC2, llvm::sys::fs::F_None);
+			m->print(ir, nullptr);
+			ir.flush();
+		}
 		return m;
 	}) {
 		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
 	}
 
-llvm::orc::VModuleKey Compiler::addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode) {
+llvm::orc::VModuleKey Compiler::addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode, bool export_optimized_ir) {
 	auto K = ES.allocateVModule();
 	this->export_bitcode = export_bitcode;
+	this->export_optimized_ir = export_optimized_ir;
 	cantFail(OptimizeLayer.addModule(K, std::move(M)));
 	return K;
 }

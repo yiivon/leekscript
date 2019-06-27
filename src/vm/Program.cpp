@@ -39,7 +39,7 @@ Program::~Program() {
 	}
 }
 
-VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code) {
+VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code, bool optimized_ir) {
 
 	auto parse_start = std::chrono::high_resolution_clock::now();
 
@@ -100,7 +100,7 @@ VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool 
 
 	auto compilation_start = std::chrono::high_resolution_clock::now();
 
-	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module), true, bitcode);
+	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module), true, bitcode, optimized_ir);
 	handle_created = true;
 	auto ExprSymbol = vm.compiler.findSymbol("main");
 	assert(ExprSymbol && "Function not found");
@@ -174,7 +174,7 @@ VM::Result Program::compile_bitcode_file(VM& vm) {
 	return result;
 }
 
-VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool ir, bool bitcode) {
+VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool optimized_ir, bool ir, bool bitcode) {
 	this->vm = &vm;
 
 	if (ir) {
@@ -182,7 +182,7 @@ VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseu
 	} else if (bitcode) {
 		return compile_bitcode_file(vm);
 	} else {
-		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code);
+		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code, optimized_ir);
 	}
 }
 

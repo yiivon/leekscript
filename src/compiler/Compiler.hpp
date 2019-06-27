@@ -95,6 +95,7 @@ public:
 	std::unordered_map<std::string, function_entry> mappings;
 	std::stack<int> exception_line;
 	bool export_bitcode = false;
+	bool export_optimized_ir = false;
 	std::unordered_map<std::string, Compiler::value> global_strings;
 
 	VM* vm;
@@ -128,7 +129,7 @@ public:
 			FPM->run(F);
 		return M;
 	}
-	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode = false);
+	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode = false, bool export_optimized_ir = false);
 
 	llvm::JITSymbol findSymbol(const std::string Name) {
 		return OptimizeLayer.findSymbol(Name, false);
