@@ -162,17 +162,6 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 		}
 		type = var->type;
 		scope = var->scope;
-		if (scope != VarScope::INTERNAL and var->function != analyzer->current_function()) {
-			if (not var->type->is_function()) {
-				// if (var->scope == VarScope::LOCAL or var->scope == VarScope::PARAMETER) {
-				// 	var = analyzer->convert_var_to_any(var);
-				// 	type = var->type;
-				// }
-				// capture_index = analyzer->current_function()->capture(analyzer, var);
-				var->index = capture_index;
-				scope = VarScope::CAPTURE;
-			}
-		}
 	} else {
 		bool found = false;
 		for (const auto& clazz : analyzer->vm->internal_vars) {

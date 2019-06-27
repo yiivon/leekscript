@@ -204,6 +204,7 @@ Variable* FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
 	if (var->function->parent == parent->parent) {
 		auto converted_var = analyzer->update_var(var);
 		converted_var->scope = VarScope::CAPTURE;
+		converted_var->index = captures.size();
 		captures.push_back(converted_var);
 		captures_map.insert({ var->name, converted_var });
 		auto capture = new Variable(*converted_var); // Copy : one var outside the function, one inside
