@@ -35,6 +35,7 @@ CallableVersion::CallableVersion(const Type* v1_type, const Type* v2_type, const
 const Type* build(const Type* type) {
 	if (type->is_template()) return ((Template_type*) type)->_implementation;
 	if (type->is_array()) return Type::array(build(type->element()));
+	if (type->is_set()) return Type::set(build(type->element()));
 	if (type->is_map()) return Type::map(build(type->key()), build(type->element()));
 	if (type->is_function()) {
 		std::vector<const Type*> args;
@@ -137,6 +138,9 @@ void solve(SemanticAnalyzer* analyzer, const Type* t1, const Type* t2) {
 		solve(analyzer, baseof->type, t2);
 	}
 	else if (t1->is_array() and t2->is_array()) {
+		solve(analyzer, t1->element(), t2->element());
+	}
+	else if (t1->is_set() and t2->is_set()) {
 		solve(analyzer, t1->element(), t2->element());
 	}
 	else if (t1->is_map() and t2->is_map()) {
