@@ -263,7 +263,7 @@ public:
 	value iterator_rkey(value v, value it, value previous) const;
 	void iterator_increment(const Type* collectionType, value it) const;
 	void iterator_rincrement(const Type* collectionType, value it) const;
-	value insn_foreach(value v, const Type* output, Variable* var, Variable* key, std::function<value(value, value)>, bool reversed = false);
+	value insn_foreach(value v, const Type* output, Variable* var, Variable* key, std::function<value(value, value)>, bool reversed = false, std::function<value(value, value)> body2 = nullptr);
 
 	// Controls
 	label insn_init_label(std::string name) const;

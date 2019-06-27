@@ -42,6 +42,7 @@ public:
 	int generator = 0;
 	Variable* parent = nullptr;
 	Phi* phi = nullptr;
+	bool assignment = false;
 
 	Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, Block* block, LSValue* lsvalue, Call call = {});
 

@@ -13,6 +13,8 @@ class Block : public Value {
 public:
 
 	bool is_function_block = false;
+	bool is_loop_body = false;
+	bool is_loop = false;
 	std::vector<std::unique_ptr<Instruction>> instructions;
 	bool temporary_mpz = false;
 	bool mpz_pointer = false;

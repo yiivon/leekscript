@@ -1571,7 +1571,7 @@ void Compiler::iterator_rincrement(const Type* collectionType, Compiler::value i
 	assert(false);
 }
 
-Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* output, Variable* var, Variable* key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed) {
+Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* output, Variable* var, Variable* key, std::function<Compiler::value(Compiler::value, Compiler::value)> body, bool reversed, std::function<Compiler::value(Compiler::value, Compiler::value)> body2) {
 	
 	enter_block(new Block()); // { for x in [1, 2] {} }<-- this block
 
@@ -1604,8 +1604,10 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* ou
 
 	auto it_label = insn_init_label("it");
 	auto cond_label = insn_init_label("cond");
+	auto cond2_label = insn_init_label("cond2");
 	auto end_label = insn_init_label("end");
 	auto loop_label = insn_init_label("loop");
+	auto loop2_label = insn_init_label("loop2");
 
 	enter_loop(&end_label, &it_label);
 
@@ -1642,14 +1644,35 @@ Compiler::value Compiler::insn_foreach(Compiler::value container, const Type* ou
 			insn_delete_temporary(body_v);
 		}
 	}
-	
 	insn_branch(&it_label);
 
 	// it++
 	insn_label(&it_label);
 	reversed ? iterator_rincrement(container.t, it) : iterator_increment(container.t, it);
 	// jump to cond
-	insn_branch(&cond_label);
+	insn_branch(body2 ? &cond2_label : &cond_label);
+	
+	// cond2 label:
+	if (body2) {
+		insn_label(&cond2_label);
+		finished = reversed ? iterator_rend(container, it) : iterator_end(container, it);
+		insn_if_new(finished, &end_label, &loop2_label);
+
+	// loop2 label:
+		insn_label(&loop2_label);
+		insn_store(value_var, reversed ? iterator_rget(container.t, it, insn_load(value_var)) : iterator_get(container.t, it, insn_load(value_var)));
+		if (key) insn_store(key_var, reversed ? iterator_rkey(container, it, insn_load(key_var)) : iterator_key(container, it, insn_load(key_var)));
+		// Body 2
+		auto body2_v = body2(insn_load(value_var), key ? insn_load(key_var) : value());
+		if (body2_v.v) {
+			if (output_v.v) {
+				insn_push_array(output_v, body2_v);
+			} else {
+				insn_delete_temporary(body2_v);
+			}
+		}
+		insn_branch(&it_label);
+	}
 
 	leave_loop();
 
@@ -1958,7 +1981,7 @@ void Compiler::delete_variables_block(int deepness) {
 		auto& variables = blocks.back()[i]->variables;
 		for (auto it = variables.begin(); it != variables.end(); ++it) {
 			// std::cout << "delete variable block " << it->second << " " << it->second->type << " " << it->second->val.v << " scope " << (int)it->second->scope << std::endl;
-			if (it->second->phi or not it->second->val.v or it->second->scope == VarScope::CAPTURE) continue;
+			if (it->second->phi or it->second->assignment or not it->second->val.v or it->second->scope == VarScope::CAPTURE) continue;
 			if (it->second->type->is_mpz_ptr()) {
 				insn_delete_mpz(it->second->val);
 			} else if (it->second->type->must_manage_memory()) {

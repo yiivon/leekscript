@@ -38,9 +38,9 @@ void Block::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 		}
 		os << "]";
 	}
-	// for (const auto& assignment : assignments) {
-	// 	os << std::endl << tabs(indent) << assignment.first << " = " << assignment.second;
-	// }
+	for (const auto& assignment : assignments) {
+		os << std::endl << tabs(indent) << assignment.first << " = " << assignment.second;
+	}
 }
 
 Location Block::location() const {
@@ -77,9 +77,9 @@ void Block::pre_analyze(SemanticAnalyzer* analyzer) {
 }
 
 void Block::create_assignments(SemanticAnalyzer* analyzer) {
-	if (not is_function_block) {
+	if (not is_function_block and not is_loop_body) {
 		for (const auto& variable : variables) {
-			std::cout << "Block update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
+			// std::cout << "Block update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
 			if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch) {
 				auto new_var = analyzer->update_var(variable.second->parent);
 				assignments.push_back({ new_var, variable.second });

@@ -15,6 +15,8 @@ public:
 	Token* value = nullptr;
 	std::unique_ptr<Value> container;
 	std::unique_ptr<Block> body;
+	std::unique_ptr<Block> body2;
+	std::vector<std::pair<Variable*, Variable*>> assignments;
 	
 	const Type* key_type;
 	const Type* value_type;

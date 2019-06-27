@@ -93,7 +93,7 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 	} else {
 		v1->pre_analyze(analyzer);
 		v2->pre_analyze(analyzer);
-		if (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL) {
+		if (not analyzer->current_block()->is_loop and (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL)) {
 			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
 				if (vv->var->scope != VarScope::CAPTURE) {
 					// std::cout << "Pre-analyze update var " << vv->var << std::endl;
@@ -368,7 +368,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 				c.insn_delete_variable(x_addr);
 			}
 			// Create the new variable
-			if (vv != nullptr) {
+			if (vv != nullptr and previous_var) {
 				// std::cout << "expression = entry" << std::endl;
 				vv->var->create_entry(c);
 				vv->var->store_value(c, y);
