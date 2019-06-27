@@ -19,6 +19,7 @@ public:
 	std::unique_ptr<Value> condition;
 	std::unique_ptr<Block> increment;
 	std::unique_ptr<Block> body;
+	std::unique_ptr<Block> body2;
 	std::vector<std::pair<Variable*, Variable*>> assignments;
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
