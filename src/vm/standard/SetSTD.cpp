@@ -36,10 +36,12 @@ SetSTD::SetSTD(VM* vm) : Module(vm, "Set") {
 		{Type::const_set(Type::real), Type::real, Type::boolean, (void*) &LSSet<double>::in_v},
 		{Type::const_set(Type::integer), Type::integer, Type::boolean, (void*) &LSSet<int>::in_v}
 	});
+
+	auto pqT = Type::template_("T");
+	auto pqE = Type::template_("E");
+	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::set(), Type::const_any, Type::any, set_add_eq, 0, {new WillStoreMutator()}, true},
-		{Type::set(Type::real), Type::const_real, Type::array(Type::real), (void*) &LSSet<double>::add_eq_double, 0, {new WillStoreMutator()}},
-		{Type::set(Type::integer), Type::const_integer, Type::array(Type::integer), (void*) &LSSet<int>::add_eq_int, 0, {new WillStoreMutator()}}
+		{Type::set(pqT), pqE, Type::set(Type::meta_mul(pqT, pqE)), set_add_eq, 0, {}, true},
 	});
 
 	/*
