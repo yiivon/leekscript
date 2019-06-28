@@ -25,6 +25,7 @@ Location While::location() const {
 
 void While::pre_analyze(SemanticAnalyzer* analyzer) {
 	condition->pre_analyze(analyzer);
+	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
 }
 
