@@ -154,6 +154,7 @@ void Test::test_types() {
 	test("any * fun", ls::Type::any->operator * (ls::Type::fun(ls::Type::void_, {})), ls::Type::any);
 	test("array<int> * array<real>", ls::Type::array(ls::Type::integer)->operator * (ls::Type::array(ls::Type::real)), ls::Type::any);
 	test("int * fun", ls::Type::integer->operator * (ls::Type::fun()), ls::Type::any);
+	test("never * int", ls::Type::never->operator * (ls::Type::integer), ls::Type::integer);
 
 	section("fold");
 	test("void.fold()", ls::Type::void_->fold(), ls::Type::void_);

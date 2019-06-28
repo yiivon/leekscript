@@ -118,8 +118,8 @@ const Type* Type::operator + (const Type* type) const {
 const Type* Type::operator * (const Type* t2) const {
 	auto a = this->fold();
 	auto b = t2->fold();
-	if (a == void_) return b;
-	if (b == void_ or a == b) return a;
+	if (a == void_ or a == never) return b;
+	if (b == void_ or b == never or a == b) return a;
 	if (a->is_polymorphic() and b->is_primitive()) {
 		return any;
 	}
