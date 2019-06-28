@@ -16,11 +16,6 @@ void WillStoreMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> val
 
 void ChangeTypeMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
 	// std::cout << "change type mutator " << values[0]->type << " += " << values[1]->type << std::endl;
-	if (!values[1]->type->strictCastable(values[0]->type)) {
-		if (values[0]->isLeftValue()) {
-			static_cast<LeftValue*>(values[0])->change_value(analyzer, values[1]);
-		}
-	}
 }
 
 void WillTakeMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
