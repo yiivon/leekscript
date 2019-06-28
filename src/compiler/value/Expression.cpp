@@ -99,6 +99,7 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 					// std::cout << "Pre-analyze update var " << vv->var << std::endl;
 					previous_var = vv->var;
 					vv->var = analyzer->update_var(vv->var);
+					variable = vv->var;
 				}
 			}
 		}
@@ -143,10 +144,10 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
-			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+			if (variable) {
 				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
-				vv->var->type = vv->var->parent->type;
-				v1->type = vv->var->type;
+				variable->type = variable->parent->type;
+				v1->type = variable->type;
 			}
 		}
 		// TODO other operators like |= ^= &=
@@ -165,10 +166,10 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
 			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
-			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+			if (variable) {
 				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
-				vv->var->type = v2->type->not_temporary();
-				v1->type = vv->var->type;
+				variable->type = v2->type->not_temporary();
+				v1->type = variable->type;
 			}
 		}
 	}
@@ -213,10 +214,10 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 					v2->set_version(analyzer, callable_version->type->argument(1)->arguments(), 1);
 				}
 				if (op->type == TokenType::PLUS_EQUAL) {
-					if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+					if (variable) {
 						// std::cout << "Expresssion update var type += " << vv->var << " " << return_type << std::endl;
 						v1->type = return_type->not_temporary();
-						vv->var->type = v1->type;
+						variable->type = v1->type;
 					}
 				}
 				// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
@@ -304,12 +305,13 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
 	}
 
-	if (op->type == TokenType::PLUS_EQUAL and previous_var) {
-		auto vv = dynamic_cast<VariableValue*>(v1.get());
-		if (vv != nullptr) {
-			vv->var->create_entry(c);
-			// std::cout << "store previous var " << vv->var << " " << previous_var << " " << previous_var->val.v << std::endl;
-			vv->var->store_value(c, c.insn_convert(c.insn_load(previous_var->val), vv->var->type, true));
+	if (op->type == TokenType::PLUS_EQUAL and variable) {
+		if (variable->type != previous_var->type) {
+			// std::cout << "create new entry for var " << variable << " " << previous_var << " " << previous_var->val.v << std::endl;
+			variable->create_entry(c);
+			variable->store_value(c, c.insn_move_inc(c.insn_convert(c.insn_load(previous_var->val), variable->type, true)));
+		} else {
+			variable->val = previous_var->val;
 		}
 	}
 
