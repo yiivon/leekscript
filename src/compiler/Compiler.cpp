@@ -283,7 +283,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	// std::cout << "convert " << v.t << " " << t->is_primitive() << " to " << t << " " << t->is_polymorphic() << std::endl;
 	// assert(v.t->llvm(*this) == v.v->getType());
 	if (!v.v) { return v; }
-	if (v.t == t) return v;
+	if (v.t->not_temporary() == t) return v;
 	if (v.t->is_function()) {
 		if (t == Type::i8_ptr) {
 			return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
