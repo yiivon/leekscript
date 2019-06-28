@@ -333,13 +333,13 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
-		v = var->val;
+		v = var->get_address(c);
 	} else if (scope == VarScope::CAPTURE) {
 		v = c.insn_load(var->addr_val);
 	} else if (scope == VarScope::INTERNAL) {
 		v = c.get_symbol(name, type);
 	} else { /* if (scope == VarScope::PARAMETER) */
-		v = var->val;
+		v = var->get_address(c);
 	}
 	return v;
 }

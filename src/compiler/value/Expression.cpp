@@ -351,7 +351,7 @@ Compiler::value Expression::compile(Compiler& c) const {
 			}
 			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1.get());
-			auto x_addr = static_cast<LeftValue*>(v1.get())->compile_l(c);
+			auto x_addr = !previous_var ? static_cast<LeftValue*>(v1.get())->compile_l(c) : Compiler::value();
 			// Compile new value
 			auto y = v2->compile(c);
 			v2->compile_end(c);

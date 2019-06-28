@@ -26,6 +26,14 @@ Compiler::value Variable::get_value(Compiler& c) const {
 	return c.insn_load(val);
 }
 
+Compiler::value Variable::get_address(Compiler& c) const {
+	if (!val.v) {
+		std::cout << "no value for variable " << this << std::endl;
+		assert(false);
+	}
+	return val;
+}
+
 void Variable::create_entry(Compiler& c) {
 	// std::cout << "create_entry " << this << std::endl;
 	auto t = get_entry_type();

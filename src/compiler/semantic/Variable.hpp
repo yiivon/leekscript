@@ -49,6 +49,7 @@ public:
 	const Type* get_entry_type() const;
 
 	Compiler::value get_value(Compiler& c) const;
+	Compiler::value get_address(Compiler& c) const;
 	void create_entry(Compiler& c);
 	void create_addr_entry(Compiler& c, Compiler::value);
 	void store_value(Compiler& c, Compiler::value);
