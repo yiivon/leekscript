@@ -279,7 +279,7 @@ Compiler::value Compiler::to_long(Compiler::value v) const {
 	return insn_invoke(Type::long_, {v}, "Value.long");
 }
 
-Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool delete_temporary) const {
+Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool delete_previous) const {
 	// std::cout << "convert " << v.t << " " << t->is_primitive() << " to " << t << " " << t->is_polymorphic() << std::endl;
 	// assert(v.t->llvm(*this) == v.v->getType());
 	if (!v.v) { return v; }
@@ -310,11 +310,11 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	if (v.t->is_set() and t->is_set() and t->element()->is_polymorphic()) {
 		if (v.t->element() == Type::integer) {
 			auto r = insn_call(t, {v}, "Set.int_to_any");
-			if (delete_temporary) insn_delete(v);
+			if (delete_previous) insn_delete(v);
 			return r;
 		} else if (v.t->element() == Type::real) {
 			auto r = insn_call(t, {v}, "Set.real_to_any");
-			if (delete_temporary) insn_delete(v);
+			if (delete_previous) insn_delete(v);
 			return r;
 		}
 	}
@@ -327,7 +327,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		return insn_to_any(v);
 	}
 	if (t->is_real()) {
-		return to_real(v, delete_temporary);
+		return to_real(v, delete_previous);
 	} else if (t->is_integer()) {
 		return to_int(v);
 	} else if (t->is_long()) {
