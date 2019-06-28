@@ -99,7 +99,7 @@ void Test::test_loops() {
 	code("for var i = 0; false; i++ {}").equals("(void)");
 	code("for var i = 0; i < 10; i++ {}").equals("(void)");
 	code("var s = 0 for var i = 0; i < 5; i++ do s += i end s").equals("10");
-	DISABLED_code("var s = 0 for var i = 0; i < 10; i += 2 do s += i end s").equals("20");
+	code("var s = 0 for var i = 0; i < 10; i += 2 do s += i end s").equals("20");
 	code("var i = 0 for i = 0; i < 10; i++ { } i").equals("10");
 	code("var i = 0 for i = 0; i < 10; i++ { if i == 5 { break } } i").equals("5");
 	code("var a = 0 for var i = 0; i < 10; i++ { a++ } a").equals("10");

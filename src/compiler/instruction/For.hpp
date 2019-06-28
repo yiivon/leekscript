@@ -17,7 +17,9 @@ public:
 	Token* token;
 	std::unique_ptr<Block> init;
 	std::unique_ptr<Value> condition;
+	std::unique_ptr<Value> condition2;
 	std::unique_ptr<Block> increment;
+	std::unique_ptr<Block> increment2;
 	std::unique_ptr<Block> body;
 	std::unique_ptr<Block> body2;
 	std::vector<std::pair<Variable*, Variable*>> assignments;

@@ -17,10 +17,15 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 	if (condition != nullptr) {
 		condition->print(os, indent + 1, debug);
 	}
-	os << ";";
-	for (const auto& ins : increment->instructions) {
-		os << " ";
-		ins->print(os, indent + 1, debug, condensed);
+	if (condition2 != nullptr) {
+		os << " # ";
+		condition2->print(os, indent + 1, debug);
+	}
+	os << "; ";
+	increment->print(os, indent + 1, debug, condensed);
+	if (increment2) {
+		os << " # ";
+		increment2->print(os, indent + 1, debug, condensed);
 	}
 	os << " ";
 	body->print(os, indent, debug);
@@ -49,7 +54,9 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
 
-	if (body->variables.size()) {
+	increment->pre_analyze(analyzer);
+
+	if (body->variables.size() or increment->variables.size()) {
 		body2 = std::move(unique_static_cast<Block>(body->clone()));
 		body2->is_loop_body = true;
 		body2->is_loop = true;
@@ -61,8 +68,17 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 		body2->pre_analyze(analyzer);
 	}
 
-	increment->is_loop_body = true;
-	increment->pre_analyze(analyzer);
+	if (increment->variables.size()) {
+		increment2 = std::move(unique_static_cast<Block>(increment->clone()));
+		increment2->is_loop_body = true;
+		increment2->is_loop = true;
+		increment2->pre_analyze(analyzer);
+		
+		if (condition != nullptr) {
+			condition2 = std::move(condition->clone());
+			condition2->pre_analyze(analyzer);
+		}
+	}
 
 	analyzer->leave_block();
 
@@ -128,9 +144,6 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	if (req_type->is_array()) {
 		type = Type::array(body->type);
 	}
-	if (body2) {
-		body2->analyze(analyzer);
-	}
 	analyzer->leave_loop();
 
 	// Increment
@@ -144,11 +157,35 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 			may_return = ins->may_return;
 			return_type = return_type->operator + (ins->return_type);
 		}
-		if (ins->returning) {
-			break;
-		}
+		if (ins->returning) { break; }
+	}
+	for (const auto& assignment : increment->assignments) {
+		assignment.first->type = assignment.second->type;
 	}
 	analyzer->leave_block();
+
+	if (body2) {
+		analyzer->enter_loop();
+		body2->analyze(analyzer);
+		throws |= body2->throws;
+		analyzer->leave_loop();
+	}
+
+	// Increment 2
+	if (increment2) {
+		analyzer->enter_block(increment2.get());
+		for (const auto& ins : increment2->instructions) {
+			ins->is_void = true;
+			ins->analyze(analyzer);
+			if (ins->returning) { break; }
+		}
+		analyzer->leave_block();
+	}
+
+	if (condition2 != nullptr) {
+		condition2->analyze(analyzer);
+		throws |= condition2->throws;
+	}
 
 	analyzer->leave_block();
 
@@ -176,7 +213,7 @@ Compiler::value For::compile(Compiler& c) const {
 	Compiler::label cond2_label;
 	Compiler::label loop2_label;
 	Compiler::label inc2_label;
-	if (body2) {
+	if (body2 or increment2) {
 		cond2_label = c.insn_init_label("cond2");
 		loop2_label = c.insn_init_label("loop2");
 		inc2_label = c.insn_init_label("inc2");
@@ -211,7 +248,6 @@ Compiler::value For::compile(Compiler& c) const {
 	c.enter_loop(&end_label, &inc_label);
 	auto body_v = body->compile(c);
 	if (output_v.v && body_v.v) {
-		// transfer the ownership of the temporary variable `body_v`
 		c.insn_push_array(output_v, body_v);
 	}
 	c.leave_loop();
@@ -219,23 +255,18 @@ Compiler::value For::compile(Compiler& c) const {
 
 	// Inc
 	c.insn_label(&inc_label);
-	c.enter_block(increment.get());
-	for (auto& ins : increment->instructions) {
-		auto r = ins->compile(c);
-		if (dynamic_cast<Return*>(ins.get())) {
-			return r;
-		}
-	}
-	c.leave_block();
-	c.insn_branch(body2 ? &cond2_label : &cond_label);
+	increment->compile(c);
+
+	c.insn_branch(body2 or increment2 ? &cond2_label : &cond_label);
 
 	// Cond 2
-	if (body2) {
+	if (body2 or increment2) {
 		c.insn_label(&cond2_label);
 		c.inc_ops(1);
-		if (condition != nullptr) {
-			auto condition_v = condition->compile(c);
-			condition->compile_end(c);
+		auto& condition_value = condition2 ? condition2 : condition;
+		if (condition_value != nullptr) {
+			auto condition_v = condition_value->compile(c);
+			condition_value->compile_end(c);
 			auto bool_v = c.insn_to_bool(condition_v);
 			c.insn_delete_temporary(condition_v);
 			c.insn_if_new(bool_v, &loop2_label, &end_label);
@@ -245,7 +276,7 @@ Compiler::value For::compile(Compiler& c) const {
 		// Body 2
 		c.insn_label(&loop2_label);
 		c.enter_loop(&end_label, &inc2_label);
-		auto body2_v = body2->compile(c);
+		auto body2_v = (body2 ? body2 : body)->compile(c);
 		if (output_v.v && body2_v.v) {
 			// transfer the ownership of the temporary variable `body_v`
 			c.insn_push_array(output_v, body2_v);
@@ -254,14 +285,7 @@ Compiler::value For::compile(Compiler& c) const {
 		c.insn_branch(&inc2_label);
 		// Inc 2
 		c.insn_label(&inc2_label);
-		c.enter_block(increment.get());
-		for (auto& ins : increment->instructions) {
-			auto r = ins->compile(c);
-			if (dynamic_cast<Return*>(ins.get())) {
-				return r;
-			}
-		}
-		c.leave_block();
+		(increment2 ? increment2 : increment)->compile(c);
 		c.insn_branch(&cond2_label);
 	}
 
@@ -283,7 +307,7 @@ std::unique_ptr<Instruction> For::clone() const {
 	auto f = std::make_unique<For>();
 	f->token = token;
 	f->init = unique_static_cast<Block>(init->clone());
-	f->condition = condition->clone();
+	if (condition) f->condition = condition->clone();
 	f->increment = unique_static_cast<Block>(increment->clone());
 	f->body = unique_static_cast<Block>(body->clone());
 	return f;
