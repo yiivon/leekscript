@@ -11,9 +11,11 @@ namespace ls {
 class While : public Instruction {
 public:
 
+	Token* token;
 	std::unique_ptr<Value> condition;
 	std::unique_ptr<Block> body;
-	Token* token;
+	std::unique_ptr<Block> body2;
+	std::vector<std::pair<Variable*, Variable*>> assignments;
 
 	While();
 
