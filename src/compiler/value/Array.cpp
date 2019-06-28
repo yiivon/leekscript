@@ -81,8 +81,7 @@ void Array::analyze(SemanticAnalyzer* analyzer) {
 			}
 			new_element_type = new_element_type-> operator + (ex->type);
 		}
-		if (new_element_type->is_bool()) type = Type::array(Type::any);
-		else type = Type::array(new_element_type->not_temporary());
+		type = Type::array(new_element_type->not_temporary());
 	}
 	type = type->add_temporary();
 	// std::cout << "Array type : " << type << " " << type->element()->fold() << std::endl;
