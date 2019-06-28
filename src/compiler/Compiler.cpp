@@ -296,16 +296,29 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		auto f = insn_convert(v, Type::i8_ptr);
 		return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
 	}
-	if (v.t->is_array() and t->is_array() and t->element()->is_polymorphic()) {
-		if (v.t->element() == Type::integer) {
-			auto r = insn_call(t, {v}, "Array.int_to_any");
-			if (delete_temporary) insn_delete(v);
-			return r;
-		} else if (v.t->element() == Type::real) {
-			auto r = insn_call(t, {v}, "Array.real_to_any");
-			if (delete_temporary) insn_delete(v);
-			return r;
+	if (v.t->is_array() and t->is_array()) {
+		std::cout << "Convert " << v.t << " to " << t << std::endl;
+		if (t->element()->is_polymorphic()) {
+			if (v.t->element() == Type::integer) {
+				auto r = insn_call(t, {v}, "Array.int_to_any");
+				if (delete_previous) insn_delete(v);
+				return r;
+			} else if (v.t->element() == Type::real) {
+				auto r = insn_call(t, {v}, "Array.real_to_any");
+				if (delete_previous) insn_delete(v);
+				return r;
+			} else if (v.t->element()->is_polymorphic() and v.t->element() != Type::never) {
+				return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
+			}
+		} else if (t->element()->is_real()) {
+			if (v.t->element() == Type::integer) {
+				auto r = insn_call(t, {v}, "Array.int_to_real");
+				if (delete_previous) insn_delete(v);
+				return r;
+			}
 		}
+		if (delete_previous) insn_delete(v);
+		return new_array(t->element(), {});
 	}
 	if (v.t->is_set() and t->is_set() and t->element()->is_polymorphic()) {
 		if (v.t->element() == Type::integer) {

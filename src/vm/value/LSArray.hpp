@@ -80,6 +80,7 @@ public:
 	LSValue* add_set(LSSet<T2>* set);
 	LSArray<T>* ls_random(int n);
 	LSArray<LSValue*>* to_any_array() const;
+	LSArray<double>* to_real_array() const;
 
 	/*
 	 * LSValue methods

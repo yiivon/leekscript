@@ -555,6 +555,15 @@ LSArray<LSValue*>* LSArray<T>::to_any_array() const {
 	}
 	return result;
 }
+template <typename T>
+LSArray<double>* LSArray<T>::to_real_array() const {
+	auto result = new LSArray<double>();
+	result->reserve(this->size());
+	for (const auto& e : *this) {
+		result->emplace_back(ls::convert<double>(e));
+	}
+	return result;
+}
 
 template <typename T>
 inline LSArray<T>* LSArray<T>::ls_reverse() {

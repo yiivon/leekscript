@@ -375,6 +375,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	method("real_to_any", {
 		{Type::array(Type::any), {Type::array(Type::real)}, (void*) &LSArray<double>::to_any_array}
 	});
+	method("int_to_real", {
+		{Type::array(Type::any), {Type::array(Type::real)}, (void*) &LSArray<int>::to_real_array}
+	});
 }
 
 Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, bool) {
