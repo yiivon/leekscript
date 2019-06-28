@@ -15,6 +15,10 @@ const Type* Variable::get_entry_type() const {
 }
 
 Compiler::value Variable::get_value(Compiler& c) const {
+	if (!val.v) {
+		std::cout << "no value for variable " << this << std::endl;
+		assert(false);
+	}
 	// std::cout << "get_value " << this << std::endl;
 	if (type->is_mpz_ptr()) {
 		return val; // mpz values are passed by pointer so we don't load the value
