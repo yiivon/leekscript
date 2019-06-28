@@ -38,7 +38,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, {}, true},
+		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, {}, true},
 	});
 
 	auto ttE = Type::template_("E");
