@@ -35,6 +35,7 @@
 #include "Meta_mul_type.hpp"
 #include "Meta_baseof_type.hpp"
 #include "Meta_element_type.hpp"
+#include "Meta_not_temporary_type.hpp"
 #include "../compiler/value/Function.hpp"
 #include "../compiler/value/Value.hpp"
 
@@ -535,6 +536,9 @@ const Type* Type::meta_mul(const Type* t1, const Type* t2) {
 }
 const Type* Type::meta_base_of(const Type* type, const Type* base) {
 	return new Meta_baseof_type(type, base);
+}
+const Type* Type::meta_not_temporary(const Type* type) {
+	return new Meta_not_temporary_type(type);
 }
 
 std::ostream& operator << (std::ostream& os, const Type* type) {
