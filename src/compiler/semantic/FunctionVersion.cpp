@@ -30,7 +30,6 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
 			os << captures[c] << " " << captures[c]->type;
-			os << " " << (void*) captures[c];
 		}
 		os << "] ";
 	}
@@ -41,7 +40,6 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 		if (i > 0) os << ", ";
 		if (debug and arguments.find(parent->arguments.at(i)->content) != arguments.end()) {
 			os << arguments.at(parent->arguments.at(i)->content);
-			os << " " << (void*)arguments.at(parent->arguments.at(i)->content);
 		} else {
 			os << parent->arguments.at(i)->content;
 		}
