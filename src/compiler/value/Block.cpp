@@ -163,7 +163,10 @@ Compiler::value Block::compile(Compiler& c) const {
 			}
 		} else {
 			auto return_value = [&]() {
-				if (not val.v) {
+				if (instructions[i]->is_void) {
+					if (val.v) c.insn_delete_temporary(val);
+					return Compiler::value();
+				} else if (not val.v) {
 					return val;
 				} else if (type->must_manage_memory() and val.v != nullptr) {
 					return c.insn_move(val);
