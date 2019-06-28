@@ -41,8 +41,8 @@ void Test::test_files() {
 	file("test/code/match.leek").output("Yeah!\n");
 
 	section("Issues (fixed)");
-	DISABLED_file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
-	DISABLED_file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
+	file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
+	file("test/code/issue/207.leek").equals("[{p: 1, v: 1}, {p: 2, v: 2}, {p: 4, v: 4}, {p: 3, v: 3}, {p: 7, v: 7}, {p: 5, v: 5}, {p: 8, v: 8}, {p: 9, v: 9}, {p: 6, v: 6}]");
 	file("test/code/issue/121.leek").equals("[123456789087654321345678976543, 2345678654324567897654324567]");
 
 	section("Project Euler");

@@ -112,7 +112,7 @@ void Test::test_loops() {
 	code("for (var i = 0, j = 10; i < 5; i++, j += 2) { System.print(i + ', ' + j) }").output("0, 10\n1, 12\n2, 14\n3, 16\n4, 18\n");
 	code("for (var i = 0, j = 1, k = 2, l = 3; i < 5; i++, j++, k++, l++) { System.print([i j k l]) }").output("[0, 1, 2, 3]\n[1, 2, 3, 4]\n[2, 3, 4, 5]\n[3, 4, 5, 6]\n[4, 5, 6, 7]\n");
 	code("for var i = 0m; i < 10m; i++ {}").equals("(void)");
-	DISABLED_code("var s = 0m for var i = 0m; i < 10m; i++ { s += i } s").equals("45");
+	code("var s = 0m for var i = 0m; i < 10m; i++ { s += i } s").equals("45");
 	DISABLED_code("var s = 0m for var i = 0m; i < 10m; i += 2m { s += i } s").equals("20");
 
 	section("For whitout braces");
