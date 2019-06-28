@@ -61,11 +61,9 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 		body2->pre_analyze(analyzer);
 	}
 
-	analyzer->enter_block(increment.get());
-	for (const auto& ins : increment->instructions) {
-		ins->pre_analyze(analyzer);
-	}
-	analyzer->leave_block();
+	increment->is_loop_body = true;
+	increment->pre_analyze(analyzer);
+
 	analyzer->leave_block();
 
 	for (const auto& variable : init->variables) {
@@ -270,7 +268,6 @@ Compiler::value For::compile(Compiler& c) const {
 	// End
 	c.insn_label(&end_label);
 	auto return_v = c.clone(output_v);
-
 
 	c.leave_block();
 
