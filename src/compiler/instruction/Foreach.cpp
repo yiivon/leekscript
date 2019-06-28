@@ -50,7 +50,11 @@ void Foreach::pre_analyze(SemanticAnalyzer* analyzer) {
 	body->pre_analyze(analyzer);
 	body2 = std::move(unique_static_cast<Block>(body->clone()));
 	body2->is_loop_body = true;
-	body2->variables = body->variables;
+	for (const auto& variable : body->variables) {
+		if (variable.second->parent and variable.second->parent->block != body.get()) {
+			body2->variables.insert({ variable.first, variable.second });
+		}
+	}
 	body2->is_loop = true;
 	body2->pre_analyze(analyzer);
 	analyzer->leave_block();
