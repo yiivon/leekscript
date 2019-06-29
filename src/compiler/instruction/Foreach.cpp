@@ -31,7 +31,7 @@ void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) co
 	os << " ";
 	body2->print(os, indent, debug);
 	for (const auto& assignment : assignments) {
-		os << std::endl << tabs(indent) << assignment.first << " = " << assignment.second;
+		os << std::endl << tabs(indent) << assignment.first << " " << assignment.first->type << " = " << assignment.second << " " << assignment.second->type;
 	}
 }
 
