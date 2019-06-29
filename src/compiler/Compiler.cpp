@@ -298,6 +298,9 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	}
 	if (v.t->is_array() and t->is_array()) {
 		std::cout << "Convert " << v.t << " to " << t << std::endl;
+		if (t->element()->fold() == v.t->element()->fold()) {
+			return v;
+		}
 		if (t->element()->is_polymorphic()) {
 			if (v.t->element() == Type::integer) {
 				auto r = insn_call(t, {v}, "Array.int_to_any");
@@ -308,7 +311,9 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 				if (delete_previous) insn_delete(v);
 				return r;
 			} else if (v.t->element()->is_polymorphic() and v.t->element() != Type::never) {
-				return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
+				auto copy = clone(v);
+				insn_delete(v);
+				return { builder.CreatePointerCast(copy.v, t->llvm(*this)), t };
 			}
 		} else if (t->element()->is_real()) {
 			if (v.t->element() == Type::integer) {
