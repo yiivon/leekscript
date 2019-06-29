@@ -297,8 +297,9 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		return insn_call(Type::fun_object(v.t->return_type(), v.t->arguments()), {f}, "Function.new");
 	}
 	if (v.t->is_array() and t->is_array()) {
-		std::cout << "Convert " << v.t << " to " << t << std::endl;
+		// std::cout << "Convert " << v.t << " to " << t << std::endl;
 		if (t->element()->fold() == v.t->element()->fold()) {
+			// std::cout << "no array conversion" << std::endl;
 			return v;
 		}
 		if (t->element()->is_polymorphic()) {
