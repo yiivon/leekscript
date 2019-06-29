@@ -56,9 +56,9 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::const_integer, Type::const_integer, Type::integer, add_real_real},
 	});
 	operator_("+=", {
-		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, add_eq_mpz_mpz, 0, {new ChangeTypeMutator()}, true},
-		{Type::real, Type::real, Type::real, add_eq_real, 0, {new ChangeTypeMutator()}, true},
-		{Type::integer, Type::integer, Type::integer, add_eq_real, 0, {new ChangeTypeMutator()}, true}
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, add_eq_mpz_mpz, 0, { new ConvertMutator() }, true},
+		{Type::real, Type::real, Type::real, add_eq_real, 0, { new ConvertMutator() }, true},
+		{Type::integer, Type::integer, Type::integer, add_eq_real, 0, { new ConvertMutator() }, true}
 	});
 	operator_("-", {
 		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, sub_mpz_mpz},

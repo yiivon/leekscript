@@ -14,7 +14,10 @@ void WillStoreMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> val
 	values[1]->must_return_any(analyzer);
 }
 
-void ChangeTypeMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
+void ConvertMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
+	// std::cout << "change type mutator " << values[0]->type << " += " << values[1]->type << std::endl;
+}
+void ChangeValueMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
 	// std::cout << "change type mutator " << values[0]->type << " += " << values[1]->type << std::endl;
 }
 

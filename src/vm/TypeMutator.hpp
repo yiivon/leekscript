@@ -22,9 +22,15 @@ public:
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values) const override;
 };
 
-class ChangeTypeMutator : public TypeMutator {
+class ConvertMutator : public TypeMutator {
 public:
-	ChangeTypeMutator() {}
+	ConvertMutator() {}
+	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values) const override;
+};
+
+class ChangeValueMutator : public TypeMutator {
+public:
+	ChangeValueMutator() {}
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values) const override;
 };
 

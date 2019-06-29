@@ -38,8 +38,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::array(pqT), pqE, Type::array(Type::meta_add(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, { new ChangeTypeMutator() }, true},
-		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_add(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
+		{Type::array(pqT), pqE, Type::array(Type::meta_add(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, { new ConvertMutator() }, true},
+		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_add(pqT, pqE)), array_add_eq, 0, { new ConvertMutator() }, true},
 	});
 
 	auto ttE = Type::template_("E");
@@ -257,8 +257,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T}, fill, 0, { new ChangeTypeMutator() }},
-		{Type::array(T), {Type::array(), T, Type::const_integer}, fill2, 0, { new ChangeTypeMutator() }},
+		{Type::array(T), {Type::array(), T}, fill, 0, { new ChangeValueMutator() }},
+		{Type::array(T), {Type::array(), T, Type::const_integer}, fill2, 0, { new ChangeValueMutator() }},
 	});
 
 	method("insert", {
