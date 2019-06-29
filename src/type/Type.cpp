@@ -32,6 +32,7 @@
 #include "Template_type.hpp"
 #include "Never_type.hpp"
 #include "Compound_type.hpp"
+#include "Meta_add_type.hpp"
 #include "Meta_mul_type.hpp"
 #include "Meta_baseof_type.hpp"
 #include "Meta_element_type.hpp"
@@ -531,6 +532,9 @@ const Type* Type::compound(std::initializer_list<const Type*> types) {
 	return type;
 }
 
+const Type* Type::meta_add(const Type* t1, const Type* t2) {
+	return new Meta_add_type(t1, t2);
+}
 const Type* Type::meta_mul(const Type* t1, const Type* t2) {
 	return new Meta_mul_type(t1, t2);
 }

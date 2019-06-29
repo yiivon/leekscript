@@ -1,5 +1,6 @@
 #include "CallableVersion.hpp"
 #include "../../type/Template_type.hpp"
+#include "../../type/Meta_add_type.hpp"
 #include "../../type/Meta_mul_type.hpp"
 #include "../../type/Meta_baseof_type.hpp"
 #include "../../type/Meta_not_temporary_type.hpp"
@@ -54,6 +55,9 @@ const Type* build(const Type* type) {
 	}
 	if (auto not_tmp = dynamic_cast<const Meta_not_temporary_type*>(type)) {
 		return build(not_tmp->type)->not_temporary();
+	}
+	if (auto mul = dynamic_cast<const Meta_add_type*>(type)) {
+		return build(mul->t1)->operator + (build(mul->t2));
 	}
 	if (auto mul = dynamic_cast<const Meta_mul_type*>(type)) {
 		return build(mul->t1)->operator * (build(mul->t2));
