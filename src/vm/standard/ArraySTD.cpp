@@ -38,8 +38,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
-		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
+		{Type::array(pqT), pqE, Type::array(Type::meta_add(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, { new ChangeTypeMutator() }, true},
+		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_add(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
 	});
 
 	auto ttE = Type::template_("E");
@@ -221,8 +221,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pE = Type::template_("E");
 	template_(pT, pE).
 	method("push", {
-		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, {new WillStoreMutator()}},
-		{Type::array(Type::meta_mul(pT, pE)), {Type::array(pT), pE}, push, 0, { new WillStoreMutator() }},
+		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, { new WillStoreMutator() }},
+		{Type::array(Type::meta_mul(pT, Type::meta_not_temporary(pE))), {Type::array(pT), pE}, push, 0, { new WillStoreMutator() }},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
