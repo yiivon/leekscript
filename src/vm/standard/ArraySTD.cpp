@@ -38,7 +38,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, {}, true},
+		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
+		{Type::array(pqT), pqE, Type::array(Type::meta_mul(pqT, pqE)), array_add_eq, 0, { new ChangeTypeMutator() }, true},
 	});
 
 	auto ttE = Type::template_("E");
@@ -221,7 +222,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	template_(pT, pE).
 	method("push", {
 		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, {new WillStoreMutator()}},
-		{Type::array(pT), {Type::array(pT), pE}, push, 0, {new WillStoreMutator()}},
+		{Type::array(Type::meta_mul(pT, pE)), {Type::array(pT), pE}, push, 0, { new WillStoreMutator() }},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
@@ -256,8 +257,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T}, fill, 0, {new WillStoreMutator()}},
-		{Type::array(T), {Type::array(), T, Type::const_integer}, fill2, 0, {new WillStoreMutator()}},
+		{Type::array(T), {Type::array(), T}, fill, 0, { new ChangeTypeMutator() }},
+		{Type::array(T), {Type::array(), T, Type::const_integer}, fill2, 0, { new ChangeTypeMutator() }},
 	});
 
 	method("insert", {
@@ -440,7 +441,9 @@ Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, b
 		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
 		return "Array.fill_fun";
 	}();
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.insn_array_size(args[0])}, fun);
+	auto convert_type = args[0].t->element()->fold();
+	if (convert_type == Type::boolean) convert_type = Type::any;
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], convert_type), c.insn_array_size(args[0])}, fun);
 }
 Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = [&]() {
@@ -448,7 +451,9 @@ Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, 
 		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
 		return "Array.fill_fun";
 	}();
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.to_int(args[2])}, fun);
+	auto convert_type = args[0].t->element()->fold();
+	if (convert_type == Type::boolean) convert_type = Type::any;
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], convert_type), c.to_int(args[2])}, fun);
 }
 
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {

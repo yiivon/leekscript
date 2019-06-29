@@ -31,6 +31,8 @@ public:
 	std::string function_name;
 	Call call;
 	const CallableVersion* callable_version;
+	Variable* variable = nullptr;
+	Variable* previous_var = nullptr;
 
 	FunctionCall(Token* t);
 
