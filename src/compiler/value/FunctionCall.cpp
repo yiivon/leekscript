@@ -295,7 +295,7 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			variable->create_entry(c);
 			// std::cout << "store previous var " << vv->var << " " << previous_var << " " << previous_var->val.v << std::endl;
 			auto new_value = c.insn_convert(c.insn_load(previous_var->val), variable->type, true);
-			std::cout << "FC new value " << new_value.t << std::endl;
+			// std::cout << "FC new value " << new_value.t << std::endl;
 			variable->store_value(c, c.insn_move_inc(new_value));
 		} else {
 			variable->val = previous_var->val;
