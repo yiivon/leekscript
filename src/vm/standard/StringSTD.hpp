@@ -19,6 +19,7 @@ public:
 	static LSString* add_int(LSString* s, int i);
 	static LSString* add_bool(LSString* s, bool i);
 	static LSString* add_real(LSString* s, double i);
+	static Compiler::value add_eq(Compiler& c, std::vector<Compiler::value> args, bool);
 
 	static LSString* replace(LSString*, LSString*, LSString*);
 	static LSValue* v1_replace(LSString* string, LSString* from, LSString* to);

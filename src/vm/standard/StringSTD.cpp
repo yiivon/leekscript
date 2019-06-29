@@ -93,6 +93,13 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 		{Type::string, Type::integer, Type::string, (void*) add_int},
 		{Type::string, Type::boolean, Type::string, (void*) add_bool},
 	});
+
+	auto aeT = Type::template_("T");
+	template_(aeT).
+	operator_("+=", {
+		{Type::string, aeT, Type::string, add_eq, 0, {}, true},
+	});
+
 	operator_("<", {
 		{Type::string, Type::string, Type::boolean, lt}
 	});
@@ -254,6 +261,11 @@ LSString* StringSTD::add_real(LSString* s, double i) {
 	} else {
 		return new LSString(*s + LSNumber::print(i));
 	}
+}
+
+Compiler::value StringSTD::add_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+	args[1] = c.insn_to_any(args[1]);
+	return c.insn_call(Type::any, args, "Value.operator+=");
 }
 
 Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, bool) {
