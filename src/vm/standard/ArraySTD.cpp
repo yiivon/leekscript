@@ -201,9 +201,10 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
 	auto frT = Type::template_("T");
 	auto frR = Type::template_("R");
-	template_(frT, frR).
+	auto frI = Type::template_("I");
+	template_(frT, frR, frI).
 	method("foldRight", {
-		{frR, {Type::const_array(frT), Type::fun(frR, {frT, frR}), frR}, fold_right},
+		{Type::meta_mul(frI, frR), {Type::const_array(frT), Type::fun(frR, {frT, Type::meta_mul(frI, frR)}), frI}, fold_right},
 	});
 
 	method("pop", {
