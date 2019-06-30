@@ -324,6 +324,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 			}
 		}
 		if (delete_previous) insn_delete(v);
+		insn_delete_temporary(v);
 		return new_array(t->element(), {});
 	}
 	if (v.t->is_set() and t->is_set() and t->element()->is_polymorphic()) {
