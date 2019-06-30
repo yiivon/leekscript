@@ -22,10 +22,10 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 		condition2->print(os, indent + 1, debug);
 	}
 	os << "; ";
-	increment->print(os, indent + 1, debug, condensed);
+	increment->print(os, indent + 1, debug, true);
 	if (increment2) {
 		os << " # ";
-		increment2->print(os, indent + 1, debug, condensed);
+		increment2->print(os, indent + 1, debug, true);
 	}
 	os << " ";
 	body->print(os, indent, debug);
