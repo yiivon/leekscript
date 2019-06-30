@@ -36,6 +36,8 @@ int Array_type::distance(const Type* type) const {
 	if (not temporary and type->temporary) return -1;
 	if (dynamic_cast<const Any_type*>(type->folded)) { return 1000; }
 	if (auto array = dynamic_cast<const Array_type*>(type->folded)) {
+		if (_element == Type::never) return 0;
+		if (array->_element == Type::never) return 999;
 		if (array->_element->is_void()) {
 			return 999;
 		}
