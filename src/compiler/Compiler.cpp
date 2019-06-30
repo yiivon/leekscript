@@ -1033,7 +1033,9 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 	if (v.t->is_string()) {
 		return insn_call(Type::integer, {v}, "String.isize");
 	} else if (v.t->is_array()) {
-		if (v.t->element()->is_integer()) {
+		if (v.t->element() == Type::never) {
+			return new_integer(0);
+		} else if (v.t->element()->is_integer()) {
 			return insn_call(Type::integer, {v}, "Array.isize.2");
 		} else if (v.t->element()->is_real()) {
 			return insn_call(Type::integer, {v}, "Array.isize.1");
