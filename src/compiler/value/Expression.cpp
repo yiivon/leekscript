@@ -144,11 +144,11 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
 			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
-			if (variable) {
-				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
-				variable->type = variable->parent->type;
-				v1->type = variable->type;
-			}
+		}
+		if (variable) {
+			// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
+			variable->type = variable->parent->type;
+			v1->type = variable->type;
 		}
 		// TODO other operators like |= ^= &=
 		if (v1->type->constant) {
