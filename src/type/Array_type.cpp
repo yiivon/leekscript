@@ -59,7 +59,10 @@ const std::string Array_type::getName() const {
 	return "array<" + _element->getName() + ">";
 }
 std::ostream& Array_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << "array" << END_COLOR << "<" << _element << ">";
+	os << BLUE_BOLD << "array" << END_COLOR;
+	if (_element != Type::void_) {
+		os << "<" << _element << ">";
+	}
 	return os;
 }
 Type* Array_type::clone() const {
