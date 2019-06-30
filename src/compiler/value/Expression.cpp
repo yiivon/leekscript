@@ -306,12 +306,15 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	if (op->type == TokenType::PLUS_EQUAL and variable) {
-		if (variable->type != previous_var->type) {
-			// std::cout << "create new entry for var " << variable << " " << previous_var << " " << previous_var->val.v << std::endl;
-			variable->create_entry(c);
-			variable->store_value(c, c.insn_move_inc(c.insn_convert(c.insn_load(previous_var->val), variable->type, true)));
-		} else {
+		// std::cout << "create new entry for var " << variable << " " << previous_var << " " << previous_var->val.v << std::endl;
+		auto previous_value = c.insn_load(previous_var->val);
+		auto converted = c.insn_convert(previous_value, variable->type);
+		if (previous_value.v == converted.v) {
 			variable->val = previous_var->val;
+		} else {
+			variable->create_entry(c);
+			variable->store_value(c, c.insn_move_inc(converted));
+			c.insn_delete_variable(previous_var->val);
 		}
 	}
 
