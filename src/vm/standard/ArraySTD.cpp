@@ -12,6 +12,7 @@ namespace ls {
 ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
 	LSArray<LSValue*>::clazz = clazz.get();
+	LSArray<char>::clazz = clazz.get();
 	LSArray<int>::clazz = clazz.get();
 	LSArray<double>::clazz = clazz.get();
 
@@ -19,6 +20,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	 * Constructor
 	 */
 	constructor_({
+		{Type::tmp_array(Type::boolean), {Type::integer}, (void*) LSArray<char>::constructor},
 		{Type::tmp_array(Type::integer), {Type::integer}, (void*) LSArray<int>::constructor},
 		{Type::tmp_array(Type::real), {Type::integer}, (void*) LSArray<double>::constructor},
 		{Type::tmp_array(Type::any), {Type::integer}, (void*) LSArray<LSValue*>::constructor},
@@ -228,6 +230,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;
 	method("vpush", {
+		{Type::void_, {Type::array(Type::boolean), Type::boolean}, (void*) &LSArray<char>::ls_push},
 		{Type::void_, {Type::array(Type::integer), Type::integer}, (void*) &LSArray<int>::ls_push},
 		{Type::void_, {Type::array(Type::real), Type::real}, (void*) &LSArray<double>::ls_push},
 		{Type::void_, {Type::array(Type::any), Type::any}, (void*) &LSArray<LSValue*>::push_inc},
@@ -365,6 +368,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::array(), {Type::array(), Type::any, Type::integer}, (void*) &LSArray<LSValue*>::ls_fill},
 		{Type::array(), {Type::array(), Type::real, Type::integer}, (void*) &LSArray<double>::ls_fill},
 		{Type::array(), {Type::array(), Type::integer, Type::integer}, (void*) &LSArray<int>::ls_fill},
+		{Type::array(), {Type::array(), Type::boolean, Type::integer}, (void*) &LSArray<char>::ls_fill},
 	});
 	method("remove_element_fun", {
 		{Type::boolean, {Type::array(), Type::any}, (void*) &LSArray<LSValue*>::ls_remove_element},
@@ -438,23 +442,21 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 
 Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = [&]() {
+		if (args[0].t->element()->fold()->is_bool()) return "Array.fill_fun.3";
 		if (args[0].t->element()->fold()->is_integer()) return "Array.fill_fun.2";
 		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
 		return "Array.fill_fun";
 	}();
-	auto convert_type = args[0].t->element()->fold();
-	if (convert_type == Type::boolean) convert_type = Type::any;
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], convert_type), c.insn_array_size(args[0])}, fun);
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.insn_array_size(args[0])}, fun);
 }
 Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto fun = [&]() {
+		if (args[0].t->element()->fold()->is_bool()) return "Array.fill_fun.3";
 		if (args[0].t->element()->fold()->is_integer()) return "Array.fill_fun.2";
 		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
 		return "Array.fill_fun";
 	}();
-	auto convert_type = args[0].t->element()->fold();
-	if (convert_type == Type::boolean) convert_type = Type::any;
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], convert_type), c.to_int(args[2])}, fun);
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.to_int(args[2])}, fun);
 }
 
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
@@ -607,10 +609,11 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args, b
 
 Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
 	auto fun = [&]() {
-		if (args[0].t->element()->fold()->is_integer()) return "Array.vpush";
-		if (args[0].t->element()->fold()->is_real()) return "Array.vpush.1";
+		if (args[0].t->element()->fold()->is_bool()) return "Array.vpush";
+		if (args[0].t->element()->fold()->is_integer()) return "Array.vpush.1";
+		if (args[0].t->element()->fold()->is_real()) return "Array.vpush.2";
 		args[1] = c.insn_convert(args[1], Type::any);
-		return "Array.vpush.2";
+		return "Array.vpush.3";
 	}();
 	c.insn_call(Type::void_, args, fun);
 	return args[0];

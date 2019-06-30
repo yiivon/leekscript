@@ -154,6 +154,7 @@ public:
 	static void delete_not_temporary(LSValue* value);
 };
 
+template <> LSValue* LSValue::get(char v);
 template <> LSValue* LSValue::get(int v);
 template <> LSValue* LSValue::get(double v);
 
@@ -267,7 +268,15 @@ namespace ls {
 		return v2->operator == (v1);
 	}
 	template <>
+	inline bool equals(char v1, ls::LSValue* v2) {
+		return v2->operator == (v1);
+	}
+	template <>
 	inline bool equals(ls::LSValue* v1, int v2) {
+		return v1->operator == (v2);
+	}
+	template <>
+	inline bool equals(ls::LSValue* v1, char v2) {
 		return v1->operator == (v2);
 	}
 	template <>
@@ -377,6 +386,9 @@ namespace ls {
 	template <> inline int convert(double v) { return v; }
 	template <> inline double convert(int v) { return v; }
 
+	template <> inline LSValue* convert(char v) {
+		return LSValue::get(v);
+	}
 	template <> inline LSValue* convert(int v) {
 		return LSValue::get(v);
 	}

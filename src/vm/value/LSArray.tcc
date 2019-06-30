@@ -1065,6 +1065,76 @@ inline LSValue* LSArray<int>::add(LSValue* v) {
 	}
 }
 
+
+template <>
+inline LSValue* LSArray<char>::add(LSValue* v) {
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
+			auto ret = new LSArray<LSValue*>();
+			ret->reserve(this->size() + array->size());
+			for (auto v : *this) {
+				ret->push_inc(LSNumber::get(v));
+			}
+			if (array->refs == 0) {
+				for (auto v : *array) {
+					ret->push_back(v);
+				}
+				array->clear();
+				delete array;
+			} else {
+				for (auto v : *array) {
+					ret->push_clone(v);
+				}
+			}
+			if (refs == 0) delete this;
+			return ret;
+		}
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_int(array);
+			}
+			return ((LSArray<int>*) this->clone())->ls_push_all_int(array);
+		}
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			auto ret = new LSArray<double>();
+			ret->reserve(this->size() + array->size());
+			ret->insert(ret->end(), this->begin(), this->end());
+			ret->insert(ret->end(), array->begin(), array->end());
+			if (refs == 0) delete this;
+			if (array->refs == 0) delete array;
+			return ret;
+		}
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (number->value == (int) number->value) {
+			if (refs == 0) {
+				this->push_back(number->value);
+				if (number->refs == 0) delete number;
+				return this;
+			}
+			auto r = (LSArray<int>*) this->clone();
+			r->push_back(number->value);
+			if (number->refs == 0) delete number;
+			return r;
+		}
+		auto ret = new LSArray<double>();
+		ret->insert(ret->end(), this->begin(), this->end());
+		ret->push_back(number->value);
+		if (refs == 0) delete this;
+		if (number->refs == 0) delete number;
+		return ret;
+	} else {
+		auto r = new LSArray<LSValue*>();
+		r->reserve(this->size() + 1);
+		for (auto v : *this) {
+			r->push_inc(LSNumber::get(v));
+		}
+		r->push_move(v);
+		if (refs == 0) delete this;
+		return r;
+	}
+}
+
 template <>
 inline LSValue* LSArray<LSValue*>::add_eq(LSValue* v) {
 	if (v->type == ARRAY) {
@@ -1130,6 +1200,24 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 	}
 	auto set = dynamic_cast<LSSet<int>*>(v);
 	return add_set(set);
+}
+
+template <>
+inline LSValue* LSArray<char>::add_eq(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		this->push_back(number->value);
+		LSValue::delete_temporary(number);
+		return this;
+	}
+	if (auto array = dynamic_cast<LSArray<char>*>(v)) {
+		this->reserve(this->size() + array->size());
+		this->insert(this->end(), array->begin(), array->end());
+		LSValue::delete_temporary(v);
+		return this;
+	}
+	// auto set = dynamic_cast<LSSet<int>*>(v);
+	// return add_set(set);
+	return this;
 }
 
 template <class T>
@@ -1363,6 +1451,17 @@ std::ostream& LSArray<T>::dump(std::ostream& os, int) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
 		os << (*i);
+	}
+	os << "]";
+	return os;
+}
+
+template <>
+inline std::ostream& LSArray<char>::dump(std::ostream& os, int level) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << std::boolalpha << (bool) (*i);
 	}
 	os << "]";
 	return os;

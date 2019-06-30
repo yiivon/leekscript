@@ -47,6 +47,7 @@ int Array_type::distance(const Type* type) const {
 }
 const Type* Array_type::iterator() const {
 	const auto merged = _element->fold();
+	if (merged->is_bool()) return Type::i8->pointer();
 	if (merged->is_integer()) return Type::integer->pointer();
 	if (merged->is_real()) return Type::real->pointer();
 	return Type::any->pointer();

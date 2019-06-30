@@ -53,7 +53,14 @@ template <class T>
 LSValue* LSValue::get(T v) {
 	return LSNull::get();
 }
-
+template <>
+LSValue* LSValue::get(bool v) {
+	return LSBoolean::get(v);
+}
+template <>
+LSValue* LSValue::get(char v) {
+	return LSBoolean::get(v);
+}
 template <>
 LSValue* LSValue::get(int v) {
 	return LSNumber::get(v);

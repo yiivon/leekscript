@@ -192,12 +192,14 @@ Compiler::value Compiler::new_set() const {
 Compiler::value Compiler::new_array(const Type* element_type, std::vector<Compiler::value> elements) const {
 	auto folded_type = element_type->fold();
 	auto array_type = Type::tmp_array(element_type);
-	auto array = [&]() { if (folded_type->is_integer()) {
+	auto array = [&]() { if (folded_type->is_bool()) {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.0");
-	} else if (folded_type->is_real()) {
+	} else if (folded_type->is_integer()) {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.1");
-	} else {
+	} else if (folded_type->is_real()) {
 		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.2");
+	} else {
+		return insn_call(array_type, {new_integer(elements.size())}, "Array.new.3");
 	}}();
 	for (const auto& element : elements) {
 		auto v = insn_move(insn_convert(element, folded_type));
@@ -1061,13 +1063,15 @@ void Compiler::insn_push_array(Compiler::value array, Compiler::value value) con
 	assert(array.t->llvm(*this) == array.v->getType());
 	assert(value.t->llvm(*this) == value.v->getType());
 	auto element_type = array.t->element()->fold();
-	if (element_type->is_integer()) {
+	if (element_type->is_bool()) {
 		insn_call(Type::void_, {array, value}, "Array.vpush.0");
+	} else if (element_type->is_integer()) {
+		insn_call(Type::void_, {array, value}, "Array.vpush.1");
 	} else if (element_type->is_real()) {
 		value.t = Type::real;
-		insn_call(Type::void_, {array, value}, "Array.vpush.1");
+		insn_call(Type::void_, {array, value}, "Array.vpush.2");
 	} else {
-		insn_call(Type::void_, {array, insn_convert(value, Type::any)}, "Array.vpush.2");
+		insn_call(Type::void_, {array, insn_convert(value, Type::any)}, "Array.vpush.3");
 	}
 }
 
