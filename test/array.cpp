@@ -513,9 +513,9 @@ void Test::test_arrays() {
 	code("var a = [] a.push(1)").equals("[1]");
 	code("var a = [] a.push('a') a").equals("['a']");
 	code("var a = [] a.push('a')").equals("['a']");
-	DISABLED_code("var a = [1] a.push('a') a").equals("[1, 'a']");
-	DISABLED_code("var a = [1] a.push('a')").equals("[1, 'a']");
-	DISABLED_code("var a = [] for i in [1..10] { a = a.push(i) } a").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
+	code("var a = [1] a.push('a') a").equals("[1, 'a']");
+	code("var a = [1] a.push('a')").equals("[1, 'a']");
+	code("var a = [] for i in [1..10] { a = a.push(i) } a").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	code("let p = (a, e) => a.push(e) var a = [] for i in [1..10] { a = p(a, i) } a").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 
 	section("Array.pushAll()");
