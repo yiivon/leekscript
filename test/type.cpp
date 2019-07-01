@@ -142,6 +142,8 @@ void Test::test_types() {
 	section("operator +");
 	test("void + int", ls::Type::void_->operator + (ls::Type::integer), ls::Type::integer);
 	test("int + real", ls::Type::integer->operator + (ls::Type::real), ls::Type::compound({ls::Type::integer, ls::Type::real}));
+	test("never + int", ls::Type::never->operator + (ls::Type::integer), ls::Type::integer);
+	test("int + never", ls::Type::integer->operator + (ls::Type::never), ls::Type::integer);
 
 	section("operator *");
 	test("void * void", ls::Type::void_->operator * (ls::Type::void_), ls::Type::void_);

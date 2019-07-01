@@ -113,8 +113,8 @@ bool Type::must_manage_memory() const {
 }
 
 const Type* Type::operator + (const Type* type) const {
-	if (is_void()) return type;
-	if (type->is_void()) return this;
+	if (is_void() or is_never()) return type;
+	if (type->is_void() or type->is_never()) return this;
 	return Type::compound({this, type});
 }
 const Type* Type::operator * (const Type* t2) const {
