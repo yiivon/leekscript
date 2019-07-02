@@ -78,7 +78,7 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 		// }
 		// os << ">";
 	}
-	if (debug) {
+	if (debug and type->return_type() != body->type) {
 		os << " : " << type->return_type();
 	}
 }
