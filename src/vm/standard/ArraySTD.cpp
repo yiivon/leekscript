@@ -338,7 +338,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 
 	/** Internal **/
 	method("convert_key", {
-		{Type::integer, {Type::const_any, Type::const_any}, (void*) &convert_key}
+		{Type::integer, {Type::const_any}, (void*) &convert_key}
 	});
 	method("in", {
 		{Type::boolean, {Type::const_array(Type::any), Type::const_any}, (void*) &LSArray<LSValue*>::in},
@@ -657,10 +657,9 @@ Compiler::value ArraySTD::push_all(Compiler& c, std::vector<Compiler::value> arg
 	return c.insn_call(Type::any, args, fun);
 }
 
-int ArraySTD::convert_key(LSValue* array, LSValue* key_pointer) {
+int ArraySTD::convert_key(LSValue* key_pointer) {
 	auto n = dynamic_cast<LSNumber*>(key_pointer);
 	if (!n) {
-		LSValue::delete_temporary(array);
 		LSValue::delete_temporary(key_pointer);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	}

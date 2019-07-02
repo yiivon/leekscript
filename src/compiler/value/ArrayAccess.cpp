@@ -170,6 +170,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 	c.mark_offset(open_bracket->location.start.line);
 
 	((ArrayAccess*) this)->compiled_array = array->compile(c);
+	c.add_temporary_value(compiled_array);
 	array->compile_end(c);
 
 	c.inc_ops(2); // Array access : 2 operations
@@ -179,8 +180,9 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		if (array->type->is_interval()) {
 
 			auto k = key->compile(c);
+			auto r = c.insn_invoke(Type::integer, {compiled_array, k}, "Interval.atv");
 			key->compile_end(c);
-			return c.insn_invoke(Type::integer, {compiled_array, k}, "Interval.atv");
+			return r;
 
 		} else if (array->type->is_map()) {
 
@@ -222,17 +224,15 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 		} else if (array->type->is_string() or array->type->is_array()) {
 
 			auto k = key->compile(c);
-			key->compile_end(c);
-
 			if (k.t->is_polymorphic()) {
-				k = c.insn_invoke(Type::integer, {compiled_array, k}, "Array.convert_key");
+				k = c.insn_invoke(Type::integer, {k}, "Array.convert_key");
 			}
 			auto int_key = c.to_int(k);
+			key->compile_end(c);
 
 			// Check index : k < 0 or k >= size
 			auto array_size = c.insn_array_size(compiled_array);
 			c.insn_if(c.insn_or(c.insn_lt(int_key, c.new_integer(0)), c.insn_ge(int_key, array_size)), [&]() {
-				c.insn_delete_temporary(compiled_array);
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
 
@@ -256,9 +256,10 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 	} else {
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
+		auto r = c.insn_invoke(type, {compiled_array, start, end}, "Value.range");
 		key->compile_end(c);
 		key2->compile_end(c);
-		return c.insn_invoke(type, {compiled_array, start, end}, "Value.range");
+		return r;
 	}
 }
 
@@ -272,6 +273,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			return array->compile(c);
 		}
 	}();
+	c.add_temporary_value(compiled_array);
 
 	if (key2 == nullptr) {
 		// Compile the key
@@ -318,7 +320,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 }
 
 void ArrayAccess::compile_end(Compiler& c) const {
-	c.insn_delete_temporary(compiled_array);
+	c.pop_temporary_value();
 }
 
 std::unique_ptr<Value> ArrayAccess::clone() const {

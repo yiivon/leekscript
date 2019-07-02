@@ -303,6 +303,7 @@ public:
 	void export_context_variable(const std::string& name, Compiler::value v) const;
 	void add_temporary_variable(Variable* variable);
 	void add_temporary_value(value container);
+	void pop_temporary_value();
 
 	// Loops
 	void enter_loop(label*, label*);

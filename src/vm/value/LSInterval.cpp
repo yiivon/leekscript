@@ -108,7 +108,6 @@ bool LSInterval::in_i(const int value) const {
 int LSInterval::atv(const int key) const {
 	int size = b - a + 1;
 	if (key < 0 or key >= size) {
-		LSValue::delete_temporary(this);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	return a + key;
@@ -116,7 +115,6 @@ int LSInterval::atv(const int key) const {
 
 LSValue* LSInterval::at(const LSValue* key) const {
 	if (key->type != NUMBER) {
-		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	}
@@ -134,7 +132,6 @@ LSValue* LSInterval::at(const LSValue* key) const {
 LSValue* LSInterval::range(int start, int end) const {
 	int size = b - a + 1;
 	if (start < 0 or start >= size or end >= b) {
-		LSValue::delete_temporary(this);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	}
 	auto new_interval = new LSInterval();

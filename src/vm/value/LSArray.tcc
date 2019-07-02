@@ -1409,7 +1409,6 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 		auto b = static_cast<const LSBoolean*>(key);
 		index = (int) b->value;
 	} else {
-		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	}
@@ -1418,7 +1417,6 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 	try {
 		res = ls::convert<LSValue*>(ls::clone(((std::vector<T>*) this)->at(index)));
 	} catch (std::exception const & e) {
-		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		ex = true;
 	}

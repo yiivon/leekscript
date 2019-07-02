@@ -303,9 +303,10 @@ Compiler::value ObjectAccess::compile(Compiler& c) const {
 
 	// Default : object.attr
 	auto o = object->compile(c);
-	object->compile_end(c);
 	auto k = c.new_const_string(field->content);
-	return c.insn_invoke(type, {o, k}, "Value.attr");
+	auto r = c.insn_invoke(type, {o, k}, "Value.attr");
+	object->compile_end(c);
+	return r;
 }
 
 Compiler::value ObjectAccess::compile_version(Compiler& c, std::vector<const Type*> version) const {

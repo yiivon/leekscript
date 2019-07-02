@@ -35,9 +35,12 @@ void ExpressionInstruction::analyze(SemanticAnalyzer* analyzer, const Type* req_
 
 Compiler::value ExpressionInstruction::compile(Compiler& c) const {
 	auto v = value->compile(c);
-	value->compile_end(c);
 	assert(!v.v or v.t->llvm(c) == v.v->getType());
 	return v;
+}
+
+Compiler::value ExpressionInstruction::compile_end(Compiler& c) const {
+	value->compile_end(c);
 }
 
 std::unique_ptr<Instruction> ExpressionInstruction::clone() const {

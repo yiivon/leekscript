@@ -102,14 +102,12 @@ Compiler::value VariableDeclaration::compile(Compiler& c) const {
 				continue;
 			}
 			auto val = ex->compile(c);
-			ex->compile_end(c);
-
-			variable->create_entry(c);
-
 			if (!val.t->reference) {
 				val = c.insn_move_inc(val);
 			}
+			variable->create_entry(c);
 			variable->store_value(c, val);
+			ex->compile_end(c);
 		} else {
 			variable->create_entry(c);
 			variable->store_value(c, c.new_null());

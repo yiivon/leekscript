@@ -111,8 +111,8 @@ Compiler::value If::compile(Compiler& c) const {
 	bool compile_elze = elze != nullptr or not type->is_void();
 
 	auto cond = condition->compile(c);
-	condition->compile_end(c);
 	auto cond_boolean = c.insn_to_bool(cond);
+	condition->compile_end(c);
 	c.insn_delete_temporary(cond);
 	c.insn_if_new(cond_boolean, &label_then, compile_elze ? &label_else : &label_end);
 

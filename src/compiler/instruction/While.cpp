@@ -96,8 +96,8 @@ Compiler::value While::compile(Compiler& c) const {
 	c.insn_branch(&cond_label);
 	c.insn_label(&cond_label);
 	auto cond = condition->compile(c);
-	condition->compile_end(c);
 	auto cond_bool = c.insn_to_bool(cond);
+	condition->compile_end(c);
 	c.insn_delete_temporary(cond);
 	c.insn_if_new(cond_bool, &loop_label, &end_label);
 	c.insn_label(&loop_label);

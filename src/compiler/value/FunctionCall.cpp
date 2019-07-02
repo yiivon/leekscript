@@ -319,16 +319,12 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 			auto arg = arguments.at(i)->compile(c);
 			if (arg.t->is_function_pointer()) {
 				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset)));
-				arguments.at(i)->compile_end(c);
 			} else if (arguments.at(i)->type->is_primitive()) {
 				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset)));
-				arguments.at(i)->compile_end(c);
 			} else if (arguments.at(i)->type->is_polymorphic() and callable_version->type->argument(i + offset)->is_primitive()) {
-				arguments.at(i)->compile_end(c);
 				args.push_back(c.insn_convert(arg, callable_version->type->argument(i + offset), true));
 			} else {
 				args.push_back(arg);
-				arguments.at(i)->compile_end(c);
 			}
 		} else if (f and ((Function*) f)->defaultValues.at(i)) {
 			types.push_back((LSValueType) ((Function*) f)->defaultValues.at(i)->type->id());
@@ -344,6 +340,11 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 		auto r2 = c.create_entry("m", r.t);
 		c.insn_store(r2, r);
 		r = r2;
+	}
+	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {
+		if (i < arguments.size()) {
+			arguments.at(i)->compile_end(c);
+		}
 	}
 	return r;
 }

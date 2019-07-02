@@ -151,6 +151,7 @@ Compiler::value Block::compile(Compiler& c) const {
 
 		if (instructions[i]->returning) {
 			// no need to compile after a return
+			instructions[i]->compile_end(c);
 			c.leave_block(false); // Variables already deleted by the return instruction
 			if (is_function_block) {
 				c.fun->compile_return(c, {});
@@ -158,6 +159,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			return {};
 		}
 		if (i < instructions.size() - 1) {
+			instructions[i]->compile_end(c);
 			if (val.v != nullptr && !instructions[i]->type->is_void()) {
 				c.insn_delete_temporary(val);
 			}
@@ -178,6 +180,7 @@ Compiler::value Block::compile(Compiler& c) const {
 					return val;
 				}
 			}();
+			instructions[i]->compile_end(c);
 			if (is_function_block and c.vm->context) {
 				c.fun->parent->export_context(c);
 			}

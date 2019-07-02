@@ -2015,7 +2015,12 @@ void Compiler::delete_variables_block(int deepness) {
 		}
 		auto& temporary_values = blocks.back()[i]->temporary_values;
 		for (const auto& value : temporary_values) {
-			insn_delete(value);
+			// std::cout << "delete temporary value " << value.t << std::endl;
+			if (value.t->temporary) {
+				insn_delete_temporary(value);
+			} else {
+				insn_delete(value);
+			}
 		}
 		auto& temporary_variables = blocks.back()[i]->temporary_variables;
 		for (const auto& variable : temporary_variables) {
@@ -2095,6 +2100,10 @@ void Compiler::add_temporary_variable(Variable* variable) {
 void Compiler::add_temporary_value(Compiler::value value) {
 	blocks.back().back()->temporary_values.push_back(value);
 }
+void Compiler::pop_temporary_value() {
+	insn_delete_temporary(blocks.back().back()->temporary_values.back());
+	blocks.back().back()->temporary_values.pop_back();
+}
 
 // Loops
 void Compiler::enter_loop(Compiler::label* end_label, Compiler::label* cond_label) {
@@ -2154,9 +2163,13 @@ void Compiler::mark_offset(int line) {
 	exception_line.top() = line;
 }
 void Compiler::insn_try_catch(std::function<void()> try_, std::function<void()> catch_) {
+	auto block = new Block();
 	auto handler = llvm::BasicBlock::Create(getContext(), "catch", F);
 	catchers.back().back().push_back({handler});
+	enter_block(block);
 	try_();
+	delete_variables_block(1);
+	leave_block();
 	catchers.back().back().pop_back();
 	auto ContBB = llvm::BasicBlock::Create(getContext(), "try.cont", F);
 	builder.CreateBr(ContBB);

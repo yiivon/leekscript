@@ -40,7 +40,7 @@ public:
 	static Compiler::value filter(Compiler&, std::vector<Compiler::value>, bool);
 	static Compiler::value push_all(Compiler&, std::vector<Compiler::value>, bool);
 
-	static int convert_key(LSValue*, LSValue*);
+	static int convert_key(LSValue*);
 };
 
 }

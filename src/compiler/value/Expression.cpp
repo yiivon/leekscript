@@ -339,9 +339,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return v;
 		}}());
 		if (op->reversed) std::reverse(args.begin(), args.end());
+		auto r = callable_version->compile_call(c, args, is_void);
 		v1->compile_end(c);
 		v2->compile_end(c);
-		return callable_version->compile_call(c, args, is_void);
+		return r;
 	}
 
 	switch (op->type) {
@@ -427,8 +428,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v1->compile_end(c);
 			}, [&]() {
 				auto y = v2->compile(c);
-				v2->compile_end(c);
 				c.insn_store(r, c.insn_convert(y, type->fold()));
+				v2->compile_end(c);
 			});
 			return c.insn_load(r);
 			break;

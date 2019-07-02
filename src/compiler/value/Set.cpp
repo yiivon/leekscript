@@ -72,8 +72,8 @@ Compiler::value Set::compile(Compiler& c) const {
 	double i = 0;
 	for (const auto& ex : expressions) {
 		auto v = c.insn_convert(ex->compile(c), type->element());
-		ex->compile_end(c);
 		c.insn_call(Type::void_, {s, v}, insert);
+		ex->compile_end(c);
 		ops += std::log2(++i);
 	}
 	c.inc_ops(ops);
