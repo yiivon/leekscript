@@ -104,7 +104,7 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 		{Type::string, Type::string, Type::boolean, lt}
 	});
 	operator_("/", {
-		{Type::string, Type::string, Type::array(Type::string), div}
+		{Type::string, Type::string, Type::tmp_array(Type::string), div}
 	});
 
 	/*
@@ -276,7 +276,7 @@ Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, bo
 }
 
 Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args, bool) {
-	return c.insn_call(Type::array(Type::string), args, "Value.operator/");
+	return c.insn_call(Type::tmp_array(Type::string), args, "Value.operator/");
 }
 
 /*

@@ -106,7 +106,7 @@ Compiler::value Compiler::clone(Compiler::value v) const {
 		if (v.t->reference) {
 			v = insn_load(v);
 		}
-		return insn_call(v.t->fold(), {v}, "Value.clone");
+		return insn_call(v.t->fold()->add_temporary(), {v}, "Value.clone");
 	}
 	return v;
 }
@@ -182,7 +182,7 @@ Compiler::value Compiler::new_object() const {
 }
 
 Compiler::value Compiler::new_object_class(Compiler::value clazz) const {
-	return insn_call(Type::any, {clazz}, "Object.new.1");
+	return insn_call(Type::tmp_any, {clazz}, "Object.new.1");
 }
 
 Compiler::value Compiler::new_set() const {
@@ -342,8 +342,9 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	}
 	if (v.t->fold()->is_polymorphic()) {
 		if (t->is_polymorphic() or t->is_pointer()) {
-			// TODO temporary
-			return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
+			auto new_type = t;
+			if (v.t->temporary) new_type = new_type->add_temporary();
+			return { builder.CreatePointerCast(v.v, new_type->llvm(*this)), new_type };
 		}
 	} else if (t->is_polymorphic()) {
 		return insn_to_any(v);
@@ -883,21 +884,21 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 		return v; // already any
 	}
 	if (v.t->is_long()) {
-		return insn_call(Type::any, {to_real(v)}, "Number.new");
+		return insn_call(Type::tmp_any, {to_real(v)}, "Number.new");
 	} else if (v.t->is_real()) {
-		return insn_call(Type::any, {v}, "Number.new");
+		return insn_call(Type::tmp_any, {v}, "Number.new");
 	} else if (v.t->is_bool()) {
-		return insn_call(Type::any, {v}, "Boolean.new");
+		return insn_call(Type::tmp_any, {v}, "Boolean.new");
 	} else if (v.t->is_mpz_ptr()) {
 		if (v.t->temporary) {
-			return insn_call(Type::any, {insn_load(v)}, "Number.new.1");
+			return insn_call(Type::tmp_any, {insn_load(v)}, "Number.new.1");
 		} else {
-			return insn_call(Type::any, {insn_load(v)}, "Number.new.2");
+			return insn_call(Type::tmp_any, {insn_load(v)}, "Number.new.2");
 		}
 	} else if (v.t->is_function_pointer()) {
 		return new_function(v);
 	} else {
-		return insn_call(Type::any, {to_real(v)}, "Number.new");
+		return insn_call(Type::tmp_any, {to_real(v)}, "Number.new");
 	}
 }
 
@@ -1014,17 +1015,11 @@ void Compiler::insn_delete_variable(Compiler::value v) const {
 
 void Compiler::insn_delete_temporary(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
+	if (not v.t->temporary) return;
 	if (v.t == Type::tmp_mpz_ptr) {
 		insn_delete_mpz(v);
 	} if (v.t->must_manage_memory()) {
-		if (v.t->temporary) {
-			insn_call(Type::void_, {v}, "Value.delete");
-		} else {
-			insn_call(Type::void_, {v}, "Value.delete_tmp");
-			// insn_if_not(insn_refs(v), [&]() {
-			// 	insn_call(Type::void_, {v}, "Value.delete");
-			// });
-		}
+		insn_call(Type::void_, {v}, "Value.delete");
 	}
 }
 
@@ -1166,7 +1161,7 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert(check_value(v));
 	if (v.t->fold()->must_manage_memory() and !v.t->temporary and !v.t->reference) {
 		// TODO avoid conversions
-		return insn_convert(insn_call(Type::any, {insn_convert(v, Type::any)}, "Value.move"), v.t->fold());
+		return insn_convert(insn_call(Type::tmp_any, {insn_convert(v, Type::any)}, "Value.move"), v.t->fold());
 	}
 	return v;
 }
@@ -1803,13 +1798,17 @@ Compiler::value Compiler::insn_phi(const Type* type, Compiler::value v1, Compile
 	const auto llvm_type = type->llvm(*this);
 	auto phi = Compiler::builder.CreatePHI(llvm_type, 2, "phi");
 	if (v1.v) {
-		// std::cout << "v1 type " << v1.t << ", " << folded_type << ", " << type << std::endl;
-		assert(v1.t == folded_type);
+		if (v1.t->not_temporary() != folded_type->not_temporary()) {
+			std::cout << "v1 type " << v1.t << ", " << folded_type << ", " << type << std::endl;
+			assert(false);
+		}
 		phi->addIncoming(v1.v, l1.block);
 	}
 	if (v2.v) {
-		// std::cout << "v2 type " << v2.t << ", " << folded_type << ", " << type << std::endl;
-		assert(v2.t == folded_type);
+		if (v2.t->not_temporary() != folded_type->not_temporary()) {
+			std::cout << "v2 type " << v2.t << ", " << folded_type << ", " << type << std::endl;
+			assert(false);
+		}
 		phi->addIncoming(v2.v, l2.block);
 	}
 	return {phi, folded_type};

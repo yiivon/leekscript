@@ -118,6 +118,7 @@ public:
 	static const Type* const void_;
 	static const Type* const never;
 	static const Type* const any;
+	static const Type* const tmp_any;
 	static const Type* const null;
 	static const Type* const const_any;
 	static const Type* const boolean;

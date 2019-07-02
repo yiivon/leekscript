@@ -212,6 +212,7 @@ inline void LSValue::delete_temporary(const LSValue* const value) {
 }
 
 inline void LSValue::free(const LSValue* value) {
+	if (value->native) return;
 	delete value;
 }
 

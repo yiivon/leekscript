@@ -39,8 +39,8 @@ IntervalSTD::IntervalSTD(VM* vm) : Module(vm, "Interval") {
 	auto filter_fun = &LSInterval::ls_filter<LSFunction*>;
 	auto filter_clo = &LSInterval::ls_filter<LSClosure*>;
 	method("filter", {
-		{Type::array(Type::integer), {Type::interval, pred_fun_type_int}, (void*) filter_fun},
-		{Type::array(Type::integer), {Type::interval, pred_clo_type_int}, (void*) filter_clo}
+		{Type::tmp_array(Type::integer), {Type::interval, pred_fun_type_int}, (void*) filter_fun},
+		{Type::tmp_array(Type::integer), {Type::interval, pred_clo_type_int}, (void*) filter_clo}
 	});
 
 	auto mapR = Type::template_("R");

@@ -90,7 +90,8 @@ const Type* const Type::const_mpz_ptr = Type::mpz_ptr->add_constant();
 
 const Type* const Type::never = new Never_type {};
 const Type* const Type::any = new Any_type {};
-const Type* const Type::const_any = Type::any->add_constant();
+const Type* const Type::tmp_any = any->add_temporary();
+const Type* const Type::const_any = any->add_constant();
 const Type* const Type::null = new Null_type {};
 const Type* const Type::string = new String_type {};
 const Type* const Type::tmp_string = Type::string->add_temporary();

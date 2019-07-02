@@ -71,12 +71,12 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 
 	} else if (operatorr->type == TokenType::NEW) {
 
-		type = Type::any;
+		type = Type::tmp_any;
 		if (VariableValue* vv = dynamic_cast<VariableValue*>(expression.get())) {
 			if (vv->name == "Number") type = Type::integer;
 			else if (vv->name == "Boolean") type = Type::boolean;
 			else if (vv->name == "String") type = Type::tmp_string;
-			else if (vv->name == "Array") type = Type::array();
+			else if (vv->name == "Array") type = Type::tmp_array();
 			else if (vv->name == "Object") type = Type::tmp_object;
 			else if (vv->name == "Set") type = Type::tmp_set(Type::any);
 		}
@@ -91,7 +91,7 @@ void PrefixExpression::analyze(SemanticAnalyzer* analyzer) {
 				}
 				else if (vv->name == "Boolean") type = Type::boolean;
 				else if (vv->name == "String") type = Type::tmp_string;
-				else if (vv->name == "Array") type = Type::array();
+				else if (vv->name == "Array") type = Type::tmp_array();
 				else if (vv->name == "Object") type = Type::tmp_object;
 				else if (vv->name == "Set") type = Type::tmp_set(Type::any);
 			}

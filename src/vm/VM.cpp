@@ -64,7 +64,7 @@ VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 	add_module(std::make_unique<IntervalSTD>(this));
 	add_module(std::make_unique<JsonSTD>(this));
 
-	auto ptr_type = Type::fun(Type::any, {Type::any});
+	auto ptr_type = Type::fun(Type::tmp_any, {Type::any});
 	add_internal_var("ptr", ptr_type, nullptr, {
 		new CallableVersion {"Value.ptr", ptr_type }
 	});

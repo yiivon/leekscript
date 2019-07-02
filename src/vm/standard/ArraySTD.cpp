@@ -79,6 +79,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::array(), {Type::const_array()}, (void*) &LSArray<LSValue*>::ls_clear},
 		{Type::array(Type::real), {Type::const_array(Type::real)}, (void*) &LSArray<double>::ls_clear},
 		{Type::array(Type::integer), {Type::const_array(Type::integer)}, (void*) &LSArray<int>::ls_clear},
+		{Type::tmp_array(), {Type::tmp_array()}, (void*) &LSArray<LSValue*>::ls_clear},
+		{Type::tmp_array(Type::real), {Type::tmp_array(Type::real)}, (void*) &LSArray<double>::ls_clear},
+		{Type::tmp_array(Type::integer), {Type::tmp_array(Type::integer)}, (void*) &LSArray<int>::ls_clear},
 	});
 
 	method("contains", {
@@ -210,7 +213,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	});
 
 	method("pop", {
-		{Type::any, {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop, THROWS},
+		{Type::tmp_any, {Type::array()}, (void*) &LSArray<LSValue*>::ls_pop, THROWS},
 		{Type::real, {Type::array(Type::real)}, (void*) &LSArray<double>::ls_pop, THROWS},
 		{Type::integer, {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_pop, THROWS},
 	});
@@ -293,9 +296,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	});
 
 	method("shuffle", {
-		{Type::array(Type::any), {Type::array()}, (void*) &LSArray<LSValue*>::ls_shuffle},
-		{Type::array(Type::real), {Type::array(Type::real)}, (void*) &LSArray<double>::ls_shuffle},
-		{Type::array(Type::integer), {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_shuffle},
+		{Type::tmp_array(Type::any), {Type::array()}, (void*) &LSArray<LSValue*>::ls_shuffle},
+		{Type::tmp_array(Type::real), {Type::array(Type::real)}, (void*) &LSArray<double>::ls_shuffle},
+		{Type::tmp_array(Type::integer), {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_shuffle},
 	});
 
 	method("search", {
