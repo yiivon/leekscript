@@ -73,11 +73,8 @@ void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 	key->analyze(analyzer);
 	constant = array->constant && key->constant;
 
-	if (array->type->is_array() || array->type->is_interval() || array->type->is_map()) {
-		type = array->type->element();
-	} else {
-		type = array->type->element();
-	}
+	type = array->type->element();
+
 	if (array->type->is_map()) {
 		map_key_type = array->type->key();
 	}
