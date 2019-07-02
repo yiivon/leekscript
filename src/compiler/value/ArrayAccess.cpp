@@ -243,8 +243,7 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 			} else {
 				auto element_addr = c.insn_array_at(compiled_array, int_key);
 				c.insn_delete_temporary(k);
-				auto e = c.insn_load(element_addr);
-				return c.clone(e);
+				return c.insn_load(element_addr);
 			}
 		} else {
 			// Unknown type, call generic at() operator
