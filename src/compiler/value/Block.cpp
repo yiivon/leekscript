@@ -116,8 +116,6 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 
 	analyzer->leave_block();
 
-	type = type->not_constant();
-
 	// std::cout << "Block type " << type << std::endl;
 
 	if (type == Type::mpz) {
@@ -128,7 +126,7 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 		type = Type::tmp_mpz;
 		temporary_mpz = true;
 		mpz_pointer = true;
-	} else if (type == Type::mpz_ptr) {
+	} else if (type == Type::mpz_ptr or type == Type::const_mpz_ptr) {
 		type = Type::tmp_mpz;
 		mpz_pointer = true;
 	}
