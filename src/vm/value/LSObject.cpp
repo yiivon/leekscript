@@ -152,15 +152,16 @@ bool LSObject::in(const LSValue* key) const {
 }
 
 LSValue* LSObject::attr(const std::string& key) const {
-	try {
-		auto v = values.at(key);
+	auto i = values.find(key);
+	if (i != values.end()) {
+		auto& v = i->second;
 		if (refs == 0) {
 			v->refs++;
 			LSValue::delete_temporary(this);
 			v->refs--;
 		}
 		return v;
-	} catch (std::exception& e) {
+	} else {
 		return LSValue::attr(key);
 	}
 }
