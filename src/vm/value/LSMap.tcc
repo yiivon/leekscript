@@ -59,6 +59,9 @@ void LSMap<K, V>::ls_emplace(K key, V value) {
 	auto it = this->lower_bound(key);
 	if (it == this->end() || !ls::equals(it->first, key)) {
 		this->emplace_hint(it, ls::move_inc(key), ls::move_inc(value));
+	} else {
+		ls::release(key);
+		ls::release(value);
 	}
 }
 

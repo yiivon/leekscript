@@ -98,9 +98,6 @@ Compiler::value Map::compile(Compiler &c) const {
 
 		c.insn_call(Type::void_, {map, k, v}, insert);
 		ops += std::log2(i + 1);
-
-		c.insn_delete_temporary(k);
-		c.insn_delete_temporary(v);
 	}
 	c.inc_ops(ops);
 	return map;
