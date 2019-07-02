@@ -86,12 +86,12 @@ StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::string, Type::any, Type::string, (void*) plus_any},
-		{Type::string, Type::mpz_ptr, Type::string, (void*) plus_mpz},
-		{Type::string, Type::tmp_mpz_ptr, Type::string, (void*) plus_mpz_tmp},
-		{Type::string, Type::real, Type::string, (void*) add_real},
-		{Type::string, Type::integer, Type::string, (void*) add_int},
-		{Type::string, Type::boolean, Type::string, (void*) add_bool},
+		{Type::string, Type::any, Type::tmp_string, (void*) plus_any},
+		{Type::string, Type::mpz_ptr, Type::tmp_string, (void*) plus_mpz},
+		{Type::string, Type::tmp_mpz_ptr, Type::tmp_string, (void*) plus_mpz_tmp},
+		{Type::string, Type::real, Type::tmp_string, (void*) add_real},
+		{Type::string, Type::integer, Type::tmp_string, (void*) add_int},
+		{Type::string, Type::boolean, Type::tmp_string, (void*) add_bool},
 	});
 
 	auto aeT = Type::template_("T");
