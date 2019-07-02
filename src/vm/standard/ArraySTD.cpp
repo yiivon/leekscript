@@ -236,16 +236,11 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::void_, {Type::array(Type::any), Type::any}, (void*) &LSArray<LSValue*>::push_inc},
 	});
 
+	auto paX = Type::template_("X");
+	auto paY = Type::template_("Y");
+	template_(paX, paY).
 	method("pushAll", {
-		{Type::array(Type::any), {Type::array(), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr},
-		{Type::array(Type::any), {Type::array(), Type::array(Type::real)}, (void*) &LSArray<LSValue*>::ls_push_all_flo},
-		{Type::array(Type::any), {Type::array(), Type::array(Type::integer)}, (void*) &LSArray<LSValue*>::ls_push_all_int},
-		{Type::array(Type::any), {Type::array(Type::real), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, 0, {new WillStoreMutator()}},
-		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::real)}, (void*) &LSArray<double>::ls_push_all_flo},
-		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::integer)}, (void*) &LSArray<double>::ls_push_all_int},
-		{Type::array(Type::any), {Type::array(Type::integer), Type::array()}, (void*) &LSArray<LSValue*>::ls_push_all_ptr, 0, {new WillStoreMutator()}},
-		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::real)}, (void*) &LSArray<int>::ls_push_all_flo},
-		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::integer)}, (void*) &LSArray<int>::ls_push_all_int},
+		{Type::array(Type::meta_add(paX, paY)), {Type::array(paX), Type::array(paY)}, push_all, 0, { new WillStoreMutator() }}
 	});
 
 	method("join", {
@@ -383,6 +378,15 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	});
 	method("int_to_real", {
 		{Type::array(Type::any), {Type::array(Type::real)}, (void*) &LSArray<int>::to_real_array}
+	});
+	method("push_all_fun", {
+		{Type::array(Type::any), {Type::array(Type::any), Type::array(Type::any)}, (void*) &LSArray<LSValue*>::ls_push_all_ptr},
+		{Type::array(Type::any), {Type::array(Type::any), Type::array(Type::real)}, (void*) &LSArray<LSValue*>::ls_push_all_flo},
+		{Type::array(Type::any), {Type::array(Type::any), Type::array(Type::integer)}, (void*) &LSArray<LSValue*>::ls_push_all_int},
+		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::real)}, (void*) &LSArray<double>::ls_push_all_flo},
+		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::integer)}, (void*) &LSArray<double>::ls_push_all_int},
+		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::real)}, (void*) &LSArray<int>::ls_push_all_flo},
+		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::integer)}, (void*) &LSArray<int>::ls_push_all_int},
 	});
 }
 
@@ -632,6 +636,22 @@ Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args,
 		return {};
 	});
 	return result;
+}
+
+Compiler::value ArraySTD::push_all(Compiler& c, std::vector<Compiler::value> args, bool) {
+	auto& array1 = args[0];
+	auto& array2 = args[1];
+	if (array2.t->element() == Type::never) return array1;
+	auto fun = [&]() {
+		if (array1.t->element()->fold() == Type::integer and array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.6";
+		if (array1.t->element()->fold() == Type::integer and array2.t->element()->fold() == Type::real) return "Array.push_all_fun.5";
+		if (array1.t->element()->fold() == Type::real and array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.4";
+		if (array1.t->element()->fold() == Type::real and array2.t->element()->fold() == Type::real) return "Array.push_all_fun.3";
+		if (array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.2";
+		if (array2.t->element()->fold() == Type::real) return "Array.push_all_fun.1";
+		return "Array.push_all_fun";
+	}();
+	return c.insn_call(Type::any, args, fun);
 }
 
 int ArraySTD::convert_key(LSValue* array, LSValue* key_pointer) {
