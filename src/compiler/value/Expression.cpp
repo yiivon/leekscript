@@ -352,8 +352,9 @@ Compiler::value Expression::compile(Compiler& c) const {
 			if (array_access && array_access->key == nullptr) {
 				auto x_addr = ((LeftValue*) array_access->array.get())->compile_l(c);
 				auto y = c.insn_to_any(v2->compile(c));
+				auto r = c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
 				v2->compile_end(c);
-				return c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
+				return r;
 			}
 			// Normal a = b operator
 			auto vv = dynamic_cast<VariableValue*>(v1.get());
