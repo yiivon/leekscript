@@ -187,6 +187,13 @@ void CallableVersion::resolve_templates(SemanticAnalyzer* analyzer, std::vector<
 	}
 }
 
+void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
+	// std::cout << "CallableVersion::apply_mutators() mutators : " << mutators.size() << std::endl;
+	for (const auto& mutator : mutators) {
+		mutator->apply(analyzer, values, type->return_type());
+	}
+}
+
 Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args, bool no_return) const {
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Do the call
