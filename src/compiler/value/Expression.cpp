@@ -140,7 +140,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 			if (v2->type->is_void()) {
 				analyzer->add_error({Error::Type::CANT_ASSIGN_VOID, location(), v2->location(), {v1->to_string()}});
 			}
-			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
 		}
 		// TODO other operators like |= ^= &=
 		if (v1->type->constant) {
@@ -151,9 +150,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		if (not v1->isLeftValue()) {
 			analyzer->add_error({Error::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
 			return; // don't analyze more
-		}
-		if (previous_var) {
-			v1->type = previous_var->type;
 		}
 		// Change the type of x for operator =
 		if (op->type == TokenType::EQUAL) {
