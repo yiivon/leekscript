@@ -32,8 +32,12 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	operator_("in", {
 		{Type::const_array(), Type::const_any, Type::boolean, in, THROWS},
 	});
+
+	auto aT = Type::template_("T");
+	auto aE = Type::template_("E");
+	template_(aT, aE).
 	operator_("+", {
-		{Type::const_array(), Type::const_any, Type::array(Type::any), op_add},
+		{Type::const_array(aT), aE, Type::tmp_array(Type::meta_add(aT, aE)), op_add},
 	});
 
 	auto pqT = Type::template_("T");
@@ -415,6 +419,9 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, boo
 }
 
 Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, bool) {
+	if (args[0].t->element() == Type::never) {
+		return c.new_array(args[1].t, { args[1] });
+	}
 	return c.insn_call(Type::array(args[0].t->element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
 }
 
@@ -623,7 +630,8 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, b
 		return "Array.vpush.3";
 	}();
 	c.insn_call(Type::void_, args, fun);
-	return args[0];
+	if (no_return) return {};
+	else return args[0];
 }
 
 Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args, bool) {
