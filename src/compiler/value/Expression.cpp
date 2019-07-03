@@ -98,6 +98,7 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 				if (vv->var->scope != VarScope::CAPTURE) {
 					// std::cout << "Pre-analyze update var " << vv->var << std::endl;
 					previous_var = vv->var;
+					vv->previous_var = vv->var;
 					vv->var = analyzer->update_var(vv->var);
 					variable = vv->var;
 				}
@@ -303,19 +304,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 		c.mark_offset(op->token->location.start.line);
 		c.insn_throw_object(vm::Exception::DIVISION_BY_ZERO);
 		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
-	}
-
-	if (op->type == TokenType::PLUS_EQUAL and variable) {
-		// std::cout << "create new entry for var " << variable << " " << previous_var << " " << previous_var->val.v << std::endl;
-		auto previous_value = c.insn_load(previous_var->val);
-		auto converted = c.insn_convert(previous_value, variable->type);
-		if (previous_value.v == converted.v) {
-			variable->val = previous_var->val;
-		} else {
-			variable->create_entry(c);
-			variable->store_value(c, c.insn_move_inc(converted));
-			c.insn_delete_variable(previous_var->val);
-		}
 	}
 
 	if (callable_version) {
