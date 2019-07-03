@@ -1121,9 +1121,6 @@ Compiler::value Compiler::insn_move_inc(Compiler::value value) const {
 			return insn_call(value.t, {value}, "Value.move_inc");
 		}
 	}
-	if (value.t->temporary) {
-		return value;
-	}
 	return value;
 }
 
