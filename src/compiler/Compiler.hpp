@@ -19,6 +19,8 @@
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/ADT/STLExtras.h"
+#include "llvm-c/Transforms/Scalar.h"
+#include "llvm/Analysis/BasicAliasAnalysis.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
 #include "llvm/ExecutionEngine/RTDyldMemoryManager.h"
@@ -115,20 +117,7 @@ public:
 
 	llvm::LLVMContext& getContext() const { return *Ctx.getContext(); }
 
-	std::unique_ptr<llvm::Module> optimizeModule(std::unique_ptr<llvm::Module> M) {
-		// Create a function pass manager.
-		auto FPM = llvm::make_unique<llvm::legacy::FunctionPassManager>(M.get());
-		// Add some optimizations.
-		FPM->add(llvm::createInstructionCombiningPass());
-		FPM->add(llvm::createReassociatePass());
-		FPM->add(llvm::createGVNPass());
-		FPM->add(llvm::createCFGSimplificationPass());
-		FPM->doInitialization();
-		// Run the optimizations over all functions in the module being added to the JIT.
-		for (auto &F : *M)
-			FPM->run(F);
-		return M;
-	}
+	std::unique_ptr<llvm::Module> optimizeModule(std::unique_ptr<llvm::Module> M);
 	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode = false, bool export_optimized_ir = false);
 
 	llvm::JITSymbol findSymbol(const std::string Name) {

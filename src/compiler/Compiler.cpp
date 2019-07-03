@@ -87,6 +87,22 @@ Compiler::Compiler(VM* vm) : vm(vm),
 		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
 	}
 
+std::unique_ptr<llvm::Module> Compiler::optimizeModule(std::unique_ptr<llvm::Module> M) {
+	// Create a function pass manager.
+	auto FPM = llvm::make_unique<llvm::legacy::FunctionPassManager>(M.get());
+	// Add some optimizations.
+	FPM->add(llvm::createBasicAAWrapperPass());
+	FPM->add(llvm::createInstructionCombiningPass());
+	FPM->add(llvm::createReassociatePass());
+	FPM->add(llvm::createGVNPass());
+	FPM->add(llvm::createCFGSimplificationPass());
+	FPM->doInitialization();
+	// Run the optimizations over all functions in the module being added to the JIT.
+	for (auto &F : *M)
+		FPM->run(F);
+	return M;
+}
+
 llvm::orc::VModuleKey Compiler::addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode, bool export_optimized_ir) {
 	auto K = ES.allocateVModule();
 	this->export_bitcode = export_bitcode;
