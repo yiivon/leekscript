@@ -1,6 +1,7 @@
 #include "TypeMutator.hpp"
 #include "../compiler/value/LeftValue.hpp"
 #include "../compiler/value/VariableValue.hpp"
+#include "../compiler/value/ArrayAccess.hpp"
 #include "../compiler/semantic/Variable.hpp"
 #include "../type/Type.hpp"
 
@@ -17,10 +18,15 @@ void WillStoreMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> val
 }
 
 void ConvertMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values, const Type* return_type) const {
-	std::cout << "ConvertMutator " << values[0]->type << " " << return_type << std::endl;
+	// std::cout << "ConvertMutator " << values[0]->type << " " << return_type << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
 		vv->type = return_type->not_temporary();
 		vv->var->type = vv->type;
+	} else if (auto aa = dynamic_cast<ArrayAccess*>(values[0])) {
+		if (auto vv = dynamic_cast<VariableValue*>(aa->array.get())) {
+			vv->type = Type::array(return_type->not_temporary());
+			vv->var->type = vv->type;
+		}
 	}
 }
 void ChangeValueMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values, const Type* return_type) const {

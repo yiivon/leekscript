@@ -98,6 +98,11 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 					vv->var = analyzer->update_var(vv->var);
 					variable = vv->var;
 				}
+			} else if (auto aa = dynamic_cast<ArrayAccess*>(v1.get())) {
+				if (auto vv = dynamic_cast<VariableValue*>(aa->array.get())) {
+					vv->previous_var = vv->var;
+					vv->var = analyzer->update_var(vv->var);
+				}
 			}
 		}
 	}
