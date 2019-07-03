@@ -1025,7 +1025,9 @@ void Compiler::insn_delete_variable(Compiler::value v) const {
 	if (v.t->is_mpz_ptr()) {
 		insn_delete_mpz(v);
 	} else {
-		insn_delete(insn_load(v));
+		if (v.t->pointed()->must_manage_memory()) {
+			insn_delete(insn_load(v));
+		}
 	}
 }
 
