@@ -214,13 +214,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 					v2->will_take(analyzer, callable_version->type->argument(1)->arguments(), 1);
 					v2->set_version(analyzer, callable_version->type->argument(1)->arguments(), 1);
 				}
-				if (op->type == TokenType::PLUS_EQUAL) {
-					if (variable) {
-						// std::cout << "Expresssion update var type += " << vv->var << " " << return_type << std::endl;
-						v1->type = return_type->not_temporary();
-						variable->type = v1->type;
-					}
-				}
 				// std::cout << "Operator " << v1->to_string() << " (" << v1->type << ") " << op->character << " " << v2->to_string() << "(" << v2->type << ") found! " << return_type << std::endl;
 				return;
 			}

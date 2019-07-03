@@ -36,7 +36,7 @@ bool Callable::is_compatible(int argument_count) {
 void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> values) const {
 	// std::cout << "CallableVersion::apply_mutators() mutators : " << mutators.size() << std::endl;
 	for (const auto& mutator : mutators) {
-		mutator->apply(analyzer, values);
+		mutator->apply(analyzer, values, type->return_type());
 	}
 }
 
