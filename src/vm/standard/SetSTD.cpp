@@ -41,7 +41,7 @@ SetSTD::SetSTD(VM* vm) : Module(vm, "Set") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
-		{Type::set(pqT), pqE, Type::set(Type::meta_mul(pqT, pqE)), set_add_eq, 0, {}, true},
+		{Type::set(pqT), pqE, Type::set(Type::meta_mul(pqT, pqE)), set_add_eq, 0, { new ConvertMutator() }, true},
 	});
 
 	/*
