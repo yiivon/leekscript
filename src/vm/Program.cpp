@@ -139,6 +139,8 @@ VM::Result Program::compile_ir_file(VM& vm) {
 		type = Type::any;
 	} else if (llvm_type->isStructTy()) {
 		type = Type::mpz;
+	} else if (llvm_type->isFloatingPointTy()) {
+		type = Type::real;
 	} else {
 		type = Type::integer;
 	}
