@@ -56,7 +56,7 @@ void Function::print(std::ostream& os, int indent, bool debug, bool condensed) c
 			v.second->print(os, indent, debug, condensed);
 		}
 	}
-	if ((debug or versions.size() == 0) and default_version) {
+	if ((debug or versions.size() == 0) and default_version and (is_main_function or generate_default_version)) {
 		if (versions.size() > 0) os << std::endl << tabs(indent);
 		// std::cout << "print default version" << std::endl;
 		default_version->print(os, indent, debug, condensed);
