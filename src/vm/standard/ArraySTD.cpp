@@ -397,7 +397,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	});
 }
 
-Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, int) {
 	const auto& type = args[0].t->element()->fold();
 	auto f = [&]() {
 		if (type->is_integer()) return "Array.in.2";
@@ -418,7 +418,7 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, boo
 	}
 }
 
-Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (args[0].t->element() == Type::never) {
 		c.insn_delete_temporary(args[0]);
 		return c.new_array(args[1].t, { args[1] });
@@ -426,12 +426,12 @@ Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args,
 	return c.insn_call(Type::array(args[0].t->element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
 }
 
-Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	args[1] = c.insn_to_any(args[1]);
 	return c.insn_call(Type::any, args, "Value.operator+=");
 }
 
-Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::size(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto res = c.insn_array_size(args[0]);
 	c.insn_delete_temporary(args[0]);
 	return res;
@@ -455,7 +455,7 @@ LSValue* ArraySTD::sub(LSArray<LSValue*>* array, int begin, int end) {
 	return r;
 }
 
-Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto fun = [&]() {
 		if (args[0].t->element()->fold()->is_bool()) return "Array.fill_fun.3";
 		if (args[0].t->element()->fold()->is_integer()) return "Array.fill_fun.2";
@@ -464,7 +464,7 @@ Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, b
 	}();
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.insn_array_size(args[0])}, fun);
 }
-Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto fun = [&]() {
 		if (args[0].t->element()->fold()->is_bool()) return "Array.fill_fun.3";
 		if (args[0].t->element()->fold()->is_integer()) return "Array.fill_fun.2";
@@ -474,7 +474,7 @@ Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, 
 	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.to_int(args[2])}, fun);
 }
 
-Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto array = args[0];
 	auto function = args[1];
 	auto result = Variable::new_temporary("r", args[2].t);
@@ -493,7 +493,7 @@ Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> ar
 	return c.insn_load(result->val);
 }
 
-Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto result = Variable::new_temporary("r", args[2].t);
 	result->create_entry(c);
@@ -508,7 +508,7 @@ Compiler::value ArraySTD::fold_right(Compiler& c, std::vector<Compiler::value> a
 	return c.insn_load(result->val);
 }
 
-Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto v = Variable::new_temporary("v", args[0].t->element());
 	v->create_entry(c);
@@ -519,10 +519,10 @@ Compiler::value ArraySTD::iter(Compiler& c, std::vector<Compiler::value> args, b
 	return {};
 }
 
-Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::remove_element_any(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::boolean, {args[0], c.insn_to_any(args[1])}, "Array.remove_element_fun");
 }
-Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (args[1].t->castable(Type::real)) {
 		return c.insn_call(Type::boolean, {args[0], c.to_real(args[1])}, "Array.remove_element_fun.1");
 	} else {
@@ -531,7 +531,7 @@ Compiler::value ArraySTD::remove_element_real(Compiler& c, std::vector<Compiler:
 		return c.new_bool(false);
 	}
 }
-Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (args[1].t->castable(Type::integer)) {
 		return c.insn_call(Type::boolean, {args[0], c.to_int(args[1])}, "Array.remove_element_fun.2");
 	} else {
@@ -541,7 +541,7 @@ Compiler::value ArraySTD::remove_element_int(Compiler& c, std::vector<Compiler::
 	}
 }
 
-Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto array = args[0];
 	auto function = args[1];
 	auto array_true = c.new_array(array.t->element(), {});
@@ -561,17 +561,17 @@ Compiler::value ArraySTD::partition(Compiler& c, std::vector<Compiler::value> ar
 	return c.new_array(Type::array(array.t->element()), {array_true, array_false});
 }
 
-Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
+Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, int flags) {
 	auto array = args[0];
 	auto function = args[1];
-	auto result = no_return ? Compiler::value() : c.new_array(function.t->return_type(), {});
+	auto result = flags & NO_RETURN ? Compiler::value() : c.new_array(function.t->return_type(), {});
 	auto v = Variable::new_temporary("v", array.t->element());
 	v->create_entry(c);
 	c.insn_foreach(array, Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
 		auto x = c.clone(v);
 		c.insn_inc_refs(x);
 		auto r = c.insn_call(function, {x});
-		if (no_return) {
+		if (flags & NO_RETURN) {
 			if (not r.t->is_void()) c.insn_delete_temporary(r);
 		} else {
 			c.insn_push_array(result, r.t->is_void() ? c.new_null() : r);
@@ -579,11 +579,11 @@ Compiler::value ArraySTD::map(Compiler& c, std::vector<Compiler::value> args, bo
 		c.insn_delete(x);
 		return {};
 	});
-	return no_return ? Compiler::value() : result;
+	return flags & NO_RETURN ? Compiler::value() : result;
 }
 
 
-Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto array = args[0];
 	auto array_size = c.insn_array_size(array);
 	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
@@ -594,7 +594,7 @@ Compiler::value ArraySTD::first(Compiler& c, std::vector<Compiler::value> args, 
 	c.insn_delete_temporary(array);
 	return e;
 }
-Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto array = args[0];
 	auto array_size = c.insn_array_size(array);
 	c.insn_if(c.insn_ge(c.new_integer(0), array_size), [&]() {
@@ -607,7 +607,7 @@ Compiler::value ArraySTD::last(Compiler& c, std::vector<Compiler::value> args, b
 	return e;
 }
 
-Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args, int) {
 	const auto& array = args[0];
 	const auto& fun = args[1];
 	auto f = [&]() {
@@ -622,7 +622,7 @@ Compiler::value ArraySTD::sort(Compiler& c, std::vector<Compiler::value> args, b
 	return c.insn_call(array.t, {array, fun}, f);
 }
 
-Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, bool no_return) {
+Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, int flags) {
 	auto fun = [&]() {
 		if (args[0].t->element()->fold()->is_bool()) return "Array.vpush";
 		if (args[0].t->element()->fold()->is_integer()) return "Array.vpush.1";
@@ -631,11 +631,11 @@ Compiler::value ArraySTD::push(Compiler& c, std::vector<Compiler::value> args, b
 		return "Array.vpush.3";
 	}();
 	c.insn_call(Type::void_, args, fun);
-	if (no_return) return {};
+	if (flags & NO_RETURN) return {};
 	else return args[0];
 }
 
-Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto result = c.new_array(args[0].t->element(), {});
 	auto v = Variable::new_temporary("v", args[0].t->element());
@@ -650,7 +650,7 @@ Compiler::value ArraySTD::filter(Compiler& c, std::vector<Compiler::value> args,
 	return result;
 }
 
-Compiler::value ArraySTD::push_all(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ArraySTD::push_all(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto& array1 = args[0];
 	auto& array2 = args[1];
 	if (array2.t->element() == Type::never) return array1;

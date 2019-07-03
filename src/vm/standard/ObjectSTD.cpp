@@ -59,7 +59,7 @@ ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 	});
 }
 
-Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::any, {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
 }
 

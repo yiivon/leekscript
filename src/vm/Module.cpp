@@ -16,6 +16,8 @@ namespace ls {
 int Module::THROWS = 1;
 int Module::LEGACY = 2;
 int Module::DEFAULT = 4;
+int Module::NO_RETURN = 8;
+int Module::EMPTY_VARIABLE = 16;
 
 Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
 	clazz = std::make_unique<LSClass>(name);

@@ -57,15 +57,15 @@ LSString* BooleanSTD::add_tmp(int boolean, LSString* string) {
 	return string;
 }
 
-Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value BooleanSTD::add_bool(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_add(args[0], args[1]);
 }
 
-Compiler::value BooleanSTD::sub_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value BooleanSTD::sub_bool(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_sub(args[0], args[1]);
 }
 
-Compiler::value BooleanSTD::mul_bool(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value BooleanSTD::mul_bool(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_mul(args[0], args[1]);
 }
 
@@ -85,7 +85,7 @@ LSValue* BooleanSTD::compare_ptr_ptr_ptr(LSBoolean* a, LSBoolean* b) {
 	return LSNumber::get(compare_ptr_ptr(a, b));
 }
 
-Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value BooleanSTD::compare_val_val(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_cmpl(args[0], args[1]);
 }
 

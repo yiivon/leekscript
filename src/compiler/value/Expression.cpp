@@ -292,6 +292,10 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	if (callable_version) {
+
+		int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
+		if (is_void) flags |= Module::NO_RETURN;
+
 		std::vector<Compiler::value> args;
 		args.push_back([&](){ if (callable_version->v1_addr) {
 			return ((LeftValue*) v1.get())->compile_l(c);
@@ -312,7 +316,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 			return v;
 		}}());
 		if (op->reversed) std::reverse(args.begin(), args.end());
-		auto r = callable_version->compile_call(c, args, is_void);
+
+		auto r = callable_version->compile_call(c, args, flags);
 		v1->compile_end(c);
 		v2->compile_end(c);
 		return r;

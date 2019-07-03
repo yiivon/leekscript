@@ -18,7 +18,7 @@ JsonSTD::JsonSTD(VM* vm) : Module(vm, "Json") {
 	});
 }
 
-Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value JsonSTD::encode(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (args[0].t->is_integer()) {
 		return c.insn_call(Type::string, args, "Number.int_to_string");
 	} else if (args[0].t->is_long()) {

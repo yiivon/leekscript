@@ -32,6 +32,8 @@ public:
 	static int THROWS;
 	static int LEGACY;
 	static int DEFAULT;
+	static int EMPTY_VARIABLE;
+	static int NO_RETURN;
 
 	VM* vm;
 	std::string name;

@@ -261,7 +261,7 @@ MapSTD::MapSTD(VM* vm) : Module(vm, "Map") {
 	});
 }
 
-Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto map = args[0];
 	auto f = [&]() {
 		if (map.t->key()->is_integer()) {
@@ -276,7 +276,7 @@ Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, boo
 	return c.insn_call(map.t->element(), {args[0], args[1], args[2]}, f);
 }
 
-Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto result = Variable::new_temporary("r", args[2].t);
 	result->create_entry(c);
@@ -295,7 +295,7 @@ Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args
 	return c.insn_load(result->val);
 }
 
-Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto result = Variable::new_temporary("r", args[2].t);
 	result->create_entry(c);
@@ -314,7 +314,7 @@ Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> arg
 	return c.insn_load(result->val);
 }
 
-Compiler::value MapSTD::iter(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value MapSTD::iter(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto v = Variable::new_temporary("v", args[0].t->element());
 	auto k = Variable::new_temporary("k", args[0].t->key());

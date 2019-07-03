@@ -333,7 +333,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	}
 	// Check arguments
 	c.insn_check_args(args, types);
-	auto r = call.compile_call(c, callable_version, args, is_void);
+	int flags = is_void ? Module::NO_RETURN : 0;
+	auto r = call.compile_call(c, callable_version, args, flags);
 	// std::cout << "FC compiled type " << r.t << std::endl;
 	c.inc_ops(1);
 	if (r.t->is_mpz()) {

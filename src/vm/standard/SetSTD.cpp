@@ -99,21 +99,21 @@ SetSTD::SetSTD(VM* vm) : Module(vm, "Set") {
 	});
 }
 
-Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value SetSTD::in_any(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::any, {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
 }
 
-Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value SetSTD::set_add_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::any, {args[0], c.insn_to_any(args[1])}, "Value.operator+=");
 }
 
-Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value SetSTD::insert_any(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::boolean, {args[0], c.insn_to_any(args[1])}, "Set.insert_fun");
 }
-Compiler::value SetSTD::insert_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value SetSTD::insert_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::boolean, {args[0], c.to_real(args[1])}, "Set.insert_fun.1");
 }
-Compiler::value SetSTD::insert_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value SetSTD::insert_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::boolean, {args[0], c.to_int(args[1])}, "Set.insert_fun.2");
 }
 

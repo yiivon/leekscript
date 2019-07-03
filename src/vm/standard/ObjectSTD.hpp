@@ -14,7 +14,7 @@ public:
 	static LSObject* readonly;
 	static LSNumber* readonly_value;
 
-	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, bool);
+	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, int);
 	static LSValue* object_new(LSClass* clazz);
 };
 

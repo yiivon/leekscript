@@ -525,24 +525,24 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 	});
 }
 
-Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_eq(c.insn_call(Type::integer, args, "Number.mpz_cmp"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::eq_int_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_eq(c.insn_call(Type::integer, {args[1], args[0]}, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[1]);
 	return r;
 }
-Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::eq_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_eq(c.insn_call(Type::integer, args, "Number._mpz_cmp_si"), c.new_integer(0));
 	c.insn_delete_temporary(args[0]);
 	return r;
 }
 
-Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::add_real_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_add(args[0], args[1]);
 }
 
@@ -550,7 +550,7 @@ LSValue* NumberSTD::add_int_ptr(int a, LSValue* b) {
 	return LSNumber::get(a)->add(b);
 }
 
-Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = [&]() {
 		if (args[0].t->temporary) return args[0];
 		if (args[1].t->temporary) return args[1];
@@ -561,7 +561,7 @@ Compiler::value NumberSTD::add_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::add_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
 	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_add_ui");
 	return r;
@@ -573,18 +573,18 @@ Compiler::value NumberSTD::add_eq_mpz_mpz(Compiler& c, std::vector<Compiler::val
 	return no_return ? Compiler::value() : c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::add_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_add(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sub_real_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_sub(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = [&]() {
 		if (args[0].t->temporary) return args[0];
 		if (args[1].t->temporary) return args[1];
@@ -595,7 +595,7 @@ Compiler::value NumberSTD::sub_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto a = args[0];
 	auto b = args[1];
 
@@ -627,31 +627,31 @@ Compiler::value NumberSTD::sub_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return {PN, Type::tmp_mpz_ptr};
 }
 
-Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sub_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_sub);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sub_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_sub(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_real_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_mul(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_int_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = args[1].t->temporary ? args[1] : c.new_mpz();
 	c.insn_call(Type::void_, {r, args[1], args[0]}, "Number.mpz_mul_si");
 	return r;
 }
 
-Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
 	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_mul_si");
 	return r;
@@ -661,7 +661,7 @@ LSValue* NumberSTD::mul_int_string(int a, LSString* b) {
 	return b->mul(LSNumber::get(a));
 }
 
-Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = [&]() {
 		if (args[0].t->temporary) return args[0];
 		if (args[1].t->temporary) return args[1];
@@ -672,25 +672,25 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_mul);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::mul_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mul_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mul(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::div_val_val(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_div(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_pow(args[0], args[1]);
 	if (args[0].t->is_integer() && args[1].t->is_integer()) {
 		r = c.to_int(r);
@@ -698,31 +698,31 @@ Compiler::value NumberSTD::pow_real_real(Compiler& c, std::vector<Compiler::valu
 	return r;
 }
 
-Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::div_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_div);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::div_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_div(x, args[1]);
 	c.insn_store(args[0], c.insn_convert(sum, x.t));
 	return sum;
 }
 
-Compiler::value NumberSTD::int_div_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::int_div_val_val(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_int_div(args[0], args[1]);
 }
-Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::int_div_eq_val_val(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto r = c.insn_int_div(x, args[1]);
 	c.insn_store(args[0], r);
 	return r;
 }
 
-Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto ui = c.insn_call(Type::long_, {args[1]}, "Number.mpz_get_ui");
 	auto r = [&]() {
 		if (args[0].t->temporary) return args[0];
@@ -734,7 +734,7 @@ Compiler::value NumberSTD::pow_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	// Check: mpz_log(a) * b <= 10000
 	auto a_size = c.insn_call(Type::integer, {args[0]}, "Number.mpz_log");
 	auto r_size = c.insn_mul(a_size, args[1]);
@@ -762,23 +762,23 @@ Compiler::value NumberSTD::pow_mpz_int(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::lt(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_lt(args[0], args[1]);
 }
-Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::le(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_le(args[0], args[1]);
 }
-Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::gt(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_gt(args[0], args[1]);
 }
-Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::ge(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_ge(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mod(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_mod(args[0], args[1]);
 }
-Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = [&]() {
 		if (args[0].t->temporary) return args[0];
 		if (args[1].t->temporary) return args[1];
@@ -789,14 +789,14 @@ Compiler::value NumberSTD::mod_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	return r;
 }
 
-Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mod_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	// auto a_addr = c.insn_address_of(args[0]);
 	// auto b_addr = c.insn_address_of(args[1]);
 	// c.insn_call(Type::void_, {a_addr, a_addr, b_addr}, &mpz_mod);
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	// std::cout << "mod " << args[0].t << " " << args[1].t << std::endl;
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_mod(x, args[1]);
@@ -804,10 +804,10 @@ Compiler::value NumberSTD::mod_eq_real(Compiler& c, std::vector<Compiler::value>
 	return sum;
 }
 
-Compiler::value NumberSTD::double_mod(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::double_mod(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_double_mod(args[0], args[1]);
 }
-Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto y = args[1];
 	auto r = c.insn_mod(c.insn_add(c.insn_mod(x, y), y), y);
@@ -815,31 +815,31 @@ Compiler::value NumberSTD::double_mod_eq(Compiler& c, std::vector<Compiler::valu
 	return r;
 }
 
-Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_and(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_bit_and(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_and_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto res = c.insn_bit_and(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
 
-Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_or(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_bit_or(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_or_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto res = c.insn_bit_or(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
 }
 
-Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_xor(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_bit_xor(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto res = c.insn_bit_xor(c.insn_load(args[0]), args[1]);
 	c.insn_store(args[0], res);
 	return res;
@@ -849,17 +849,17 @@ Compiler::value NumberSTD::bit_xor_eq(Compiler& c, std::vector<Compiler::value> 
  * Methods
  */
 
-Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.to_int(args[0]);
 }
-Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::_long(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.to_long(args[0]);
 }
 
 LSValue* NumberSTD::abs_ptr(LSValue* x) {
 	return LSNumber::get(std::abs(((LSNumber*) x)->value));
 }
-Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::abs(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_abs(args[0]);
 	c.insn_delete_temporary(args[0]);
 	return r;
@@ -871,7 +871,7 @@ double NumberSTD::acos_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::acos_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_acos(args[0]);
 }
 
@@ -881,7 +881,7 @@ double NumberSTD::asin_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::asin_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_asin(args[0]);
 }
 
@@ -891,7 +891,7 @@ double NumberSTD::atan_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::atan_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_atan(args[0]);
 }
 
@@ -901,7 +901,7 @@ LSValue* NumberSTD::atan2_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return r;
 }
-Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::atan2(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (!args[0].t->is_polymorphic() and !args[1].t->is_polymorphic()) {
 		return c.insn_atan2(args[0], args[1]);
 	} else {
@@ -940,7 +940,7 @@ double NumberSTD::exp_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::exp_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_exp(args[0]);
 }
 
@@ -950,7 +950,7 @@ long NumberSTD::floor_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::floor_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_floor(args[0]);
 }
 
@@ -960,11 +960,11 @@ int NumberSTD::round_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::round_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_round(args[0]);
 }
 
-Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::round_int(Compiler&, std::vector<Compiler::value> args, int) {
 	return args[0]; // Nothing to do
 }
 
@@ -974,11 +974,11 @@ int NumberSTD::ceil_ptr(LSNumber* x) {
 	return a;
 }
 
-Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::ceil_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_ceil(args[0]);
 }
 
-Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::ceil_int(Compiler&, std::vector<Compiler::value> args, int) {
 	return args[0]; // Nothing to do
 }
 
@@ -988,7 +988,7 @@ LSValue* NumberSTD::max_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return max;
 }
-Compiler::value NumberSTD::max(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::max(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto a = c.to_numeric(args[0]);
 	auto b = c.to_numeric(args[1]);
 	auto t = a.t->operator * (b.t);
@@ -1003,7 +1003,7 @@ double NumberSTD::min_ptr_ptr(LSNumber* x, LSNumber* y) {
 	LSValue::delete_temporary(y);
 	return min;
 }
-Compiler::value NumberSTD::min(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::min(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto a = c.to_numeric(args[0]);
 	auto b = c.to_numeric(args[1]);
 	auto t = a.t->operator * (b.t);
@@ -1017,7 +1017,7 @@ LSValue* NumberSTD::cos_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return r;
 }
-Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::cos_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_cos(args[0]);
 }
 
@@ -1026,7 +1026,7 @@ double NumberSTD::sin_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return s;
 }
-Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sin_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_sin(args[0]);
 }
 
@@ -1035,7 +1035,7 @@ double NumberSTD::tan_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return c;
 }
-Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::tan_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_tan(args[0]);
 }
 
@@ -1045,7 +1045,7 @@ double NumberSTD::sqrt_ptr(LSNumber* x) {
 	return s;
 }
 
-Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::sqrt_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = args[0].t->temporary ? args[0] : c.new_mpz();
 	c.insn_call(Type::void_, {r, args[0]}, "Number.mpz_sqrt");
 	return r;
@@ -1057,23 +1057,23 @@ LSValue* NumberSTD::cbrt_ptr(LSNumber* x) {
 	return r;
 }
 
-Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_int(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_pow(args[0], args[1]);
 }
 
-Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_eq_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
 	c.insn_call(Type::void_, {args[0], args[0], args[1]}, "Number.mpz_pow_ui");
 	return c.insn_clone_mpz(args[0]);
 }
 
-Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::pow_eq_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto x = c.insn_load(args[0]);
 	auto sum = c.insn_pow(x, args[1]);
 	c.insn_store(args[0], sum);
 	return sum;
 }
 
-Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::is_prime(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto reps = c.new_integer(15);
 	auto res = c.insn_call(Type::integer, {args[0], reps}, "Number.mpz_probab_prime_p");
 	c.insn_delete_temporary(args[0]);
@@ -1101,7 +1101,7 @@ bool NumberSTD::is_palindrome(T n) {
 	return tmp == x;
 }
 
-Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::hypot_ptr_ptr(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto r = c.insn_call(Type::real, {c.to_real(args[0]), c.to_real(args[1])}, "Number.hypot.2");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
@@ -1113,7 +1113,7 @@ double NumberSTD::log_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return res;
 }
-Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::log_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_log(args[0]);
 }
 
@@ -1122,7 +1122,7 @@ double NumberSTD::log10_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return res;
 }
-Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::log10_real(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_log10(args[0]);
 }
 
@@ -1144,7 +1144,7 @@ double NumberSTD::rand_real(double min, double max) {
 	return min + ((double) rand() / RAND_MAX) * (max - min);
 }
 
-Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto ap = c.insn_to_any(args[0]);
 	auto r = c.insn_call(Type::integer, {ap}, "Number.signum");
 	c.insn_dec_refs(ap);
@@ -1163,7 +1163,7 @@ double NumberSTD::toDegrees_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return d;
 }
-Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::toDegrees(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::real, {c.insn_to_any(args[0])}, "Number.toDegrees");
 }
 double NumberSTD::toRadians_ptr(LSNumber* x) {
@@ -1171,7 +1171,7 @@ double NumberSTD::toRadians_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return r;
 }
-Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::toRadians(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::real, {c.insn_to_any(args[0])}, "Number.toRadians");
 }
 
@@ -1180,7 +1180,7 @@ LSValue* NumberSTD::isInteger_ptr(LSNumber* x) {
 	LSValue::delete_temporary(x);
 	return is;
 }
-Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto type = args[0].t->fold();
 	if (type->is_integer() or type->is_long()) {
 		return c.new_bool(true);
@@ -1191,7 +1191,7 @@ Compiler::value NumberSTD::isInteger(Compiler& c, std::vector<Compiler::value> a
 	}
 }
 
-Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value NumberSTD::fold(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::any, {c.insn_to_any(args[0]), args[1], c.insn_to_any(args[2])}, "Number.fold");
 }
 

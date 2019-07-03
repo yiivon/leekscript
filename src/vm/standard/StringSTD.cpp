@@ -263,19 +263,19 @@ LSString* StringSTD::add_real(LSString* s, double i) {
 	}
 }
 
-Compiler::value StringSTD::add_eq(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value StringSTD::add_eq(Compiler& c, std::vector<Compiler::value> args, int) {
 	args[1] = c.insn_to_any(args[1]);
 	return c.insn_call(Type::any, args, "Value.operator+=");
 }
 
-Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto res = c.insn_call(Type::boolean, args, "Value.operator<");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
-Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args, int) {
 	return c.insn_call(Type::tmp_array(Type::string), args, "Value.operator/");
 }
 
@@ -466,7 +466,7 @@ long string_number(const LSString* s) {
 	return r;
 }
 
-Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args, bool) {
+Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
 	auto result = Variable::new_temporary("r", args[2].t);
 	result->create_entry(c);

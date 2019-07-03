@@ -45,10 +45,10 @@ Compiler::value Call::pre_compile_call(Compiler& c) const {
 	}
 }
 
-Compiler::value Call::compile_call(Compiler& c, const CallableVersion* version, std::vector<Compiler::value> args, bool no_return) const {
+Compiler::value Call::compile_call(Compiler& c, const CallableVersion* version, std::vector<Compiler::value> args, int flags) const {
 	// std::cout << "Call::compile_call(" << args << ")" << std::endl;
 	// Do the call
-	auto r = version->compile_call(c, args, no_return);
+	auto r = version->compile_call(c, args, flags);
 	if (object) {
 		object->compile_end(c);
 	}
