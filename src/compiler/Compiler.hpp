@@ -272,7 +272,7 @@ public:
 	value insn_invoke(const Type* return_type, std::vector<value> args, std::string name) const;
 	value insn_invoke(const Type* return_type, std::vector<value> args, value func) const;
 	value insn_call(value fun, std::vector<value> args) const;
-	value insn_call(const Type* return_type, std::vector<value> args, std::string name) const;
+	value insn_call(const Type* return_type, std::vector<value> args, std::string name, bool readonly = false) const;
 	void function_add_capture(value fun, value capture) const;
 	void log(const std::string&& str) const;
 

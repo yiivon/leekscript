@@ -1071,7 +1071,7 @@ Compiler::value Compiler::insn_get_capture_l(int index, const Type* type) const 
 	assert(type->is_polymorphic());
 	Compiler::value arg0 = {F->arg_begin(), Type::any};
 	auto jit_index = new_integer(index);
-	return insn_call(type->pointer(), {arg0, jit_index}, "Function.get_capture_l");
+	return insn_call(type->pointer(), {arg0, jit_index}, "Function.get_capture_l", true);
 }
 
 void Compiler::insn_push_array(Compiler::value array, Compiler::value value) const {
@@ -1919,7 +1919,7 @@ Compiler::value Compiler::insn_call(Compiler::value fun, std::vector<Compiler::v
 	}
 }
 
-Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, std::string name) const {
+Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compiler::value> args, std::string name, bool readonly) const {
 	std::vector<llvm::Value*> llvm_args;
 	for (unsigned i = 0, e = args.size(); i != e; ++i) {
 		assert(check_value(args[i]));
@@ -1934,6 +1934,9 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 		}
 		auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
 		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
+		if (readonly) {
+			lambda->addFnAttr(llvm::Attribute::ReadNone);
+		}
 		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
 	} else {
 		lambda = p->second.function;
