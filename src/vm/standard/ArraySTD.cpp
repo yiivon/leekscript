@@ -420,6 +420,7 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, boo
 
 Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, bool) {
 	if (args[0].t->element() == Type::never) {
+		c.insn_delete_temporary(args[0]);
 		return c.new_array(args[1].t, { args[1] });
 	}
 	return c.insn_call(Type::array(args[0].t->element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
