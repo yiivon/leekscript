@@ -146,11 +146,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 			}
 			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
 		}
-		if (variable) {
-			// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
-			variable->type = variable->parent->type;
-			v1->type = variable->type;
-		}
 		// TODO other operators like |= ^= &=
 		if (v1->type->constant) {
 			analyzer->add_error({Error::Type::CANT_MODIFY_CONSTANT_VALUE, location(), op->token->location, {v1->to_string()}});

@@ -153,6 +153,9 @@ void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 	if (var != nullptr) {
+		if (previous_var) {
+			var->type = var->parent->type;
+		}
 		auto function_object = dynamic_cast<Function*>(var->value);
 		if (var->value && function_object) {
 			// Analyse the real function (if the function is defined below its call for example)
