@@ -80,16 +80,16 @@ bool SemanticAnalyzer::in_loop(int deepness) const {
 	return loops.top() >= deepness;
 }
 
-Variable* SemanticAnalyzer::get_var(Token* v) {
+Variable* SemanticAnalyzer::get_var(const std::string& v) {
 
 	// Search in interval variables : global for the program
-	auto i = vm->internal_vars.find(v->content);
+	auto i = vm->internal_vars.find(v);
 	if (i != vm->internal_vars.end()) {
 		return i->second.get();
 	}
 
 	// Search operators
-	if (auto op = program->get_operator(v->content)) {
+	if (auto op = program->get_operator(v)) {
 		return op;
 	}
 
@@ -98,7 +98,7 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 	while (f >= 0) {
 		// Search in the function parameters
 		const auto& arguments = functions_stack[f]->arguments;
-		auto i = arguments.find(v->content);
+		auto i = arguments.find(v);
 		if (i != arguments.end()) {
 			return i->second;
 		}
@@ -117,7 +117,7 @@ Variable* SemanticAnalyzer::get_var(Token* v) {
 			// std::cout << "Block variables : ";
 			// for (const auto& v : vars) std::cout << v.first << " " << v.second << ", ";
 			// std::cout << std::endl;
-			auto i = vars.find(v->content);
+			auto i = vars.find(v);
 			if (i != vars.end()) {
 				return i->second;
 			}

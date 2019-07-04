@@ -138,7 +138,7 @@ Call VariableValue::get_callable(SemanticAnalyzer* analyzer, int argument_count)
 }
 
 void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
-	var = analyzer->get_var(token);
+	var = analyzer->get_var(token->content);
 	if (var != nullptr) {
 		// std::cout << "VV pre_analyze variable = " << var << std::endl;
 		// std::cout << "pre analyze var " << var->name << " " << (void*) var->function << " <=> " << (void*) analyzer->current_function() << " " << (int) var->scope << std::endl;

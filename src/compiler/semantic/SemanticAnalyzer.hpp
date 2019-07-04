@@ -51,7 +51,7 @@ public:
 
 	Variable* add_var(Token*, const Type*, Value*);
 	Variable* add_global_var(Token*, const Type*, Value*);
-	Variable* get_var(Token* name);
+	Variable* get_var(const std::string& name);
 	Variable* convert_var_to_any(Variable* var);
 	Variable* update_var(Variable* variable);
 
