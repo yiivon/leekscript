@@ -286,6 +286,7 @@ public:
 	void delete_function_variables() const;
 	bool is_current_function_closure() const;
 	void insert_new_generation_block() const;
+	Block* current_block() const;
 
 	// Variables
 	value add_external_var(Variable*);

@@ -2093,6 +2093,9 @@ void Compiler::insert_new_generation_block() const {
 	auto block = llvm::BasicBlock::Create(getContext(), "new.block", F);
 	builder.SetInsertPoint(block);
 }
+Block* Compiler::current_block() const {
+	return blocks.back().back();
+}
 
 // Variables
 
