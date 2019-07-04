@@ -27,6 +27,13 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 	/*
 	 * Operators
 	 */
+	auto sV = Type::template_("V");
+	auto sT = Type::template_("T");
+	template_(sV, sT).
+	operator_("=", {
+		{sV, sT, sT, op_store, 0, { new ChangeValueMutator() }, true}
+	});
+
 	operator_("is", {
 		{Type::const_any, Type::const_class(), Type::boolean, op_instanceof}
 	});
@@ -77,7 +84,7 @@ ValueSTD::ValueSTD(VM* vm) : Module(vm, "Value") {
 		{Type::const_any, Type::const_any, Type::any, op_add, THROWS},
 	});
 	operator_("+=", {
-		{Type::const_any, Type::const_any, Type::any, (void*) ls_add_eq, THROWS, {}, true}
+		{Type::const_any, Type::const_any, Type::any, (void*) ls_add_eq, THROWS, { new ConvertMutator() }, true}
 	});
 	operator_("-", {
 		{Type::const_any, Type::const_any, Type::any, (void*) ls_sub, THROWS},
@@ -331,6 +338,34 @@ Compiler::value ValueSTD::attr_class(Compiler& c, Compiler::value a) {
 /*
  * Operators
  */
+Compiler::value ValueSTD::op_store(Compiler& c, std::vector<Compiler::value> args, int flags) {
+	// std::cout << "op_store " << args << " " << flags << std::endl;
+	auto x = args[0];
+	auto y = args[1];
+	auto ny = c.insn_convert(y, x.t->pointed());
+	// Move the object
+	ny = c.insn_move_inc(ny);
+	// Delete previous value
+	if (not (flags & EMPTY_VARIABLE)) {
+		c.insn_delete_variable(x);
+	}
+	if (ny.t->is_mpz_ptr()) {
+		c.insn_store(x, c.insn_load(ny));
+	} else {
+		c.insn_store(x, ny);
+	}
+	if (flags & NO_RETURN) {
+		return {};
+	} else {
+		if (y.t->is_mpz_ptr()) {
+			y.t = y.t->not_temporary();
+			return c.insn_clone_mpz(y);
+		} else {
+			return c.clone(y);
+		}
+	}
+}
+
 Compiler::value ValueSTD::op_instanceof(Compiler& c, std::vector<Compiler::value> args, bool) {
 	auto r = c.insn_eq(c.insn_class_of(args[0]), args[1]);
 	c.insn_delete_temporary(args[0]);

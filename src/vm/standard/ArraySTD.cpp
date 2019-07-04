@@ -231,8 +231,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pE = Type::template_("E");
 	template_(pT, pE).
 	method("push", {
-		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, { new WillStoreMutator() }},
-		{Type::array(Type::meta_mul(pT, Type::meta_not_temporary(pE))), {Type::array(pT), pE}, push, 0, { new WillStoreMutator() }},
+		{Type::array(Type::any), {Type::array(), Type::const_any}, (void*) &LSArray<LSValue*>::ls_push, 0, { new ConvertMutator() }},
+		{Type::array(Type::meta_mul(pT, Type::meta_not_temporary(pE))), {Type::array(pT), pE}, push, 0, { new ConvertMutator() }},
 	});
 
 	// void (LSArray<int>::*push_int)(int&&) = &LSArray<int>::push_back;

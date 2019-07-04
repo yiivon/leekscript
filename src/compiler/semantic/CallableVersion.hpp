@@ -46,6 +46,7 @@ public:
 	void apply_mutators(SemanticAnalyzer* analyzer, std::vector<Value*> arguments) const;
 	void resolve_templates(SemanticAnalyzer* analyzer, std::vector<const Type*> arguments) const;
 
+	int compile_mutators(Compiler& c, std::vector<Value*> arguments) const;
 	Compiler::value compile_call(Compiler& c, std::vector<Compiler::value> args, int flags) const;
 };
 

@@ -192,16 +192,17 @@ Variable* SemanticAnalyzer::convert_var_to_any(Variable* var) {
 Variable* SemanticAnalyzer::update_var(Variable* variable) {
 	// std::cout << "update_var " << variable << " " << (int) variable->scope << std::endl;
 	Variable* new_variable;
-	if (current_block() == variable->block and variable->parent) {
+	if (current_block() == variable->block) {
 		// std::cout << "same block" << std::endl;
 		/* Same block */
 		// var a = 12
 		// a.1 = 5.5
 		// a.2 = 'salut'
-		variable = variable->parent;
-		new_variable = new Variable(variable->name, variable->scope, Type::any, variable->index, nullptr, current_function(), current_block(), nullptr);
-		new_variable->id = variable->id + 1;
+		auto root = variable->root ? variable->root : variable;
+		new_variable = new Variable(root->name, root->scope, Type::any, root->index, nullptr, current_function(), current_block(), nullptr);
 		new_variable->parent = variable;
+		new_variable->id = ++root->generator;
+		new_variable->root = root;
 	} else {
 		// std::cout << "branch" << std::endl;
 		/* Branch */
@@ -211,7 +212,7 @@ Variable* SemanticAnalyzer::update_var(Variable* variable) {
 		//    a.1.1 = 'salut'
 		// }
 		new_variable = new Variable(variable->name, variable->scope, Type::any, variable->index, nullptr, current_function(), current_block(), nullptr);
-		new_variable->id = 1;
+		new_variable->id = ++variable->generator;
 		new_variable->parent = variable;
 	}
 	if (variable->scope == VarScope::PARAMETER) {

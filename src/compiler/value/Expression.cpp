@@ -91,17 +91,20 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 		v2->pre_analyze(analyzer);
 		if (not analyzer->current_block()->is_loop and (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL)) {
 			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
+				// std::cout << "update variable " << vv->var << " " << (int) vv->var->scope << std::endl;
 				if (vv->var->scope != VarScope::CAPTURE) {
-					// std::cout << "Pre-analyze update var " << vv->var << std::endl;
-					previous_var = vv->var;
-					vv->previous_var = vv->var;
 					vv->var = analyzer->update_var(vv->var);
-					variable = vv->var;
+					vv->update_variable = true;
 				}
 			} else if (auto aa = dynamic_cast<ArrayAccess*>(v1.get())) {
 				if (auto vv = dynamic_cast<VariableValue*>(aa->array.get())) {
-					vv->previous_var = vv->var;
 					vv->var = analyzer->update_var(vv->var);
+					vv->update_variable = true;
+				} else if (auto aa2 = dynamic_cast<ArrayAccess*>(aa->array.get())) {
+					if (auto vv2 = dynamic_cast<VariableValue*>(aa2->array.get())) {
+						vv2->var = analyzer->update_var(vv2->var);
+						vv2->update_variable = true;
+					}
 				}
 			}
 		}
@@ -155,15 +158,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		if (not v1->isLeftValue()) {
 			analyzer->add_error({Error::Type::VALUE_MUST_BE_A_LVALUE, location(), v1->location(), {v1->to_string()}});
 			return; // don't analyze more
-		}
-		// Change the type of x for operator =
-		if (op->type == TokenType::EQUAL) {
-			// std::cout << "Expression change type " << v1->type << " = " << v2->type << std::endl;
-			if (variable) {
-				// std::cout << "Expresssion update var type " << vv->var << " " << v2->type << std::endl;
-				variable->type = v2->type->not_temporary();
-				v1->type = variable->type;
-			}
 		}
 	}
 
@@ -291,6 +285,29 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
 	}
 
+	if (op->type == TokenType::EQUAL) {
+		// array[] = 12, array push
+		auto array_access = dynamic_cast<ArrayAccess*>(v1.get());
+		if (array_access && array_access->key == nullptr) {
+			if (auto vv = dynamic_cast<VariableValue*>(array_access->array.get())) {
+				auto previous_value = c.insn_load(vv->var->parent->val);
+				auto converted = c.insn_convert(previous_value, vv->var->type);
+				if (previous_value.v == converted.v) {
+					vv->var->val = vv->var->parent->val;
+				} else {
+					vv->var->create_entry(c);
+					vv->var->store_value(c, c.insn_move_inc(converted));
+					c.insn_delete_variable(vv->var->parent->val);
+				}
+			}
+			auto x_addr = ((LeftValue*) array_access->array.get())->compile_l(c);
+			auto y = c.insn_to_any(v2->compile(c));
+			auto r = c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
+			v2->compile_end(c);
+			return r;
+		}
+	}
+
 	if (callable_version) {
 
 		int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
@@ -324,52 +341,6 @@ Compiler::value Expression::compile(Compiler& c) const {
 	}
 
 	switch (op->type) {
-		case TokenType::EQUAL: {
-			// array[] = 12, array push
-			auto array_access = dynamic_cast<ArrayAccess*>(v1.get());
-			if (array_access && array_access->key == nullptr) {
-				auto x_addr = ((LeftValue*) array_access->array.get())->compile_l(c);
-				auto y = c.insn_to_any(v2->compile(c));
-				auto r = c.insn_invoke(Type::any, {x_addr, y}, "Value.operator+=");
-				v2->compile_end(c);
-				return r;
-			}
-			// Normal a = b operator
-			auto vv = dynamic_cast<VariableValue*>(v1.get());
-			auto x_addr = !previous_var ? static_cast<LeftValue*>(v1.get())->compile_l(c) : Compiler::value();
-			// Compile new value
-			auto y = v2->compile(c);
-			v2->compile_end(c);
-			if (vv == nullptr) {
-				y = c.insn_convert(y, v1->type);
-			}
-			// Move the object
-			y = c.insn_move_inc(y);
-			y.t = y.t->not_temporary();
-			// Delete previous variable reference
-			if (previous_var) {
-				c.insn_delete_variable(previous_var->val);
-			} else {
-				c.insn_delete_variable(x_addr);
-			}
-			// Create the new variable
-			if (vv != nullptr and previous_var) {
-				// std::cout << "expression = entry" << std::endl;
-				vv->var->create_entry(c);
-				vv->var->store_value(c, y);
-			} else {
-				c.insn_store(x_addr, y);
-			}
-			if (is_void) {
-				return {};
-			} else {
-				if (y.t->is_mpz_ptr()) {
-					return c.insn_clone_mpz(y);
-				} else {
-					return y;
-				}
-			}
-		}
 		case TokenType::DOUBLE_QUESTION_MARK: {
 			// x ?? y ==> if (x != null) { x } else { y }
 			Compiler::label label_then = c.insn_init_label("then");

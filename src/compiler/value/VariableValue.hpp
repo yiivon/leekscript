@@ -23,7 +23,8 @@ public:
 	std::function<Compiler::value(Compiler&)> static_access_function = nullptr;
 	bool class_method = false;
 	LSFunction* ls_function = nullptr;
-	Variable* previous_var = nullptr;
+	bool update_variable = false;
+	const Type* previous_type;
 
 	VariableValue(Token* token);
 
@@ -45,7 +46,6 @@ public:
 	virtual Compiler::value compile(Compiler&) const override;
 	virtual Compiler::value compile_version(Compiler&, std::vector<const Type*> version) const override;
 	virtual Compiler::value compile_l(Compiler&) const override;
-	virtual void update_variable(Compiler&) const;
 
 	virtual std::unique_ptr<Value> clone() const override;
 };

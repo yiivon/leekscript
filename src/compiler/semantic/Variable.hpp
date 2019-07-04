@@ -40,6 +40,7 @@ public:
 	Compiler::value addr_val;
 	int id = 0;
 	int generator = 0;
+	Variable* root = nullptr;
 	Variable* parent = nullptr;
 	Phi* phi = nullptr;
 	bool assignment = false;

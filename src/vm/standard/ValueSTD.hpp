@@ -22,6 +22,7 @@ public:
 	/*
 	 * Operators
 	 */
+	static Compiler::value op_store(Compiler& c, std::vector<Compiler::value> args, int);
 	static Compiler::value op_instanceof(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_equals(Compiler& c, std::vector<Compiler::value> args, bool);
 	static Compiler::value op_triple_equals(Compiler& c, std::vector<Compiler::value> args, bool);

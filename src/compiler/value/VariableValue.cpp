@@ -14,7 +14,7 @@
 
 namespace ls {
 
-VariableValue::VariableValue(Token* token) : token(token) {
+VariableValue::VariableValue(Token* token) : token(token), previous_type(Type::void_) {
 	this->name = token->content;
 	this->var = nullptr;
 	constant = false;
@@ -153,7 +153,7 @@ void VariableValue::pre_analyze(SemanticAnalyzer* analyzer) {
 
 void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 	if (var != nullptr) {
-		if (previous_var) {
+		if (update_variable) {
 			var->type = var->parent->type;
 		}
 		auto function_object = dynamic_cast<Function*>(var->value);
@@ -246,12 +246,7 @@ bool VariableValue::elements_will_store(SemanticAnalyzer* analyzer, const Type* 
 	return false;
 }
 
-void VariableValue::change_value(SemanticAnalyzer*, Value* value) {
-	if (var != nullptr) {
-		var->value = value;
-		var->type = value->type->not_constant();
-	}
-}
+void VariableValue::change_value(SemanticAnalyzer*, Value* value) {}
 
 const Type* VariableValue::version_type(std::vector<const Type*> version) const {
 	// std::cout << "VariableValue::version_type " << version << std::endl;
@@ -269,20 +264,6 @@ const Type* VariableValue::version_type(std::vector<const Type*> version) const 
 	return type;
 }
 
-void VariableValue::update_variable(Compiler& c) const {
-	if (previous_var) {
-		auto previous_value = c.insn_load(previous_var->val);
-		auto converted = c.insn_convert(previous_value, var->type);
-		if (previous_value.v == converted.v) {
-			var->val = previous_var->val;
-		} else {
-			var->create_entry(c);
-			var->store_value(c, c.insn_move_inc(converted));
-			c.insn_delete_variable(previous_var->val);
-		}
-	}
-}
-
 Compiler::value VariableValue::compile(Compiler& c) const {
 	// std::cout << "Compile var " << name << " " << type << std::endl;
 	// std::cout << "Compile vv " << name << " : " << type << "(" << (int) scope << ")" << std::endl;
@@ -294,7 +275,6 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		const auto& fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
 		return c.new_function(fun, type);
 	}
-	update_variable(c);
 
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
@@ -348,7 +328,7 @@ Compiler::value VariableValue::compile_version(Compiler& c, std::vector<const Ty
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {
-	update_variable(c);
+	// std::cout << "VV compile_l " << type << " " << var->type << " " << var << std::endl;
 	Compiler::value v;
 	// No internal values here
 	if (scope == VarScope::LOCAL) {

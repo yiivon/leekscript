@@ -4,8 +4,7 @@
 
 namespace ls {
 
-Variable::Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, Block* block, LSValue* lsvalue, Call call) : name(name), scope(scope), index(index), parent_index(0), value(value), function(function), block(block), type(type), lsvalue(lsvalue), call(call) {
-}
+Variable::Variable(std::string name, VarScope scope, const Type* type, int index, Value* value, FunctionVersion* function, Block* block, LSValue* lsvalue, Call call) : name(name), scope(scope), index(index), parent_index(0), value(value), function(function), block(block), type(type), lsvalue(lsvalue), call(call) {}
 
 const Type* Variable::get_entry_type() const {
 	if (type->is_mpz_ptr()) {
@@ -77,7 +76,7 @@ namespace ls {
 		auto v = &variable;
 		while (v and v->id != 0) {
 			versions = C_GREY + std::string(".") + std::to_string(v->id) + END_COLOR + versions;
-			v = v->parent;
+			v = v->root;
 		}
 		os << versions;
 		// os << "." << (int) variable.scope;

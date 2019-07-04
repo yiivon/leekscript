@@ -10,6 +10,8 @@
 #include "FunctionVersion.hpp"
 #include "../value/Function.hpp"
 #include "../../type/Function_type.hpp"
+#include "../value/VariableValue.hpp"
+#include "Variable.hpp"
 
 namespace ls {
 
@@ -192,6 +194,21 @@ void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Val
 	for (const auto& mutator : mutators) {
 		mutator->apply(analyzer, values, type->return_type());
 	}
+}
+
+int CallableVersion::compile_mutators(Compiler& c, std::vector<Value*> values) const {
+	int flags = 0;
+	for (const auto& mutator : mutators) {
+		flags |= mutator->compile(c, values);
+	}
+	if (not mutators.size()) {
+		if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
+			if (vv->var->parent and not vv->var->val.v) {
+				vv->var->val = vv->var->parent->val;
+			}
+		}
+	}
+	return flags;
 }
 
 Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler::value> args, int flags) const {

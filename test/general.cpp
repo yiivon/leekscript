@@ -202,6 +202,9 @@ void Test::test_general() {
 	code("var a = 12 if 1 { a = 5 a++ } else { a = 3 } a").equals("6");
 	code("var a = 12 if 0 { a = 5 a++ } else { a = 5.5 } a").equals("5.5");
 	code("var a = 12 if 0 { a = 5 a++ } else { a = 7l } a").equals("7");
+	code("var b = 5 if 1 {} else { b = 'salut' } b").equals("5");
+	code("var b = 5 if 0 {} else { b = 'salut' } b").equals("'salut'");
+	code("var x = 5 if true if true x = 'a' x").equals("'a'");
 
 	section("Assignments with +=");
 	code("var a = 10 a += 0.5 a").equals("10.5");
