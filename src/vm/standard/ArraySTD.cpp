@@ -421,9 +421,9 @@ Compiler::value ArraySTD::in(Compiler& c, std::vector<Compiler::value> args, int
 Compiler::value ArraySTD::op_add(Compiler& c, std::vector<Compiler::value> args, int) {
 	if (args[0].t->element() == Type::never) {
 		c.insn_delete_temporary(args[0]);
-		return c.new_array(args[1].t, { args[1] });
+		return c.new_array(args[1].t->add_temporary(), { args[1] });
 	}
-	return c.insn_call(Type::array(args[0].t->element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
+	return c.insn_call(Type::tmp_array(args[0].t->element()), {args[0], c.insn_to_any(args[1])}, "Value.operator+");
 }
 
 Compiler::value ArraySTD::array_add_eq(Compiler& c, std::vector<Compiler::value> args, int) {
