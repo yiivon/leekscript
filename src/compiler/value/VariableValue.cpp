@@ -334,6 +334,10 @@ Compiler::value VariableValue::compile_l(Compiler& c) const {
 	if (scope == VarScope::LOCAL) {
 		v = var->get_address(c);
 	} else if (scope == VarScope::CAPTURE) {
+		if (!var->addr_val.v) {
+			std::cout << "No addr_val for variable " << var << "!" << std::endl;
+			assert(false);
+		}
 		v = c.insn_load(var->addr_val);
 	} else if (scope == VarScope::INTERNAL) {
 		v = c.get_symbol(name, type);
