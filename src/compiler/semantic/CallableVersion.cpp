@@ -38,7 +38,9 @@ CallableVersion::CallableVersion(const Type* v1_type, const Type* v2_type, const
 
 const Type* build(const Type* type) {
 	if (type->is_template()) return ((Template_type*) type)->_implementation;
-	if (type->is_array()) return Type::array(build(type->element()));
+	if (type->is_array()) {
+		return type->temporary ? Type::tmp_array(build(type->element())) : Type::array(build(type->element()));
+	}
 	if (type->is_set()) return Type::set(build(type->element()));
 	if (type->is_map()) return Type::map(build(type->key()), build(type->element()));
 	if (type->is_function()) {
