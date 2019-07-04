@@ -1739,6 +1739,7 @@ void Compiler::insn_if(Compiler::value condition, std::function<void()> then, st
 		insn_branch(&label_end);
 	}
 	insn_label(&label_end);
+	((Compiler*) this)->current_block()->blocks.push_back(label_end.block);
 }
 void Compiler::insn_if_new(Compiler::value cond, label* then, label* elze) const {
 	assert(cond.t->llvm(*this) == cond.v->getType());
@@ -1838,12 +1839,12 @@ Compiler::value Compiler::insn_phi(const Type* type, Compiler::value v1, Block* 
 	if (v1.v) {
 		// std::cout << "v1 type " << v1.t << ", " << folded_type << ", " << type << std::endl;
 		// assert(v1.t == folded_type);
-		phi->addIncoming(v1.v, b1->block);
+		phi->addIncoming(v1.v, b1->blocks.back());
 	}
 	if (v2.v) {
 		// std::cout << "v2 type " << v2.t << ", " << folded_type << ", " << type << std::endl;
 		// assert(v2.t == folded_type);
-		phi->addIncoming(v2.v, b2->block);
+		phi->addIncoming(v2.v, b2->blocks.back());
 	}
 	return {phi, folded_type};
 }

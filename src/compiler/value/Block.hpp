@@ -20,7 +20,7 @@ public:
 	bool mpz_pointer = false;
 	bool was_reference = false;
 	std::unordered_map<std::string, Variable*> variables;
-	llvm::BasicBlock* block;
+	std::vector<llvm::BasicBlock*> blocks;
 	Block* branch = nullptr;
 	std::vector<std::pair<Variable*, Variable*>> assignments;
 	std::vector<Variable*> temporary_variables;

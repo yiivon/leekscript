@@ -141,7 +141,7 @@ Compiler::value Block::compile(Compiler& c) const {
 	// std::cout << "Compile block " << type << std::endl;
 
 	c.enter_block((Block*) this);
-	((Block*) this)->block = c.builder.GetInsertBlock();
+	((Block*) this)->blocks.push_back(c.builder.GetInsertBlock());
 
 	for (unsigned i = 0; i < instructions.size(); ++i) {
 

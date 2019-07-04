@@ -158,6 +158,8 @@ Compiler::value If::compile(Compiler& c) const {
 		c.insn_store(phi->variable->val, phi_node);
 	}
 
+	c.current_block()->blocks.push_back(label_end.block);
+
 	return r;
 }
 
