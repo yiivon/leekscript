@@ -132,10 +132,10 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto sT = Type::template_("T");
 	template_(sT).
 	method("sort", {
-		{Type::tmp_array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort},
-		{Type::tmp_array(Type::real), {Type::array(Type::real)}, (void*) &LSArray<double>::ls_sort},
-		{Type::tmp_array(Type::integer), {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_sort},
-		{Type::tmp_array(sT), {Type::array(sT), Type::fun_object(Type::boolean, {sT, sT})}, sort}
+		{Type::array(), {Type::array()}, (void*) &LSArray<LSValue*>::ls_sort},
+		{Type::array(Type::real), {Type::array(Type::real)}, (void*) &LSArray<double>::ls_sort},
+		{Type::array(Type::integer), {Type::array(Type::integer)}, (void*) &LSArray<int>::ls_sort},
+		{Type::array(sT), {Type::array(sT), Type::fun_object(Type::boolean, {sT, sT})}, sort}
 	});
 
 	auto map2_fun_type = (const Type*) Type::fun_object(Type::any, {Type::any, Type::any});
