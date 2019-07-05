@@ -211,9 +211,11 @@ Variable* SemanticAnalyzer::update_var(Variable* variable) {
 		// if (...) {
 		//    a.1.1 = 'salut'
 		// }
+		auto root = variable->root ? variable->root : variable;
 		new_variable = new Variable(variable->name, variable->scope, Type::any, variable->index, nullptr, current_function(), current_block(), nullptr);
 		new_variable->id = ++variable->generator;
 		new_variable->parent = variable;
+		new_variable->root = root;
 	}
 	if (variable->scope == VarScope::PARAMETER) {
 		// std::cout << "update argument " << new_variable->name << std::endl;

@@ -80,7 +80,8 @@ void Block::create_assignments(SemanticAnalyzer* analyzer) {
 	if (not is_function_block and not is_loop_body) {
 		for (const auto& variable : variables) {
 			// std::cout << "Block update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
-			if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch) {
+			auto root = variable.second->root ? variable.second->root : variable.second;
+			if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch	and root->block != this) {
 				auto new_var = analyzer->update_var(variable.second->parent);
 				assignments.push_back({ new_var, variable.second });
 			}

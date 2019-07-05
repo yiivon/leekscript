@@ -94,6 +94,7 @@ void Test::test_general() {
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
 	code("{let a = 5} a").error(ls::Error::Type::UNDEFINED_VARIABLE, {"a"});
+	code("{ var x = [] x.push(4) x } x").error(ls::Error::Type::UNDEFINED_VARIABLE, {"x"});
 
 	section("Syntaxic errors");
 	code("{").error(ls::Error::Type::BLOCK_NOT_CLOSED, {});
