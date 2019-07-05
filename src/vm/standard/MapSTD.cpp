@@ -181,18 +181,20 @@ MapSTD::MapSTD(VM* vm) : Module(vm, "Map") {
 
 	auto flT = Type::template_("T");
 	auto flK = Type::template_("K");
+	auto flI = Type::template_("I");
 	auto flR = Type::template_("R");
-	template_(flT, flK, flR).
+	template_(flT, flK, flI, flR).
 	method("foldLeft", {
-		{flR, {Type::const_map(flK, flT), Type::fun(flR, {flR, flK, flT}), flR}, fold_left},
+		{flR, {Type::const_map(flK, flT), Type::fun(flR, {Type::meta_add(flI, flR), flK, flT}), flI}, fold_left},
 	});
 
 	auto frT = Type::template_("T");
 	auto frK = Type::template_("K");
+	auto frI = Type::template_("I");
 	auto frR = Type::template_("R");
-	template_(frT, frK, frR).
+	template_(frT, frK, frI, frR).
 	method("foldRight", {
-		{frR, {Type::const_map(frK, frT), Type::fun(frR, {frK, frT, frR}), frR}, fold_right},
+		{frR, {Type::const_map(frK, frT), Type::fun(frR, {frK, frT, Type::meta_add(frI, frR)}), frI}, fold_right},
 	});
 
 	/** Internal **/
@@ -278,9 +280,10 @@ Compiler::value MapSTD::look(Compiler& c, std::vector<Compiler::value> args, int
 
 Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
-	auto result = Variable::new_temporary("r", args[2].t);
+	auto init_type = function.t->argument(0);
+	auto result = Variable::new_temporary("r", init_type);
 	result->create_entry(c);
-	c.insn_store(result->val, c.insn_move(args[2]));
+	c.insn_store(result->val, c.insn_convert(c.insn_move(args[2]), init_type));
 	c.add_temporary_variable(result);
 	auto v = Variable::new_temporary("v", args[0].t->element());
 	auto k = Variable::new_temporary("k", args[0].t->key());
@@ -297,9 +300,10 @@ Compiler::value MapSTD::fold_left(Compiler& c, std::vector<Compiler::value> args
 
 Compiler::value MapSTD::fold_right(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto function = args[1];
-	auto result = Variable::new_temporary("r", args[2].t);
+	auto init_type = function.t->argument(2);
+	auto result = Variable::new_temporary("r", init_type);
 	result->create_entry(c);
-	c.insn_store(result->val, c.insn_move(args[2]));
+	c.insn_store(result->val, c.insn_convert(c.insn_move(args[2]), init_type));
 	c.add_temporary_variable(result);
 	auto v = Variable::new_temporary("v", args[0].t->element());
 	auto k = Variable::new_temporary("k", args[0].t->key());

@@ -205,15 +205,14 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto flR = Type::template_("R");
 	template_(flT, flR).
 	method("foldLeft", {
-		{flR, {Type::const_array(flT), Type::fun(flR, {flR, flT}), flR}, fold_left},
+		{flR, {Type::const_array(flT), Type::fun(flR, {Type::meta_not_temporary(flR), flT}), flR}, fold_left},
 	});
 
 	auto frT = Type::template_("T");
 	auto frR = Type::template_("R");
-	auto frI = Type::template_("I");
-	template_(frT, frR, frI).
+	template_(frT, frR).
 	method("foldRight", {
-		{Type::meta_mul(frI, frR), {Type::const_array(frT), Type::fun(frR, {frT, Type::meta_mul(frI, frR)}), frI}, fold_right},
+		{frR, {Type::const_array(frT), Type::fun(frR, {frT, Type::meta_not_temporary(frR)}), frR}, fold_right},
 	});
 
 	method("pop", {
@@ -477,10 +476,11 @@ Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, 
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto array = args[0];
 	auto function = args[1];
-	auto result = Variable::new_temporary("r", args[2].t);
+	auto init_type = function.t->argument(0);
+	auto result = Variable::new_temporary("r", init_type);
 	result->create_entry(c);
 	c.add_temporary_variable(result);
-	c.insn_store(result->val, c.insn_move_inc(args[2]));
+	c.insn_store(result->val, c.insn_convert(c.insn_move_inc(args[2]), init_type));
 	auto v = Variable::new_temporary("v", args[0].t->element());
 	v->create_entry(c);
 	c.add_temporary_variable(v);

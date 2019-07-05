@@ -46,14 +46,14 @@ const Type* build(const Type* type) {
 	if (type->is_function()) {
 		std::vector<const Type*> args;
 		for (const auto& t : type->arguments()) {
-			args.push_back(build(t)->not_temporary());
+			args.push_back(build(t));
 		}
 		return Type::fun(build(type->return_type()), args);
 	}
 	if (type->is_function_object()) {
 		std::vector<const Type*> args;
 		for (const auto& t : type->arguments()) {
-			args.push_back(build(t)->not_temporary());
+			args.push_back(build(t));
 		}
 		return Type::fun_object(build(type->return_type()), args);
 	}
