@@ -117,7 +117,7 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 	// Retrieve the callable version
 	call = function->get_callable(analyzer, arguments_types.size());
 	if (call.callable) {
-		// std::cout << "Callable: " << (void*) call.callable << std::endl;
+		// std::cout << "Callable: " << call.callable << std::endl;
 		callable_version = call.resolve(analyzer, arguments_types);
 		if (callable_version) {
 			// std::cout << "Version: " << callable_version << std::endl;

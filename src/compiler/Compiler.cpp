@@ -1062,7 +1062,7 @@ Compiler::value Compiler::insn_array_size(Compiler::value v) const {
 
 Compiler::value Compiler::insn_get_capture(int index, const Type* type) const {
 	// std::cout << "get_capture " << fun->type << " " << fun->captures.size() << " captures " << F->arg_size() << " " << type << " " << index << std::endl;
-	assert(fun->captures.size() > 0);
+	assert(fun->parent->captures.size() > 0);
 	Compiler::value closure = { F->arg_begin(), Type::any };
 	return insn_call(Type::any, {closure, new_integer(index)}, "Function.get_capture");
 }

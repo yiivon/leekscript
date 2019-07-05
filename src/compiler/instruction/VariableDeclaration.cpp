@@ -54,7 +54,8 @@ void VariableDeclaration::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (global && function) return;
 	for (unsigned i = 0; i < variables.size(); ++i) {
 		auto& var = variables.at(i);
-		auto v = analyzer->add_var(var, Type::any, expressions.at(i).get());
+		auto type = (dynamic_cast<Function*>(expressions[i].get())) ? Type::fun() : Type::any; // Set type in pre analyze to avoid capture functions
+		auto v = analyzer->add_var(var, type, expressions.at(i).get());
 		if (v) vars.insert({ var->content, v });
 		if (expressions[i] != nullptr) {
 			expressions[i]->pre_analyze(analyzer);

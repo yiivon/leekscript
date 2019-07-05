@@ -23,9 +23,7 @@ public:
 	bool recursive = false;
 	std::unordered_map<std::string, Variable*> initial_arguments;
 	std::unordered_map<std::string, Variable*> arguments;
-	std::vector<Variable*> captures;
 	std::vector<Variable*> captures_inside;
-	std::unordered_map<std::string, Variable*> captures_map;
 	bool pre_analyzed = false;
 
 	FunctionVersion(std::unique_ptr<Block> body);

@@ -22,17 +22,6 @@ bool FunctionVersion::is_compiled() const {
 }
 
 void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	for (const auto& capture : captures) {
-		os << "[" << capture << " = any(" << capture->parent << ")] ";
-	}
-	if (captures.size() > 0) {
-		os << "[";
-		for (unsigned c = 0; c < captures.size(); ++c) {
-			if (c > 0) os << ", ";
-			os << captures[c] << " " << captures[c]->type;
-		}
-		os << "] ";
-	}
 	if (parent->arguments.size() != 1) {
 		os << "(";
 	}
@@ -170,7 +159,7 @@ void FunctionVersion::analyze(SemanticAnalyzer* analyzer, const std::vector<cons
 	}
 	// std::cout << "return_type " << return_type << std::endl;
 	body->type = return_type;
-	if (captures.size()) {
+	if (parent->captures.size()) {
 		type = Type::closure(return_type, arg_types, parent);
 	} else {
 		type = Type::fun(return_type, arg_types, parent)->pointer();
@@ -192,26 +181,40 @@ Variable* FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
 	// the function becomes a closure
 	type = Type::closure(getReturnType(), type->arguments());
 	// Already exists?
-	for (size_t i = 0; i < captures.size(); ++i) {
-		if (captures[i]->name == var->name)
-			return captures[i];
+	for (size_t i = 0; i < parent->captures.size(); ++i) {
+		if (parent->captures[i]->name == var->name) {
+			// std::cout << "Capture already exists" << std::endl;
+			auto capture = analyzer->update_var(parent->captures[i]); // Copy : one var outside the function, one inside
+			capture->scope = VarScope::CAPTURE;
+			captures_inside.push_back(capture);
+			return capture;
+		}
 	}
 
 	// Capture from direct parent
-	// std::cout << "var->function->parent " << var->function->parent << " parent->parent " << parent->parent << std::endl;
+	// std::cout << "var->function->parent " << (void*)var->function->parent << " parent->parent " << (void*)parent->parent << std::endl;
 	if (var->function->parent == parent->parent) {
+		// std::cout << "Capture from parent" << std::endl;
+		auto parent_version = parent->parent->current_version ? parent->parent->current_version : parent->parent->default_version;
+		analyzer->enter_function(parent_version);
+		analyzer->enter_block(parent_version->body.get());
 		auto converted_var = analyzer->update_var(var);
+		analyzer->leave_block();
+		analyzer->leave_function();
+
 		converted_var->scope = VarScope::CAPTURE;
-		converted_var->index = captures.size();
-		captures.push_back(converted_var);
-		captures_map.insert({ var->name, converted_var });
-		auto capture = new Variable(*converted_var); // Copy : one var outside the function, one inside
+		converted_var->index = parent->captures.size();
+		parent->captures.push_back(converted_var);
+		parent->captures_map.insert({ var->name, converted_var });
+
+		auto capture = analyzer->update_var(converted_var);
 		capture->scope = VarScope::CAPTURE;
 		captures_inside.push_back(capture);
 		// std::cout << "Capture " << capture << " " << (void*) capture << " parent " << capture->parent << " " << (void*) capture->parent << " " << (int) capture->scope << std::endl;
 		return capture;
 	} else {
 		// Capture from parent of parent
+		// std::cout << "Capture from parent of parent" << std::endl;
 		// std::cout << "var->function->parent " << var->function->parent << std::endl << "parent->parent " << parent->parent << std::endl << std::endl; 
 		// std::cout << "Capture by parent" << std::endl;
 		// std::cout << "parents versions " << parent->parent->versions.size() << std::endl;
@@ -232,7 +235,7 @@ void FunctionVersion::create_function(Compiler& c) {
 	if (fun.v) return;
 
 	std::vector<const Type*> args;
-	if (captures.size()) {
+	if (parent->captures.size()) {
 		args.push_back(Type::any); // first arg is the function pointer
 	}
 	for (auto& t : this->type->arguments()) {
@@ -262,15 +265,10 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 
 	if (not is_compiled()) {
 
-		for (const auto& capture : captures) {
-			// std::cout << "Convert capture " << capture << " " << (void*) capture << " " << (int)capture->scope << " parent " << capture->parent << " " << capture->parent->val.v << " " << capture->parent->val.t << " " << (void*) capture->parent << std::endl;
-			if (capture->parent->val.v) {
-				capture->val = c.create_entry(capture->name, Type::any);
-				c.insn_store(capture->val, c.insn_convert(c.insn_load(capture->parent->val), Type::any));
-			}
-		}
+		parent->compile_captures(c);
+
 		std::vector<llvm::Type*> args;
-		if (captures.size()) {
+		if (parent->captures.size()) {
 			args.push_back(Type::any->llvm(c)); // first arg is the function pointer
 		}
 		for (auto& t : this->type->arguments()) {
@@ -279,7 +277,7 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 		// Create the llvm function
 		create_function(c);
 
-		c.enter_function((llvm::Function*) fun.v, captures.size() > 0, this);
+		c.enter_function((llvm::Function*) fun.v, parent->captures.size() > 0, this);
 
 		c.builder.SetInsertPoint(block);
 
@@ -293,9 +291,9 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 
 		// Create arguments
 		unsigned index = 0;
-		int offset = captures.size() ? -1 : 0;
+		int offset = parent->captures.size() ? -1 : 0;
 		for (auto& arg : ((llvm::Function*) fun.v)->args()) {
-			if (index == 0 && captures.size()) {
+			if (index == 0 && parent->captures.size()) {
 				arg.setName("closure");
 			} else if (offset + index < parent->arguments.size()) {
 				const auto name = parent->arguments.at(offset + index)->content;
@@ -340,10 +338,10 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 		llvm::verifyFunction(*((llvm::Function*) fun.v));
 	}
 
-	if (captures.size()) {
+	if (parent->captures.size()) {
 		std::vector<Compiler::value> captures;
 		if (!parent->is_main_function) {
-			for (const auto& capture : this->captures) {
+			for (const auto& capture : parent->captures) {
 				Compiler::value jit_cap;
 				// std::cout << "Compile capture " << capture << " " << (int) capture->scope << std::endl;
 				if (capture->parent->scope == VarScope::LOCAL) {

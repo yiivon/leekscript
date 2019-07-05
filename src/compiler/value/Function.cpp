@@ -48,6 +48,17 @@ void Function::addArgument(Token* name, Value* defaultValue) {
 }
 
 void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
+	for (const auto& capture : captures) {
+		os << "[" << capture << " = any(" << capture->parent << ")] ";
+	}
+	if (captures.size() > 0) {
+		os << "[";
+		for (unsigned c = 0; c < captures.size(); ++c) {
+			if (c > 0) os << ", ";
+			os << captures[c] << " " << captures[c]->type;
+		}
+		os << "] ";
+	}
 	if (versions.size() > 0) {
 		// std::cout << "print version " << versions.begin()->second->type << std::endl;
 		int i = 0;
@@ -189,7 +200,7 @@ const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<co
 				auto ret = f->will_take(analyzer, args, level - 1);
 				analyzer->leave_function();
 
-				if (v->captures.size()) {
+				if (captures.size()) {
 					v->type = Type::closure(f->version_type(args), v->type->arguments(), this);
 				} else {
 					v->type = Type::fun(f->version_type(args), v->type->arguments(), this)->pointer();
@@ -275,7 +286,6 @@ Compiler::value Function::compile(Compiler& c) const {
 
 Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> args) const {
 	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
-
 	// Fill with default arguments
 	auto full_args = args;
 	for (size_t i = version.size(); i < arguments.size(); ++i) {
@@ -295,6 +305,19 @@ Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> 
 Compiler::value Function::compile_default_version(Compiler& c) const {
 	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
 	return default_version->compile(c, false);
+}
+
+void Function::compile_captures(Compiler& c) const {
+	if (captures_compiled) return;
+	((Function*) this)->captures_compiled = true;
+	// std::cout << "Function::compile_captures" << std::endl;
+	for (const auto& capture : captures) {
+		if (capture->parent->val.v) {
+			// std::cout << "Convert capture " << capture << " " << (void*) capture << " " << (int)capture->scope << " parent " << capture->parent << " " << capture->parent->val.v << " " << capture->parent->val.t << " " << (void*) capture->parent << std::endl;
+			capture->val = c.create_entry(capture->name, Type::any);
+			c.insn_store(capture->val, c.insn_convert(c.insn_load(capture->parent->val), Type::any));
+		}
+	}
 }
 
 void Function::export_context(const Compiler& c) const {
