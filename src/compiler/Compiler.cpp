@@ -1176,7 +1176,9 @@ Compiler::value Compiler::insn_move(Compiler::value v) const {
 	assert(check_value(v));
 	if (v.t->fold()->must_manage_memory() and !v.t->temporary and !v.t->reference) {
 		// TODO avoid conversions
-		return insn_convert(insn_call(Type::tmp_any, {insn_convert(v, Type::any)}, "Value.move"), v.t->fold());
+		auto r = insn_convert(insn_call(Type::tmp_any, {insn_convert(v, Type::any)}, "Value.move"), v.t->fold());
+		r.t = r.t->add_temporary();
+		return r;
 	}
 	return v;
 }

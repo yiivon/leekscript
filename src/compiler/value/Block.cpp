@@ -118,6 +118,10 @@ void Block::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "Block type " << type << std::endl;
 
+	if (type->must_manage_memory()) {
+		type = type->add_temporary();
+	}
+
 	if (type == Type::mpz) {
 		type = Type::tmp_mpz;
 	} else if (type == Type::tmp_mpz) {
