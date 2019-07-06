@@ -221,43 +221,6 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		return;
 	}
 
-	/*
-	 * OLD
-	 */
-	// A = B, A += B, A * B, etc. mix types
-	if (op->type == TokenType::EQUAL or op->type == TokenType::XOR
-		or op->type == TokenType::PLUS_EQUAL
-		or op->type == TokenType::TIMES_EQUAL
-		or op->type == TokenType::DIVIDE_EQUAL
-		or op->type == TokenType::MINUS_EQUAL
-		or op->type == TokenType::POWER_EQUAL
-		or op->type == TokenType::MODULO or op->type == TokenType::MODULO_EQUAL
-		or op->type == TokenType::LOWER or op->type == TokenType::LOWER_EQUALS
-		or op->type == TokenType::GREATER or op->type == TokenType::GREATER_EQUALS
-		or op->type == TokenType::SWAP or op->type == TokenType::CATCH_ELSE
-		) {
-		// Set the correct type nature for the two members
-		auto vv = dynamic_cast<VariableValue*>(v1.get());
-		if (op->type == TokenType::EQUAL and vv != nullptr) {
-			if (is_void) {
-				type = Type::void_;
-			} else {
-				type = v2->type;
-			}
-		} else {
-			if (v1->type->is_any() || v2->type->is_any()) {
-				type = Type::any;
-			} else {
-				type = v1->type;
-			}
-		}
-		if (type->is_void() and not is_void) {
-			type = v2_type;
-		}
-		// type.reference = false;
-		type = type->add_temporary();
-	}
-
 	// object ?? default
 	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
 		type = v1->type->operator * (v2->type);
