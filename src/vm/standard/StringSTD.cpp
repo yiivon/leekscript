@@ -244,6 +244,14 @@ LSString* StringSTD::add_int(LSString* s, int i) {
 		return new LSString(*s + std::to_string(i));
 	}
 }
+LSString* StringSTD::add_int_r(int i, LSString* s) {
+	if (s->refs == 0) {
+		s->insert(0, std::to_string(i));
+		return s;
+	} else {
+		return new LSString(std::to_string(i) + *s);
+	}
+}
 
 LSString* StringSTD::add_bool(LSString* s, bool b) {
 	if (s->refs == 0) {

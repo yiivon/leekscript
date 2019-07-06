@@ -1,5 +1,6 @@
 #include "NumberSTD.hpp"
 #include "ValueSTD.hpp"
+#include "StringSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSMpz.hpp"
 #include "../value/LSString.hpp"
@@ -54,6 +55,7 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::real, Type::real, Type::real, add_real_real},
 		{Type::long_, Type::long_, Type::long_, add_real_real},
 		{Type::const_integer, Type::const_integer, Type::integer, add_real_real},
+		{Type::const_integer, Type::const_string, Type::tmp_string, (void*) &StringSTD::add_int_r}
 	});
 	operator_("+=", {
 		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, add_eq_mpz_mpz, 0, { new ConvertMutator() }, true},

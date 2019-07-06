@@ -17,6 +17,7 @@ public:
 	static Compiler::value div(Compiler& c, std::vector<Compiler::value> args, int);
 
 	static LSString* add_int(LSString* s, int i);
+	static LSString* add_int_r(int i, LSString* s);
 	static LSString* add_bool(LSString* s, bool i);
 	static LSString* add_real(LSString* s, double i);
 	static Compiler::value add_eq(Compiler& c, std::vector<Compiler::value> args, int);
