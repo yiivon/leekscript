@@ -7,6 +7,13 @@ Compound_type::Compound_type(std::set<const Type*> list, const Type* folded) {
 	for (const auto& t : list) types.push_back(t);
 	this->folded = folded;
 }
+const Type* Compound_type::element() const {
+	std::vector<const Type*> elements;
+	for (const auto& type : types) {
+		elements.push_back(type->element());
+	}
+	return Type::compound(elements);
+}
 const Type* Compound_type::pointed() const {
 	return Type::void_;
 }
