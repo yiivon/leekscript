@@ -22,11 +22,19 @@ LSMpz* LSMpz::get_from_tmp(__mpz_struct i) {
 	mpz->value = i;
 	return mpz;
 }
+LSMpz* LSMpz::get() {
+	auto mpz = new LSMpz();
+	mpz_init(&mpz->value);
+	VM::current()->mpz_created++;
+	return mpz;
+}
 LSMpz* LSMpz::get(long i) {
 	return new LSMpz(i);
 }
 
-LSMpz::LSMpz() : LSValue(MPZ) {}
+LSMpz::LSMpz() : LSValue(MPZ) {
+	// Value not initialized
+}
 
 LSMpz::LSMpz(__mpz_struct value) : LSValue(MPZ) {
 	mpz_init_set(&this->value, &value);
@@ -105,12 +113,10 @@ LSValue* LSMpz::add(LSValue* v) {
 			LSValue::delete_temporary(number);
 			return this;
 		}
-		if (number->refs == 0) {
-			// number->value += value;
-			return number;
-		}
-		// return LSMpz::get(this->value + number->value);
-		return LSMpz::get(0);
+		auto r = LSMpz::get();
+		mpz_add_ui(&r->value, &value, number->value);
+		LSValue::delete_temporary(number);
+		return r;
 	}
 	if (v->type == BOOLEAN) {
 		auto boolean = static_cast<LSBoolean*>(v);
@@ -206,15 +212,13 @@ LSValue* LSMpz::mul(LSValue* v) {
 		auto number = static_cast<LSNumber*>(v);
 		if (refs == 0) {
 			mpz_mul_ui(&value, &value, number->value);
-			if (number->refs == 0) delete number;
+			LSValue::delete_temporary(number);
 			return this;
 		}
-		if (number->refs == 0) {
-			// number->value *= value;
-			return number;
-		}
-		// return LSMpz::get(value * number->value);
-		return LSMpz::get(0);
+		auto r = LSMpz::get();
+		mpz_mul_ui(&r->value, &value, number->value);
+		LSValue::delete_temporary(number);
+		return r;
 	}
 	if (v->type == BOOLEAN) {
 		auto boolean = static_cast<LSBoolean*>(v);
