@@ -157,10 +157,6 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 			if (type->is_mpz()) {
 				type = type == Type::tmp_mpz ? Type::tmp_mpz_ptr : Type::mpz_ptr;
 			}
-			if (previous_var and callable_version->mutators.size()) {
-				variable->type = type->not_temporary();
-				((VariableValue*) ((ObjectAccess*) function.get())->object.get())->type = type->not_temporary();
-			}
 			// std::cout << "FC type " << type << std::endl;
 			return;
 		}
