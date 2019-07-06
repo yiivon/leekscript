@@ -54,10 +54,12 @@ const std::string Compound_type::getName() const {
 	return r;
 }
 std::ostream& Compound_type::print(std::ostream& os) const {
+	if (temporary) os << "(";
 	for (size_t i = 0; i < types.size(); ++i) {
 		if (i > 0) { os << " | "; }
-		types[i]->print(os);
+		os << types[i];
 	}
+	if (temporary) os << ")";
 	return os;
 }
 Type* Compound_type::clone() const {
