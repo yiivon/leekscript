@@ -50,6 +50,7 @@ unsigned int Type::placeholder_counter = 0;
 
 const std::vector<const Type*> Type::empty_types;
 std::map<std::set<const Type*>, const Type*> Type::compound_types;
+std::map<const Type*, const Type*> Type::tmp_compound_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Function_type*> Type::function_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::closure_types;
 std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> Type::function_object_types;
@@ -516,23 +517,42 @@ const Type* Type::template_(std::string name) {
 	return new Template_type(name);
 }
 const Type* Type::compound(std::initializer_list<const Type*> types) {
+	return Type::compound(std::vector<const Type*>(types));
+}
+const Type* Type::compound(std::vector<const Type*> types) {
 	if (types.size() == 1) return *types.begin();
 	std::set<const Type*> base;
 	auto folded = Type::void_;
+	auto temporary = false;
 	for (const auto& t : types) {
 		if (auto c = dynamic_cast<const Compound_type*>(t)) {
 			for (const auto& bt : c->types) base.insert(bt);
 		} else {
-			base.insert(t);
+			base.insert(t->not_temporary());
 		}
+		// std::cout << "compound t " << t << " tmp " << t->temporary << std::endl;
+		temporary |= t->temporary;
 		folded = folded->operator * (t);
 	}
+	// std::cout << "temporary compound " << temporary << std::endl;
 	if (base.size() == 1) return *types.begin();
 	auto i = compound_types.find(base);
-	if (i != compound_types.end()) return i->second;
+	if (i != compound_types.end()) {
+		if (temporary) {
+			return i->second->add_temporary();
+		}
+		return i->second;
+	}
 	auto type = new Compound_type { base, folded };
 	compound_types.insert({ base, type });
+	if (temporary) {
+		// std::cout << "temporary" << std::endl;
+		return type->add_temporary();
+	}
 	return type;
+}
+const Type* Type::tmp_compound(std::initializer_list<const Type*> types) {
+	return compound(types)->add_temporary();
 }
 
 const Type* Type::meta_add(const Type* t1, const Type* t2) {

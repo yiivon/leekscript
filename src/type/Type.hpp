@@ -163,7 +163,9 @@ public:
 	static const Type* clazz(const std::string name = "class?");
 	static const Type* const_class(const std::string name = "class?");
 	static const Type* template_(std::string name);
+	static const Type* compound(std::vector<const Type*> types);
 	static const Type* compound(std::initializer_list<const Type*> types);
+	static const Type* tmp_compound(std::initializer_list<const Type*> types);
 
 	static const Type* meta_add(const Type* t1, const Type* t2);
 	static const Type* meta_mul(const Type* t1, const Type* t2);
@@ -177,6 +179,7 @@ public:
 	// Const types to be used to optimize return of references
 	static const std::vector<const Type*> empty_types;
 	static std::map<std::set<const Type*>, const Type*> compound_types;
+	static std::map<const Type*, const Type*> tmp_compound_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Function_type*> function_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> function_object_types;
 	static std::map<std::pair<const Type*, std::vector<const Type*>>, const Type*> closure_types;
