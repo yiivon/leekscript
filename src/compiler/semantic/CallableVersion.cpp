@@ -203,13 +203,6 @@ int CallableVersion::compile_mutators(Compiler& c, std::vector<Value*> values) c
 	for (const auto& mutator : mutators) {
 		flags |= mutator->compile(c, values);
 	}
-	if (not mutators.size()) {
-		if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
-			if (vv->var->parent and not vv->var->val.v) {
-				vv->var->val = vv->var->parent->val;
-			}
-		}
-	}
 	return flags;
 }
 

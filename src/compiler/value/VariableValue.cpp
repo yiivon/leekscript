@@ -275,6 +275,9 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		const auto& fun = has_version and versions.find(version) != versions.end() ? versions.at(version) : default_version_fun;
 		return c.new_function(fun, type);
 	}
+	if (var->parent and not var->val.v) {
+		var->val = var->parent->val;
+	}
 
 	Compiler::value v;
 	if (scope == VarScope::CAPTURE) {
@@ -324,12 +327,18 @@ Compiler::value VariableValue::compile_version(Compiler& c, std::vector<const Ty
 	if (f) {
 		return f->compile_version(c, version);
 	}
+	if (var->parent and not var->val.v) {
+		var->val = var->parent->val;
+	}
 	return var->get_value(c);
 }
 
 Compiler::value VariableValue::compile_l(Compiler& c) const {
 	// std::cout << "VV compile_l " << type << " " << var->type << " " << var << std::endl;
 	Compiler::value v;
+	if (var->parent and not var->val.v) {
+		var->val = var->parent->val;
+	}
 	// No internal values here
 	if (scope == VarScope::LOCAL) {
 		v = var->get_address(c);
