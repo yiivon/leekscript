@@ -105,7 +105,7 @@ void Test::test_types() {
 	test("array<int>.element", ls::Type::array(ls::Type::integer)->element(), ls::Type::integer);
 	test("array<p>.element", ls::Type::array(p1)->element(), p1);
 	test("array<int | p>.element", ls::Type::array(ls::Type::compound({ ls::Type::integer, p1 }))->element(), ls::Type::compound({ ls::Type::integer, p1 }));
-	// test("(array<int> | array<real>).element", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) })->element(), ls::Type::compound({ ls::Type::integer, ls::Type::real }));
+	test("(array<int> | array<real>).element", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) })->element(), ls::Type::compound({ ls::Type::integer, ls::Type::real }));
 
 	section("placeholder");
 	test("array<p.element>", ls::Type::array(p1->element()), p1);
@@ -146,6 +146,8 @@ void Test::test_types() {
 	test("int + never", ls::Type::integer->operator + (ls::Type::never), ls::Type::integer);
 	test("array<never> + array<int>", ls::Type::array(ls::Type::never)->operator + (ls::Type::array(ls::Type::integer)), ls::Type::array(ls::Type::integer));
 	test("array<int> + array<never>", ls::Type::array(ls::Type::integer)->operator + (ls::Type::array(ls::Type::never)), ls::Type::array(ls::Type::integer));
+	test("array<int>&& + array<real>", ls::Type::tmp_array(ls::Type::integer)->operator + (ls::Type::array(ls::Type::real)), ls::Type::tmp_compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) }));
+	test("array<int>&& + array<real>&&", ls::Type::tmp_array(ls::Type::integer)->operator + (ls::Type::tmp_array(ls::Type::real)), ls::Type::tmp_compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) }));
 
 	section("operator *");
 	test("void * void", ls::Type::void_->operator * (ls::Type::void_), ls::Type::void_);
@@ -179,6 +181,7 @@ void Test::test_types() {
 	test("string&&", ls::Type::string->add_temporary(), ls::Type::tmp_string);
 	test("(int | string)&&.fold", ls::Type::compound({ls::Type::integer, ls::Type::string})->add_temporary()->fold(), ls::Type::any->add_temporary());
 	test("(const:int)&&", ls::Type::integer->add_constant()->add_temporary(), ls::Type::integer->add_constant());
+	test("(array<int> | array<real>)&&", ls::Type::compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) })->add_temporary(), ls::Type::tmp_compound({ ls::Type::array(ls::Type::integer), ls::Type::array(ls::Type::real) }));
 
 	section("LLVM type");
 	test("void", ls::Type::void_->llvm(vm.compiler), llvm::Type::getVoidTy(vm.compiler.getContext()));
