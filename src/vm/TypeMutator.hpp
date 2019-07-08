@@ -10,7 +10,7 @@ class SemanticAnalyzer;
 class TypeMutator {
 public:
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values, const Type* return_type) const = 0;
-	virtual int compile(Compiler&, std::vector<Value*> values) const = 0;
+	virtual int compile(Compiler&, CallableVersion* callable, std::vector<Value*> values) const = 0;
 };
 class TypeExtractor {
 public:
@@ -21,21 +21,22 @@ class WillStoreMutator : public TypeMutator {
 public:
 	WillStoreMutator();
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values, const Type* return_type) const override;
-	virtual int compile(Compiler&, std::vector<Value*> values) const override;
+	virtual int compile(Compiler&, CallableVersion* callable, std::vector<Value*> values) const override;
 };
 
 class ConvertMutator : public TypeMutator {
 public:
-	ConvertMutator() {}
+	bool store_array_size = false;
+	ConvertMutator(bool store_array_size = false) : store_array_size(store_array_size) {}
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values, const Type* return_type) const override;
-	virtual int compile(Compiler&, std::vector<Value*> values) const override;
+	virtual int compile(Compiler&, CallableVersion* callable, std::vector<Value*> values) const override;
 };
 
 class ChangeValueMutator : public TypeMutator {
 public:
 	ChangeValueMutator() {}
 	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values, const Type* return_type) const override;
-	virtual int compile(Compiler&, std::vector<Value*> values) const override;
+	virtual int compile(Compiler&, CallableVersion* callable, std::vector<Value*> values) const override;
 };
 
 class WillTakeMutator : public TypeMutator {

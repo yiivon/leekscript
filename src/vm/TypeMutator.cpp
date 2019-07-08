@@ -18,7 +18,7 @@ void WillStoreMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> val
 	values[1]->must_return_any(analyzer);
 }
 
-int WillStoreMutator::compile(Compiler& analyzer, std::vector<Value*> values) const {
+int WillStoreMutator::compile(Compiler& analyzer, CallableVersion* callable, std::vector<Value*> values) const {
 
 }
 
@@ -36,9 +36,12 @@ void ConvertMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> value
 	}
 }
 
-int ConvertMutator::compile(Compiler& c, std::vector<Value*> values) const {
+int ConvertMutator::compile(Compiler& c, CallableVersion* callable, std::vector<Value*> values) const {
 	// std::cout << "ConvertMutator" << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
+		if (store_array_size) {
+			callable->extra_arg = c.insn_array_size(vv->var->parent->get_value(c));
+		}
 		if (vv->var->scope == VarScope::CAPTURE) {
 			vv->var->val = vv->var->parent->val;
 			return 0;
@@ -112,7 +115,7 @@ void ChangeValueMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> v
 	}
 }
 
-int ChangeValueMutator::compile(Compiler& c, std::vector<Value*> values) const {
+int ChangeValueMutator::compile(Compiler& c, CallableVersion* callable, std::vector<Value*> values) const {
 	// std::cout << "ChangeValueMutator " << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
 		// std::cout << "ChangeValueMutator " << vv->var << " ||| " << vv->previous_type << " == " << vv->type << std::endl;

@@ -30,6 +30,7 @@ public:
 	bool v2_addr = false;
 	int flags = 0;
 	void* addr = nullptr;
+	Compiler::value extra_arg;
 
 	CallableVersion(std::string name, const Type* type, std::vector<TypeMutator*> mutators = {}, std::vector<const Type*> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0);
 	CallableVersion(std::string name, const Type* type, std::function<Compiler::value(Compiler&, std::vector<Compiler::value>, int)> func, std::vector<TypeMutator*> mutators = {}, std::vector<const Type*> templates = {}, bool object = false, bool unknown = false, bool v1_addr = false, bool v2_addr = false, int flags = 0);

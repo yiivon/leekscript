@@ -201,7 +201,7 @@ void CallableVersion::apply_mutators(SemanticAnalyzer* analyzer, std::vector<Val
 int CallableVersion::compile_mutators(Compiler& c, std::vector<Value*> values) const {
 	int flags = 0;
 	for (const auto& mutator : mutators) {
-		flags |= mutator->compile(c, values);
+		flags |= mutator->compile(c, (CallableVersion*) this, values);
 	}
 	return flags;
 }
@@ -210,6 +210,9 @@ Compiler::value CallableVersion::compile_call(Compiler& c, std::vector<Compiler:
 	// std::cout << "CallableVersion::compile_call(" << args << ")" << std::endl;
 	// Do the call
 	auto full_flags = this->flags | flags;
+	if (extra_arg.v) {
+		args.push_back(extra_arg);
+	}
 	auto r = [&]() { if (user_fun) {
 		// std::cout << "Compile CallableVersion user_fun " << user_fun->type << std::endl;
 		user_fun->compile(c);
