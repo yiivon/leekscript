@@ -39,6 +39,7 @@ void ConvertMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> value
 int ConvertMutator::compile(Compiler& c, CallableVersion* callable, std::vector<Value*> values) const {
 	// std::cout << "ConvertMutator" << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
+		if (vv->var->scope == VarScope::INTERNAL) return 0;
 		if (store_array_size) {
 			callable->extra_arg = c.insn_array_size(vv->var->parent->get_value(c));
 		}
