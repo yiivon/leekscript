@@ -22,7 +22,6 @@ public:
 	static LSValue* sub(LSArray<LSValue*>* array, int begin, int end);
 
 	static Compiler::value fill(Compiler&, std::vector<Compiler::value>, int);
-	static Compiler::value fill2(Compiler&, std::vector<Compiler::value>, int);
 
 	static Compiler::value remove_element_any(Compiler&, std::vector<Compiler::value>, int);
 	static Compiler::value remove_element_real(Compiler&, std::vector<Compiler::value>, int);

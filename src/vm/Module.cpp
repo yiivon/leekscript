@@ -19,6 +19,8 @@ int Module::DEFAULT = 4;
 int Module::NO_RETURN = 8;
 int Module::EMPTY_VARIABLE = 16;
 
+bool Module::STORE_ARRAY_SIZE = true;
+
 Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
 	clazz = std::make_unique<LSClass>(name);
 	if (name != "Value") {

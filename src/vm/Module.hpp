@@ -35,6 +35,8 @@ public:
 	static int EMPTY_VARIABLE;
 	static int NO_RETURN;
 
+	static bool STORE_ARRAY_SIZE;
+
 	VM* vm;
 	std::string name;
 	std::unique_ptr<LSClass> clazz;

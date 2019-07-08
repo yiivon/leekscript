@@ -262,8 +262,8 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto T = Type::template_("T");
 	template_(T).
 	method("fill", {
-		{Type::array(T), {Type::array(), T}, fill, 0, { new ChangeValueMutator() }},
-		{Type::array(T), {Type::array(), T, Type::const_integer}, fill2, 0, { new ChangeValueMutator() }},
+		{Type::array(T), {Type::array(), T}, fill, 0, { new ConvertMutator(STORE_ARRAY_SIZE) }},
+		{Type::array(T), {Type::array(), T, Type::const_integer}, fill, 0, { new ConvertMutator() }},
 	});
 
 	method("insert", {
@@ -461,16 +461,8 @@ Compiler::value ArraySTD::fill(Compiler& c, std::vector<Compiler::value> args, i
 		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
 		return "Array.fill_fun";
 	}();
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.insn_array_size(args[0])}, fun);
-}
-Compiler::value ArraySTD::fill2(Compiler& c, std::vector<Compiler::value> args, int) {
-	auto fun = [&]() {
-		if (args[0].t->element()->fold()->is_bool()) return "Array.fill_fun.3";
-		if (args[0].t->element()->fold()->is_integer()) return "Array.fill_fun.2";
-		if (args[0].t->element()->fold()->is_real()) return "Array.fill_fun.1";
-		return "Array.fill_fun";
-	}();
-	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), c.to_int(args[2])}, fun);
+	auto size = args.size() == 3 ? c.to_int(args[2]) : c.insn_array_size(args[0]);
+	return c.insn_call(args[0].t, {args[0], c.insn_convert(args[1], args[0].t->element()->fold()), size}, fun);
 }
 
 Compiler::value ArraySTD::fold_left(Compiler& c, std::vector<Compiler::value> args, int) {
