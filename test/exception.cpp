@@ -39,23 +39,23 @@ void Test::test_exceptions() {
 		{f, "main", 3},
 	});
 	std::string f1 = "test/code/exception/exception_1.leek";
-	file("test/code/exception/exception_1.leek").exception(ls::vm::Exception::DIVISION_BY_ZERO, {
+	file(f1).exception(ls::vm::Exception::DIVISION_BY_ZERO, {
 		{f1, "crash", 2}, {f1, "power", 7}, {f1, "will_crash", 12}, {f1, "do_something", 17}, {f1, "main", 20}
 	});
 	std::string f2 = "test/code/exception/exception_2.leek";
-	file("test/code/exception/exception_2.leek").exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
+	file(f2).exception(ls::vm::Exception::NO_SUCH_OPERATOR, {
 		{f2, "crash", 2}, {f2, "power", 7}, {f2, "will_crash", 12}, {f2, "do_something", 17}, {f2, "main", 20}
 	});
 	std::string f3 = "test/code/exception/exception_3.leek";
-	file("test/code/exception/exception_3.leek").exception(ls::vm::Exception::EXCEPTION, {
+	file(f3).exception(ls::vm::Exception::EXCEPTION, {
 		{f3, "crash", 2}, {f3, "power", 7}, {f3, "will_crash", 12}, {f3, "do_something", 17}, {f3, "main", 20}
 	});
 	std::string f4 = "test/code/exception/exception_4.leek";
-	file("test/code/exception/exception_4.leek").exception(ls::vm::Exception::NUMBER_OVERFLOW, {
+	file(f4).exception(ls::vm::Exception::NUMBER_OVERFLOW, {
 		{f4, "crash", 2}, {f4, "power", 7}, {f4, "will_crash", 12}, {f4, "do_something", 17}, {f4, "main", 20}
 	});
 	std::string f5 = "test/code/exception/exception_5.leek";
-	file("test/code/exception/exception_5.leek").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
+	file(f5).exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS, {
 		{f5, "crash", 3}, {f5, "power", 8}, {f5, "will_crash", 13}, {f5, "do_something", 18}, {f5, "main", 21}
 	});
 }
