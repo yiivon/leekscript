@@ -25,6 +25,7 @@ int WillStoreMutator::compile(Compiler& analyzer, CallableVersion* callable, std
 void ConvertMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values, const Type* return_type) const {
 	// std::cout << "ConvertMutator " << values[0]->type << " " << return_type << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
+		// std::cout << "Convert mutator " << (void*) vv->var->parent << " => " << vv->var << " " << vv->var->type << " " << return_type << std::endl;
 		vv->previous_type = vv->type;
 		vv->type = return_type->not_temporary();
 		vv->var->type = vv->type;
@@ -47,6 +48,7 @@ int ConvertMutator::compile(Compiler& c, CallableVersion* callable, std::vector<
 			vv->var->val = vv->var->parent->val;
 			return 0;
 		}
+		// std::cout << "ConvertMutator " << vv->var << " " << vv->previous_type << " => " << vv->type << std::endl;
 		if (vv->previous_type == vv->type) {
 			if (not vv->var->val.v) {
 				vv->var->val = vv->var->parent->val;
@@ -94,7 +96,7 @@ int ConvertMutator::compile(Compiler& c, CallableVersion* callable, std::vector<
 void ChangeValueMutator::apply(SemanticAnalyzer* analyzer, std::vector<Value*> values, const Type* return_type) const {
 	// std::cout << "Change value mutator " << values[0]->type << " => " << return_type << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
-		// std::cout << "Change value mutator " << vv->var << " " << vv->var->type << " " << values[0]->type << " => " << return_type << std::endl;
+		// std::cout << "Change mutator " << vv->var->parent << " " << vv->var->parent->type << " => " << vv->var << " " << vv->var->type << " " << return_type << std::endl;
 		vv->previous_type = vv->type;
 		vv->type = return_type->not_temporary();
 		vv->var->type = vv->type;
@@ -131,6 +133,7 @@ int ChangeValueMutator::compile(Compiler& c, CallableVersion* callable, std::vec
 		} else {
 			// std::cout << "ChangeValueMutator new_entry " << vv->var << std::endl;
 			vv->var->create_entry(c);
+			// std::cout << "delete parent : " << vv->var->parent << std::endl;
 			c.insn_delete_variable(vv->var->parent->val);
 			return Module::EMPTY_VARIABLE;
 		}
