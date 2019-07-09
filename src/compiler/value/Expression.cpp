@@ -87,13 +87,15 @@ void Expression::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (op == nullptr) {
 		v1->pre_analyze(analyzer);
 	} else {
-		v1->pre_analyze(analyzer);
 		v2->pre_analyze(analyzer);
+		v1->pre_analyze(analyzer);
 		if (not analyzer->current_block()->is_loop and (op->type == TokenType::EQUAL or op->type == TokenType::PLUS_EQUAL)) {
 			if (auto vv = dynamic_cast<VariableValue*>(v1.get())) {
 				// std::cout << "update variable " << vv->var << " " << (int) vv->var->scope << std::endl;
 				if (vv->var->scope != VarScope::CAPTURE) {
+					// std::cout << "EX update_var " << vv->var;
 					vv->var = analyzer->update_var(vv->var);
+					// std::cout << " to " << vv->var << std::endl;
 					vv->update_variable = true;
 				}
 			} else if (auto aa = dynamic_cast<ArrayAccess*>(v1.get())) {
@@ -126,8 +128,8 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		return;
 	}
 
-	v1->analyze(analyzer);
 	v2->analyze(analyzer);
+	v1->analyze(analyzer);
 
 	throws = v1->throws or v2->throws;
 
@@ -273,20 +275,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 
 	if (callable_version) {
 
-		int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
-		if (is_void) flags |= Module::NO_RETURN;
-
 		std::vector<Compiler::value> args;
-		args.push_back([&](){ if (callable_version->v1_addr) {
-			return ((LeftValue*) v1.get())->compile_l(c);
-		} else {
-			auto v = v1->compile(c);
-			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
-				v = c.insn_to_any(v);
-			}
-			return v;
-		}}());
-		args.push_back([&](){ if (callable_version->v2_addr) {
+		auto compiled_v2 = [&](){ if (callable_version->v2_addr) {
 			return ((LeftValue*) v2.get())->compile_l(c);
 		} else {
 			auto v = v2->compile(c);
@@ -294,8 +284,26 @@ Compiler::value Expression::compile(Compiler& c) const {
 				v = c.insn_to_any(v);
 			}
 			return v;
-		}}());
+		}}();
+		c.add_temporary_expression_value(compiled_v2);
+
+		int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
+		if (is_void) flags |= Module::NO_RETURN;
+
+		auto compiled_v1 = [&](){ if (callable_version->v1_addr) {
+			return ((LeftValue*) v1.get())->compile_l(c);
+		} else {
+			auto v = v1->compile(c);
+			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
+				v = c.insn_to_any(v);
+			}
+			return v;
+		}}();
+		args.push_back(compiled_v1);
+		args.push_back(compiled_v2);
 		if (op->reversed) std::reverse(args.begin(), args.end());
+
+		c.pop_temporary_expression_value();
 
 		auto r = callable_version->compile_call(c, args, flags);
 		v1->compile_end(c);
