@@ -2034,9 +2034,16 @@ void Compiler::delete_variables_block(int deepness) {
 				insn_delete(insn_load(it->second->val));
 			}
 		}
-		auto& temporary_values = blocks.back()[i]->temporary_values;
-		for (const auto& value : temporary_values) {
+		for (const auto& value : blocks.back()[i]->temporary_values) {
 			// std::cout << "delete temporary value " << value.t << std::endl;
+			if (value.t->temporary) {
+				insn_delete_temporary(value);
+			} else {
+				insn_delete(value);
+			}
+		}
+		for (const auto& value : blocks.back()[i]->temporary_expression_values) {
+			// std::cout << "delete temporary expression value " << value.t << std::endl;
 			if (value.t->temporary) {
 				insn_delete_temporary(value);
 			} else {
@@ -2127,6 +2134,12 @@ void Compiler::add_temporary_value(Compiler::value value) {
 void Compiler::pop_temporary_value() {
 	insn_delete_temporary(blocks.back().back()->temporary_values.back());
 	blocks.back().back()->temporary_values.pop_back();
+}
+void Compiler::add_temporary_expression_value(Compiler::value value) {
+	blocks.back().back()->temporary_expression_values.push_back(value);
+}
+void Compiler::pop_temporary_expression_value() {
+	blocks.back().back()->temporary_expression_values.pop_back();
 }
 
 // Loops

@@ -25,6 +25,7 @@ public:
 	std::vector<std::pair<Variable*, Variable*>> assignments;
 	std::vector<Variable*> temporary_variables;
 	std::vector<Compiler::value> temporary_values;
+	std::vector<Compiler::value> temporary_expression_values;
 
 	Block(bool is_function_block = false);
 

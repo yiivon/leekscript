@@ -292,8 +292,10 @@ public:
 	value add_external_var(Variable*);
 	void export_context_variable(const std::string& name, Compiler::value v) const;
 	void add_temporary_variable(Variable* variable);
-	void add_temporary_value(value container);
+	void add_temporary_value(value);
 	void pop_temporary_value();
+	void add_temporary_expression_value(value);
+	void pop_temporary_expression_value();
 
 	// Loops
 	void enter_loop(label*, label*);
