@@ -386,6 +386,7 @@ const Type* Type::generate_new_placeholder_type() {
 
 const Type* Type::array(const Type* element) {
 	if (auto e = dynamic_cast<const Meta_element_type*>(element)) return e->type;
+	element = element->not_temporary();
 	auto i = array_types.find(element);
 	if (i != array_types.end()) return i->second;
 	auto type = new Array_type(element);
