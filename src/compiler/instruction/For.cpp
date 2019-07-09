@@ -61,7 +61,7 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 		body2->is_loop_body = true;
 		body2->is_loop = true;
 		for (const auto& variable : body->variables) {
-			if (variable.second->parent and variable.second->parent->block != body.get()) {
+			if (variable.second->root and variable.second->root->block != body.get()) {
 				body2->variables.insert({ variable.first, variable.second });
 			}
 		}
