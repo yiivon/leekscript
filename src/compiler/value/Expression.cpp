@@ -133,6 +133,15 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 
 	throws = v1->throws or v2->throws;
 
+	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
+		type = v1->type->operator * (v2->type);
+		return;
+	}
+	if (op->type == TokenType::CATCH_ELSE) {
+		type = Type::any;
+		return;
+	}
+
 	// in operator : v1 must be a container
 	if (op->type == TokenType::IN and not v2->type->can_be_container()) {
 		analyzer->add_error({Error::Type::VALUE_MUST_BE_A_CONTAINER, location(), v2->location(), {v2->to_string()}});
@@ -208,25 +217,7 @@ void Expression::analyze(SemanticAnalyzer* analyzer) {
 		}
 	}
 	// std::cout << "No such operator " << v1->type << " " << op->character << " " << v2->type << std::endl;
-
-	// Don't use old stuff for boolean, /, and bit operators
-	if ((v1->type->is_bool() and op->type != TokenType::EQUAL) 
-		or op->type == TokenType::TRIPLE_EQUAL
-		or op->type == TokenType::PLUS or op->type == TokenType::MINUS
-		or op->type == TokenType::TIMES or op->type == TokenType::DIVIDE 
-		or op->type == TokenType::BIT_AND or op->type == TokenType::PIPE or op->type == TokenType::BIT_XOR
-		or op->type == TokenType::BIT_SHIFT_LEFT or op->type == TokenType::BIT_SHIFT_LEFT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT or op->type == TokenType::BIT_SHIFT_RIGHT_EQUALS
-		or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED or op->type == TokenType::BIT_SHIFT_RIGHT_UNSIGNED_EQUALS) {
-		if (v1->type->placeholder or v2->type->placeholder) return;
-		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type->to_string(), op->character, v2->type->to_string()}});
-		return;
-	}
-
-	// object ?? default
-	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
-		type = v1->type->operator * (v2->type);
-	}
+	analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), op->token->location, {v1->type->to_string(), op->character, v2->type->to_string()}});
 }
 
 Compiler::value Expression::compile(Compiler& c) const {
@@ -250,8 +241,8 @@ Compiler::value Expression::compile(Compiler& c) const {
 		return c.insn_convert(c.new_integer(0), c.fun->getReturnType());
 	}
 
+	// array[] = 12, array push
 	if (op->type == TokenType::EQUAL) {
-		// array[] = 12, array push
 		auto array_access = dynamic_cast<ArrayAccess*>(v1.get());
 		if (array_access && array_access->key == nullptr) {
 			if (auto vv = dynamic_cast<VariableValue*>(array_access->array.get())) {
@@ -273,93 +264,87 @@ Compiler::value Expression::compile(Compiler& c) const {
 		}
 	}
 
-	if (callable_version) {
+	// x ?? y ==> if (x != null) { x } else { y }
+	if (op->type == TokenType::DOUBLE_QUESTION_MARK) {
+		Compiler::label label_then = c.insn_init_label("then");
+		Compiler::label label_else = c.insn_init_label("else");
+		Compiler::label label_end = c.insn_init_label("end");
 
-		std::vector<Compiler::value> args;
-		auto compiled_v2 = [&](){ if (callable_version->v2_addr) {
-			return ((LeftValue*) v2.get())->compile_l(c);
-		} else {
-			auto v = v2->compile(c);
-			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(1)->is_any()) {
-				v = c.insn_to_any(v);
-			}
-			return v;
-		}}();
-		c.add_temporary_expression_value(compiled_v2);
-
-		int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
-		if (is_void) flags |= Module::NO_RETURN;
-
-		auto compiled_v1 = [&](){ if (callable_version->v1_addr) {
-			return ((LeftValue*) v1.get())->compile_l(c);
-		} else {
-			auto v = v1->compile(c);
-			if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
-				v = c.insn_to_any(v);
-			}
-			return v;
-		}}();
-		args.push_back(compiled_v1);
-		args.push_back(compiled_v2);
-		if (op->reversed) std::reverse(args.begin(), args.end());
-
-		c.pop_temporary_expression_value();
-
-		auto r = callable_version->compile_call(c, args, flags);
+		auto x = c.insn_convert(v1->compile(c), type);
 		v1->compile_end(c);
+		auto condition = c.insn_call(Type::boolean, {x}, "Value.is_null");
+		c.insn_if_new(condition, &label_then, &label_else);
+
+		c.insn_label(&label_then);
+		auto y = c.insn_convert(v2->compile(c), type);
 		v2->compile_end(c);
-		return r;
+		c.insn_branch(&label_end);
+		label_then.block = c.builder.GetInsertBlock();
+
+		c.insn_label(&label_else);
+		c.insn_branch(&label_end);
+		label_else.block = c.builder.GetInsertBlock();
+
+		c.insn_label(&label_end);
+		auto PN = c.builder.CreatePHI(type->llvm(c), 2);
+		PN->addIncoming(y.v, label_then.block);
+		PN->addIncoming(x.v, label_else.block);
+		return {PN, type};
 	}
 
-	switch (op->type) {
-		case TokenType::DOUBLE_QUESTION_MARK: {
-			// x ?? y ==> if (x != null) { x } else { y }
-			Compiler::label label_then = c.insn_init_label("then");
-			Compiler::label label_else = c.insn_init_label("else");
-			Compiler::label label_end = c.insn_init_label("end");
-
-			auto x = c.insn_convert(v1->compile(c), type);
+	if (op->type == TokenType::CATCH_ELSE) {
+		auto r = c.create_entry("r", type);
+		c.insn_try_catch([&]() {
+			auto v1_value = v1->compile(c);
+			if (v1_value.v) { // can be void
+				c.insn_store(r, c.insn_convert(v1_value, type->fold()));
+			}
 			v1->compile_end(c);
-			auto condition = c.insn_call(Type::boolean, {x}, "Value.is_null");
-			c.insn_if_new(condition, &label_then, &label_else);
-
-			c.insn_label(&label_then);
-			auto y = c.insn_convert(v2->compile(c), type);
+		}, [&]() {
+			auto y = v2->compile(c);
+			c.insn_store(r, c.insn_convert(y, type->fold()));
 			v2->compile_end(c);
-			c.insn_branch(&label_end);
-			label_then.block = c.builder.GetInsertBlock();
-
-			c.insn_label(&label_else);
-			c.insn_branch(&label_end);
-			label_else.block = c.builder.GetInsertBlock();
-
-			c.insn_label(&label_end);
-			auto PN = c.builder.CreatePHI(type->llvm(c), 2);
-			PN->addIncoming(y.v, label_then.block);
-			PN->addIncoming(x.v, label_else.block);
-			return {PN, type};
-		}
-		case TokenType::CATCH_ELSE: {
-			auto r = c.create_entry("r", type);
-			c.insn_try_catch([&]() {
-				auto v1_value = v1->compile(c);
-				if (v1_value.v) { // can be void
-					c.insn_store(r, c.insn_convert(v1_value, type->fold()));
-				}
-				v1->compile_end(c);
-			}, [&]() {
-				auto y = v2->compile(c);
-				c.insn_store(r, c.insn_convert(y, type->fold()));
-				v2->compile_end(c);
-			});
-			return c.insn_load(r);
-			break;
-		}
-		default: {
-			std::cout << "No such operator to compile : " << op->character << " (" << (int) op->type << ")" << std::endl; // LCOV_EXCL_LINE
-			assert(false); // LCOV_EXCL_LINE
-		}
+		});
+		return c.insn_load(r);
 	}
+
+	assert(callable_version);
+
+	std::vector<Compiler::value> args;
+	auto compiled_v2 = [&](){ if (callable_version->v2_addr) {
+		return ((LeftValue*) v2.get())->compile_l(c);
+	} else {
+		auto v = v2->compile(c);
+		if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(1)->is_any()) {
+			v = c.insn_to_any(v);
+		}
+		return v;
+	}}();
+	c.add_temporary_expression_value(compiled_v2);
+
+	int flags = callable_version->compile_mutators(c, {v1.get(), v2.get()});
+	if (is_void) flags |= Module::NO_RETURN;
+
+	auto compiled_v1 = [&](){ if (callable_version->v1_addr) {
+		return ((LeftValue*) v1.get())->compile_l(c);
+	} else {
+		auto v = v1->compile(c);
+		if (callable_version->symbol and v.t->is_primitive() and callable_version->type->argument(0)->is_any()) {
+			v = c.insn_to_any(v);
+		}
+		return v;
+	}}();
+	args.push_back(compiled_v1);
+	args.push_back(compiled_v2);
+	if (op->reversed) std::reverse(args.begin(), args.end());
+
+	c.pop_temporary_expression_value();
+
+	auto r = callable_version->compile_call(c, args, flags);
+
+	v1->compile_end(c);
+	v2->compile_end(c);
+	return r;
 }
 
 std::unique_ptr<Value> Expression::clone() const {
