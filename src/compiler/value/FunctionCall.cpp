@@ -18,6 +18,7 @@
 #include "../semantic/Callable.hpp"
 #include "../semantic/FunctionVersion.hpp"
 #include "../semantic/Variable.hpp"
+#include "ArrayAccess.hpp"
 
 namespace ls {
 
@@ -28,10 +29,6 @@ FunctionCall::FunctionCall(Token* t) : token(t) {
 }
 
 void FunctionCall::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-
-	if (variable and variable->type != previous_var->type) {
-		os << "[" << variable << " = (" << type << ") " << previous_var << "] ";
-	}
 
 	auto parenthesis = condensed && dynamic_cast<const Function*>(function.get());
 	if (parenthesis) os << "(";
@@ -62,10 +59,20 @@ void FunctionCall::pre_analyze(SemanticAnalyzer* analyzer) {
 		if (not analyzer->current_block()->is_loop) {
 			if (auto vv = dynamic_cast<VariableValue*>(object_access->object.get())) {
 				if (vv->var->scope != VarScope::CAPTURE and vv->var->scope != VarScope::INTERNAL) {
-					// std::cout << "Pre-analyze update var " << vv->var << std::endl;
-					previous_var = vv->var;
+					// std::cout << "FC update_var " << vv->var;
 					vv->var = analyzer->update_var(vv->var);
-					variable = vv->var;
+					// std::cout << " to " << vv->var << std::endl;
+					vv->update_variable = true;
+				}
+			} else if (auto aa = dynamic_cast<ArrayAccess*>(object_access->object.get())) {
+				if (auto vv = dynamic_cast<VariableValue*>(aa->array.get())) {
+					vv->var = analyzer->update_var(vv->var);
+					vv->update_variable = true;
+				} else if (auto aa2 = dynamic_cast<ArrayAccess*>(aa->array.get())) {
+					if (auto vv2 = dynamic_cast<VariableValue*>(aa2->array.get())) {
+						vv2->var = analyzer->update_var(vv2->var);
+						vv2->update_variable = true;
+					}
 				}
 			}
 		}
@@ -88,9 +95,6 @@ Call FunctionCall::get_callable(SemanticAnalyzer*, int argument_count) const {
 void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 
 	// std::cout << "FC analyse " << std::endl;
-	if (previous_var) {
-		variable->type = previous_var->type;
-	}
 
 	// Analyse the function (can be anything here)
 	function->analyze(analyzer);
@@ -286,16 +290,8 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
 	assert(callable_version);
 
-	if (variable) {
-		if (variable->type != previous_var->type) {
-			variable->create_entry(c);
-			// std::cout << "store previous var " << vv->var << " " << previous_var << " " << previous_var->val.v << std::endl;
-			auto new_value = c.insn_convert(c.insn_load(previous_var->val), variable->type, true);
-			// std::cout << "FC new value " << new_value.t << std::endl;
-			variable->store_value(c, c.insn_move_inc(new_value));
-		} else {
-			variable->val = previous_var->val;
-		}
+	if (auto oa = dynamic_cast<ObjectAccess*>(function.get())) {
+		callable_version->compile_mutators(c, { oa->object.get() });
 	}
 
 	std::vector<LSValueType> types;
