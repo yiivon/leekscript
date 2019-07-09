@@ -553,6 +553,7 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] a.fill('a', 4) a").equals("['a', 'a', 'a', 'a']");
 	code("var a = [1, 2, 3] a.fill('a') a").equals("['a', 'a', 'a']");
 	code("var a = ['a', 'b', 'c'] a.fill(true, 4) a").equals("[true, true, true, true]");
+	code("var a = ['a', 'b', 'c'] a.fill(true) a").equals("[true, true, true]");
 	code("var a = ['a', 'b', 'c'] a.fill(1, 3) a").equals("[1, 1, 1]");
 
 	section("fill() v1");
