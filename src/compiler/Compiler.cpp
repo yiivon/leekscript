@@ -1837,11 +1837,12 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 		llvm_types.push_back(args[i].t->llvm(*this));
 	}
 	llvm::Function* lambda;
-	auto p = mappings.find(name);
+	auto name2 = std::count(name.begin(), name.end(), '.') == 2 ? name : name + ".0";
+	auto p = mappings.find({ name2, return_type });
 	if (p == mappings.end()) {
 		auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
-		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name2, program->module);
+		((Compiler*) this)->mappings.insert({{ name2, return_type }, {(llvm::JITTargetAddress) nullptr, lambda}});
 	} else {
 		lambda = p->second.function;
 	}
@@ -1905,18 +1906,19 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 		llvm_args.push_back(args[i].v);
 	}
 	llvm::Function* lambda;
-	auto p = mappings.find(name);
+	auto name2 = std::count(name.begin(), name.end(), '.') == 2 ? name : name + ".0";
+	auto p = mappings.find({ name2, return_type });
 	if (p == mappings.end()) {
 		std::vector<llvm::Type*> llvm_types;
 		for (unsigned i = 0, e = args.size(); i != e; ++i) {
 			llvm_types.push_back(args[i].t->llvm(*this));
 		}
 		auto fun_type = llvm::FunctionType::get(return_type->llvm(*this), llvm_types, false);
-		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name, program->module);
+		lambda = llvm::Function::Create(fun_type, llvm::Function::ExternalLinkage, name2, program->module);
 		if (readonly) {
 			lambda->addFnAttr(llvm::Attribute::ReadNone);
 		}
-		((Compiler*) this)->mappings.insert({name, {(llvm::JITTargetAddress) nullptr, lambda}});
+		((Compiler*) this)->mappings.insert({{ name2, return_type }, {(llvm::JITTargetAddress) nullptr, lambda}});
 	} else {
 		lambda = p->second.function;
 	}

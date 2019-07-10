@@ -94,7 +94,7 @@ public:
 	std::vector<label*> loops_cond_labels;
 	std::vector<std::vector<Block*>> blocks;
 	std::vector<std::vector<std::vector<catcher>>> catchers;
-	std::unordered_map<std::string, function_entry> mappings;
+	std::map<std::pair<std::string, const Type*>, function_entry> mappings;
 	std::stack<int> exception_line;
 	bool export_bitcode = false;
 	bool export_optimized_ir = false;
