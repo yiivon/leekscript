@@ -121,8 +121,7 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	});
 	for (const auto& assignment : assignments) {
 		// std::cout << "Store variable " << assignment.first << " = " << assignment.second << std::endl;
-		assignment.first->val = c.create_entry(assignment.first->name, assignment.first->type);
-		c.insn_store(assignment.first->val, c.insn_load(assignment.second->val));
+		assignment.first->val = assignment.second->val;
 	}
 	return result;
 }
