@@ -155,6 +155,7 @@ void VariableValue::analyze(SemanticAnalyzer* analyzer) {
 	if (var != nullptr) {
 		if (update_variable) {
 			var->type = var->parent->type;
+			var->value = var->parent->value;
 		}
 		auto function_object = dynamic_cast<Function*>(var->value);
 		if (var->value && function_object) {
