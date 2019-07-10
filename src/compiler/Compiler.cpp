@@ -1006,14 +1006,6 @@ void Compiler::insn_delete(Compiler::value v) const {
 	assert(v.t->llvm(*this) == v.v->getType());
 	if (v.t->must_manage_memory()) {
 		insn_call(Type::void_, {v}, "Value.delete_ref");
-		// insn_if_not(insn_native(v), [&]() {
-		// 	auto refs = insn_refs(v);
-		// 	insn_if(insn_refs(v), [&]() {
-		// 		insn_if_not(insn_dec_refs(v, refs), [&]() {
-		// 			insn_call(Type::void_, {v}, "Value.delete");
-		// 		});
-		// 	});
-		// });
 	} else if (v.t->is_mpz_ptr()) {
 		insn_delete_mpz(v);
 	}
@@ -1148,22 +1140,6 @@ Compiler::value Compiler::insn_inc_refs(Compiler::value v) const {
 	if (v.t->must_manage_memory()) {
 		auto previous = insn_refs(v);
 		auto new_refs = insn_add(previous, new_integer(1));
-		auto llvm_type = v.v->getType()->getPointerElementType();
-		auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
-		insn_store({r, Type::integer->pointer()}, new_refs);
-		return new_refs;
-	}
-	return new_integer(0);
-}
-
-Compiler::value Compiler::insn_dec_refs(Compiler::value v, Compiler::value previous) const {
-	assert(v.t->llvm(*this) == v.v->getType());
-	assert(!previous.v or previous.t->llvm(*this) == previous.v->getType());
-	if (v.t->must_manage_memory()) {
-		if (previous.v == nullptr) {
-			previous = insn_refs(v);
-		}
-		auto new_refs = insn_sub(previous, new_integer(1));
 		auto llvm_type = v.v->getType()->getPointerElementType();
 		auto r = builder.CreateStructGEP(llvm_type, v.v, 3);
 		insn_store({r, Type::integer->pointer()}, new_refs);

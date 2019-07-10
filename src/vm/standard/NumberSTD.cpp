@@ -1149,7 +1149,7 @@ double NumberSTD::rand_real(double min, double max) {
 Compiler::value NumberSTD::signum(Compiler& c, std::vector<Compiler::value> args, int) {
 	auto ap = c.insn_to_any(args[0]);
 	auto r = c.insn_call(Type::integer, {ap}, "Number.signum");
-	c.insn_dec_refs(ap);
+	c.insn_delete(ap);
 	return r;
 }
 int NumberSTD::signum_ptr(LSNumber* x) {
