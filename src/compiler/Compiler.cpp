@@ -1849,10 +1849,7 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 	if (return_type->is_void()) {
 		return {};
 	} else {
-		value result = { r, return_type };
-		if (return_type->llvm(*this) != lambda->getReturnType()) {
-			result.v = builder.CreatePointerCast(r, return_type->llvm(*this));
-		}
+		value result { r, return_type };
 		assert(check_value(result));
 		return result;
 	}
@@ -1887,10 +1884,7 @@ Compiler::value Compiler::insn_call(Compiler::value fun, std::vector<Compiler::v
 	if (fun.t->return_type()->is_void()) {
 		return {};
 	} else {
-		value result = { r, fun.t->return_type() };
-		// if (fun.t->return_type()->llvm(*this) != ((llvm::Function*) fun.v)->getReturnType()) {
-		// 	result.v = builder.CreatePointerCast(r, fun.t->return_type()->llvm(*this));
-		// }
+		value result { r, fun.t->return_type() };
 		assert(check_value(result));
 		return result;
 	}
@@ -1923,11 +1917,8 @@ Compiler::value Compiler::insn_call(const Type* return_type, std::vector<Compile
 	if (return_type->is_void()) {
 		return {};
 	} else {
-		value result = { r, return_type };
-		if (return_type->llvm(*this) != lambda->getReturnType()) {
-			result.v = builder.CreatePointerCast(r, return_type->llvm(*this));
-		}
-		assert(result.t->llvm(*this) == result.v->getType());
+		value result { r, return_type };
+		assert(check_value(result));
 		return result;
 	}
 }
@@ -1959,7 +1950,7 @@ Compiler::value Compiler::insn_invoke(const Type* return_type, std::vector<Compi
 	if (return_type->is_void()) {
 		return {};
 	} else {
-		value result = { r, return_type };
+		value result { r, return_type };
 		assert(check_value(result));
 		return result;
 	}
