@@ -151,11 +151,15 @@ Compiler::value If::compile(Compiler& c) const {
 		// std::cout << "phi variable " << phi.variable << " " << phi.variable->type << std::endl;
 		// std::cout << "value 1 " << phi.variable1 << " " << phi.variable1->type << " " << phi.variable1->val.t << std::endl;
 		// std::cout << "value 2 " << phi.variable2 << " " << phi.variable2->type << " " << phi.variable2->val.t << std::endl;
-		// auto phi_node = c.insn_phi(phi->variable->type, phi->variable1->init_value, phi->block1, phi->variable2->init_value, phi->block2);
-		auto phi_node = c.insn_phi(phi->variable->type, c.insn_convert(phi->variable1->init_value, phi->variable->type), phi->block1, c.insn_convert(phi->variable2->init_value, phi->variable->type), phi->block2);
-		// auto phi_node = c.insn_phi(phi.variable->type, c.insn_convert(c.insn_load(phi.variable1->val), type), phi.block1, c.insn_convert(c.insn_load(phi.variable2->val), type), phi.block2);
-		phi->variable->val = c.create_entry(phi->variable->name, phi->variable->type);
-		c.insn_store(phi->variable->val, phi_node);
+		if (phi->variable1->root == phi->variable2->root and phi->variable1->type == phi->variable2->type) {
+			phi->variable->val = phi->variable1->val;
+		} else {
+			// auto phi_node = c.insn_phi(phi->variable->type, phi->variable1->init_value, phi->block1, phi->variable2->init_value, phi->block2);
+			auto phi_node = c.insn_phi(phi->variable->type, c.insn_convert(phi->variable1->init_value, phi->variable->type), phi->block1, c.insn_convert(phi->variable2->init_value, phi->variable->type), phi->block2);
+			// auto phi_node = c.insn_phi(phi.variable->type, c.insn_convert(c.insn_load(phi.variable1->val), type), phi.block1, c.insn_convert(c.insn_load(phi.variable2->val), type), phi.block2);
+			phi->variable->val = c.create_entry(phi->variable->name, phi->variable->type);
+			c.insn_store(phi->variable->val, phi_node);
+		}
 	}
 
 	c.current_block()->blocks.push_back(label_end.block);
