@@ -391,7 +391,6 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 		{Type::array(Type::any), {Type::array(Type::any), Type::array(Type::integer)}, (void*) &LSArray<LSValue*>::ls_push_all_int},
 		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::real)}, (void*) &LSArray<double>::ls_push_all_flo},
 		{Type::array(Type::real), {Type::array(Type::real), Type::array(Type::integer)}, (void*) &LSArray<double>::ls_push_all_int},
-		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::real)}, (void*) &LSArray<int>::ls_push_all_flo},
 		{Type::array(Type::integer), {Type::array(Type::integer), Type::array(Type::integer)}, (void*) &LSArray<int>::ls_push_all_int},
 	});
 }
@@ -646,16 +645,27 @@ Compiler::value ArraySTD::push_all(Compiler& c, std::vector<Compiler::value> arg
 	auto& array1 = args[0];
 	auto& array2 = args[1];
 	if (array2.t->element() == Type::never) return array1;
+	if (array1.t->element() == Type::never) {
+		c.insn_delete_temporary(array1);
+		return array2;
+	}
 	auto fun = [&]() {
-		if (array1.t->element()->fold() == Type::integer and array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.6";
-		if (array1.t->element()->fold() == Type::integer and array2.t->element()->fold() == Type::real) return "Array.push_all_fun.5";
-		if (array1.t->element()->fold() == Type::real and array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.4";
-		if (array1.t->element()->fold() == Type::real and array2.t->element()->fold() == Type::real) return "Array.push_all_fun.3";
-		if (array2.t->element()->fold() == Type::integer) return "Array.push_all_fun.2";
-		if (array2.t->element()->fold() == Type::real) return "Array.push_all_fun.1";
+		if (array1.t->element()->is_integer() and array2.t->element()->is_integer()) return "Array.push_all_fun.5";
+		if (array1.t->element()->is_integer() and array2.t->element()->is_real()) {
+			array1 = c.insn_convert(array1, Type::array(Type::real), true);
+			return "Array.push_all_fun.3";
+		}
+		if (array1.t->element()->is_real() and array2.t->element()->is_integer()) return "Array.push_all_fun.4";
+		if (array1.t->element()->is_real() and array2.t->element()->is_real()) return "Array.push_all_fun.3";
+		if (array1.t->element()->is_real() and array2.t->element()->is_polymorphic()) {
+			array1 = c.insn_convert(array1, Type::array(Type::any), true);
+			return "Array.push_all_fun";
+		}
+		if (array2.t->element()->is_integer()) return "Array.push_all_fun.2";
+		if (array2.t->element()->is_real()) return "Array.push_all_fun.1";
 		return "Array.push_all_fun";
 	}();
-	return c.insn_call(Type::any, args, fun);
+	return c.insn_call(Type::array(array1.t->element()->operator + (array2.t->element())), args, fun);
 }
 
 int ArraySTD::convert_key(LSValue* key_pointer) {
