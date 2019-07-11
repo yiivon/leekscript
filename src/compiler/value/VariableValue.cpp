@@ -309,10 +309,14 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		if (vv && has_version) {
 			return var->value->compile_version(c, version);
 		}
-		v = var->get_value(c);
+		if (not is_void) {
+			v = var->get_value(c);
+		}
 	} else if (scope == VarScope::PARAMETER) {
 		// std::cout << "compile argument " << var << std::endl;
-		v = var->get_value(c);
+		if (not is_void) {
+			v = var->get_value(c);
+		}
 	} else {
 		assert(false);
 	}
