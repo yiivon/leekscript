@@ -246,7 +246,7 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto paY = Type::template_("Y");
 	template_(paX, paY).
 	method("pushAll", {
-		{Type::array(Type::meta_add(paX, paY)), {Type::array(paX), Type::array(paY)}, push_all, 0, { new WillStoreMutator() }}
+		{Type::array(Type::meta_add(paX, paY)), {Type::array(paX), Type::array(paY)}, push_all, 0, { new ConvertMutator() }}
 	});
 
 	method("join", {

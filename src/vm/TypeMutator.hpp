@@ -17,13 +17,6 @@ public:
 	virtual const Type* extract(SemanticAnalyzer*, std::vector<Value*> values) const;
 };
 
-class WillStoreMutator : public TypeMutator {
-public:
-	WillStoreMutator();
-	virtual void apply(SemanticAnalyzer*, std::vector<Value*> values, const Type* return_type) const override;
-	virtual int compile(Compiler&, CallableVersion* callable, std::vector<Value*> values) const override;
-};
-
 class ConvertMutator : public TypeMutator {
 public:
 	bool store_array_size = false;
