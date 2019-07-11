@@ -323,10 +323,12 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		if (t->element()->is_polymorphic()) {
 			if (v.t->element() == Type::integer) {
 				auto r = insn_call(t, {v}, "Array.int_to_any");
+				if (delete_previous) insn_delete_temporary(v);
 				if (delete_previous) insn_delete(v);
 				return r;
 			} else if (v.t->element() == Type::real) {
 				auto r = insn_call(t, {v}, "Array.real_to_any");
+				if (delete_previous) insn_delete_temporary(v);
 				if (delete_previous) insn_delete(v);
 				return r;
 			} else if (v.t->element()->is_polymorphic() and v.t->element() != Type::never) {
@@ -337,6 +339,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 		} else if (t->element()->is_real()) {
 			if (v.t->element() == Type::integer) {
 				auto r = insn_call(t, {v}, "Array.int_to_real");
+				if (delete_previous) insn_delete_temporary(v);
 				if (delete_previous) insn_delete(v);
 				return r;
 			}
