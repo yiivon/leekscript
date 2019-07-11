@@ -86,6 +86,7 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 		// std::cout << "For update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
 		if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch) {
 			auto new_var = analyzer->update_var(variable.second->parent);
+			variable.second->assignment = true;
 			assignments.push_back({ new_var, variable.second });
 		}
 	}
