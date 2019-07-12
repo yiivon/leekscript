@@ -17,15 +17,18 @@ void For::print(std::ostream& os, int indent, bool debug, bool condensed) const 
 	if (condition != nullptr) {
 		condition->print(os, indent + 1, debug);
 	}
-	if (condition2 != nullptr) {
-		os << " # ";
-		condition2->print(os, indent + 1, debug);
-	}
 	os << "; ";
 	increment->print(os, indent + 1, debug, true);
-	if (increment2) {
-		os << " # ";
-		increment2->print(os, indent + 1, debug, true);
+
+	if (condition2 or increment2) {
+		os << std::endl << tabs(indent) << "for . . . . . . .; ";
+		if (condition2 != nullptr) {
+			condition2->print(os, indent + 1, debug);
+		}
+		os << "; ";
+		if (increment2) {
+			increment2->print(os, indent + 1, debug, true);
+		}
 	}
 	os << " ";
 	body->print(os, indent, debug);
