@@ -27,8 +27,8 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 	}
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		if (i > 0) os << ", ";
-		if (debug and arguments.find(parent->arguments.at(i)->content) != arguments.end()) {
-			os << arguments.at(parent->arguments.at(i)->content);
+		if (debug and initial_arguments.find(parent->arguments.at(i)->content) != initial_arguments.end()) {
+			os << initial_arguments.at(parent->arguments.at(i)->content);
 		} else {
 			os << parent->arguments.at(i)->content;
 		}
