@@ -54,24 +54,28 @@ Location FunctionCall::location() const {
 
 void FunctionCall::pre_analyze(SemanticAnalyzer* analyzer) {
 	function->pre_analyze(analyzer);
-	
-	if (auto object_access = dynamic_cast<const ObjectAccess*>(function.get())) {
-		if (not analyzer->current_block()->is_loop) {
+
+	bool var_updated = false;
+	if (not analyzer->current_block()->is_loop) {
+		if (auto object_access = dynamic_cast<const ObjectAccess*>(function.get())) {
 			if (auto vv = dynamic_cast<VariableValue*>(object_access->object.get())) {
 				if (vv->var->scope != VarScope::CAPTURE and vv->var->scope != VarScope::INTERNAL) {
 					// std::cout << "FC update_var " << vv->var;
 					vv->var = analyzer->update_var(vv->var);
 					// std::cout << " to " << vv->var << std::endl;
 					vv->update_variable = true;
+					var_updated = true;
 				}
 			} else if (auto aa = dynamic_cast<ArrayAccess*>(object_access->object.get())) {
 				if (auto vv = dynamic_cast<VariableValue*>(aa->array.get())) {
 					vv->var = analyzer->update_var(vv->var);
 					vv->update_variable = true;
+					var_updated = true;
 				} else if (auto aa2 = dynamic_cast<ArrayAccess*>(aa->array.get())) {
 					if (auto vv2 = dynamic_cast<VariableValue*>(aa2->array.get())) {
 						vv2->var = analyzer->update_var(vv2->var);
 						vv2->update_variable = true;
+						var_updated = true;
 					}
 				}
 			}
@@ -80,6 +84,17 @@ void FunctionCall::pre_analyze(SemanticAnalyzer* analyzer) {
 
 	for (const auto& argument : arguments) {
 		argument->pre_analyze(analyzer);
+	}
+	if (not analyzer->current_block()->is_loop and not var_updated) {
+		if (arguments.size()) {
+			if (auto vv = dynamic_cast<VariableValue*>(arguments[0].get())) {
+				if (vv->var and vv->var->scope != VarScope::CAPTURE and vv->var->scope != VarScope::INTERNAL) {
+					// std::cout << "FunctionCall update_var " << vv->var << std::endl;
+					vv->var = analyzer->update_var(vv->var);
+					vv->update_variable = true;
+				}
+			}
+		}
 	}
 }
 
@@ -290,8 +305,10 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	// std::cout << "FunctionCall::compile(" << function_type << ")" << std::endl;
 	assert(callable_version);
 
-	if (auto oa = dynamic_cast<ObjectAccess*>(function.get())) {
-		callable_version->compile_mutators(c, { oa->object.get() });
+	if (call.object) {
+		callable_version->compile_mutators(c, { call.object });
+	} else if (arguments.size()) {
+		callable_version->compile_mutators(c, { arguments[0].get() });
 	}
 
 	std::vector<LSValueType> types;
