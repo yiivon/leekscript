@@ -90,7 +90,7 @@ void If::analyze(SemanticAnalyzer* analyzer) {
 	if (elze != nullptr) return_type = return_type->operator + (elze->return_type);
 
 	for (const auto& phi : phis) {
-		phi->variable->type = Type::compound({ phi->variable1->type, phi->variable2->type });
+		phi->variable->type = phi->variable1->type->operator + (phi->variable2->type);
 	}
 }
 
