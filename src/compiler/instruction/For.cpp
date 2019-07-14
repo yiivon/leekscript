@@ -56,7 +56,7 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 	}
 	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
-
+	
 	increment->pre_analyze(analyzer);
 
 	if (body->variables.size() or increment->variables.size()) {
@@ -87,7 +87,7 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 
 	for (const auto& variable : init->variables) {
 		// std::cout << "For update_var " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
-		if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch) {
+		if (variable.second->parent and variable.second->root->block != init.get()) {
 			auto new_var = analyzer->update_var(variable.second->parent);
 			variable.second->assignment = true;
 			assignments.push_back({ new_var, variable.second });
