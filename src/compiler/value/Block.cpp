@@ -201,7 +201,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			for (const auto& assignment : assignments) {
 				// std::cout << "Store variable " << assignment.first << " = " << assignment.second << std::endl;
 				assignment.first->val = c.create_entry(assignment.first->name, assignment.first->type);
-				c.insn_store(assignment.first->val, c.insn_move(c.insn_load(assignment.second->val)));
+				c.insn_store(assignment.first->val, c.insn_move_inc(c.insn_load(assignment.second->val)));
 			}
 			c.leave_block();
 			if (is_function_block) {
