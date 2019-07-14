@@ -10,7 +10,7 @@ void Test::test_files() {
 	file("test/code/gcd.leek").equals("151");
 	file("test/code/strings.leek").almost(52.0, 12.0);
 	DISABLED_file("test/code/reachable_cells.leek").equals("383");// TODO issue #243
-	DISABLED_file("test/code/break_and_continue.leek").equals("2504"); // TODO issue #243
+	file("test/code/break_and_continue.leek").equals("2504"); // TODO issue #243
 	DISABLED_file("test/code/french.leek").ops_limit(10000).equals("'cent-soixante-huit millions quatre-cent-quatre-vingt-neuf-mille-neuf-cent-quatre-vingt-dix-neuf'");
 	DISABLED_file("test/code/french.min.leek").equals("'neuf-cent-quatre-vingt-sept milliards six-cent-cinquante-quatre millions trois-cent-vingt-et-un-mille-douze'");
 	file("test/code/quine.leek").quine();
