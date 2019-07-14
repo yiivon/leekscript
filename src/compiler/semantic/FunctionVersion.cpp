@@ -377,7 +377,7 @@ void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool 
 	// Delete temporary mpz arguments
 	for (size_t i = 0; i < type->arguments().size(); ++i) {
 		const auto& name = parent->arguments.at(i)->content;
-		const auto& arg = arguments.at(name);
+		const auto& arg = initial_arguments.at(name);
 		if (type->argument(i) == Type::tmp_mpz_ptr) {
 			// std::cout << "delete tmp arg " << name << " " << type->argument(i) << std::endl;
 			c.insn_delete_mpz(arg->val);
