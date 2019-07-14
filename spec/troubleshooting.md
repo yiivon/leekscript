@@ -3,6 +3,7 @@
 ## General
 
 ### Phi nodes
+- The phi node should be *the first instruction of a block*
 - Input blocks must be direct predecessor of the phi's block, but for input values it's more permissive.
 
 ## Errors
