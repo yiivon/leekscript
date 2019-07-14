@@ -1995,7 +1995,7 @@ void Compiler::delete_variables_block(int deepness) {
 	for (int i = blocks.back().size() - 1; i >= (int) blocks.back().size() - deepness; --i) {
 		auto& variables = blocks.back()[i]->variables;
 		for (auto it = variables.begin(); it != variables.end(); ++it) {
-			// std::cout << "delete variable block " << it->second << " " << it->second->type << " " << it->second->val.v << " scope " << (int)it->second->scope << std::endl;
+			// std::cout << "delete variable block " << it->second << " " << it->second->type << " " << it->second->val.v << " scope " << (int)it->second->scope << " " << it->second->assignment << std::endl;
 			if (it->second->phi or it->second->assignment or not it->second->val.v or it->second->scope == VarScope::CAPTURE) continue;
 			if (it->second->type->is_mpz_ptr()) {
 				insn_delete_mpz(it->second->val);
