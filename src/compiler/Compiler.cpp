@@ -316,10 +316,6 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 	}
 	if (v.t->is_array() and t->is_array()) {
 		// std::cout << "Convert " << v.t << " to " << t << std::endl;
-		if (t->element()->fold() == v.t->element()->fold()) {
-			// std::cout << "no array conversion" << std::endl;
-			return v;
-		}
 		if (t->element()->is_polymorphic()) {
 			if (v.t->element() == Type::integer) {
 				auto r = insn_call(t, {v}, "Array.int_to_any");
@@ -332,9 +328,7 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 				if (delete_previous) insn_delete(v);
 				return r;
 			} else if (v.t->element()->is_polymorphic() and v.t->element() != Type::never) {
-				auto copy = clone(v);
-				insn_delete(v);
-				return { builder.CreatePointerCast(copy.v, t->llvm(*this)), t };
+				return { builder.CreatePointerCast(v.v, t->llvm(*this)), t };
 			}
 		} else if (t->element()->is_real()) {
 			if (v.t->element() == Type::integer) {
@@ -343,10 +337,20 @@ Compiler::value Compiler::insn_convert(Compiler::value v, const Type* t, bool de
 				if (delete_previous) insn_delete(v);
 				return r;
 			}
+		} else if (t->element()->is_integer()) {
+			if (v.t->element()->is_real() or v.t->element()->is_polymorphic()) {
+				if (delete_previous) insn_delete(v);
+				insn_delete_temporary(v);
+				return new_array(Type::integer, {});
+			}
+		} else if (t->element()->is_bool()) {
+			return new_array(Type::boolean, {});
 		}
-		if (delete_previous) insn_delete(v);
-		insn_delete_temporary(v);
-		return new_array(t->element(), {});
+		if (v.t->element()->is_never()) {
+			if (delete_previous) insn_delete(v);
+			insn_delete_temporary(v);
+			return new_array(t->element(), {});
+		}
 	}
 	if (v.t->is_set() and t->is_set() and t->element()->is_polymorphic()) {
 		if (v.t->element() == Type::integer) {
