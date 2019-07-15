@@ -66,6 +66,13 @@ void FunctionVersion::print(std::ostream& os, int indent, bool debug, bool conde
 		// 	i++;
 		// }
 		// os << ">";
+		os << " args: [";
+		int i = 0;
+		for (const auto& argument : arguments) {
+			if (i++ > 0) os << ", ";
+			os << argument.second;
+		}
+		os << "]";
 	}
 	if (debug and type->return_type() != body->type) {
 		os << " : " << type->return_type();
