@@ -352,7 +352,7 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 						jit_cap = capture->get_value(c);
 					}
 				} else if (capture->parent->scope == VarScope::CAPTURE) {
-					jit_cap = c.insn_get_capture(capture->parent_index, capture->type);
+					jit_cap = capture->get_value(c);
 				} else {
 					jit_cap = capture->get_value(c);
 				}
