@@ -167,7 +167,7 @@ VM::Result VM::execute(const std::string code, Context* ctx, std::string file_na
 		std::cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << std::endl;
 		#if DEBUG_LEAKS
 			for (auto o : LSValue::objs()) {
-				std::cout << o.second << " (" << o.second->refs << " refs)" << std::endl;
+				std::cout << o.second << " (" << o.second->refs << " refs) " << (void*) o.second << std::endl;
 			}
 		#endif
 		// LCOV_EXCL_STOP
