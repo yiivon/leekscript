@@ -284,8 +284,8 @@ Compiler::value FunctionVersion::compile(Compiler& c, bool compile_body) {
 		// Declare context vars
 		if (parent->is_main_function and c.vm->context) {
 			for (const auto& var : c.vm->context->vars) {
-				// std::cout << "Main function compile context var " << var.first << std::endl;
-				c.add_external_var(Variable::new_temporary(var.first, var.second.type));
+				// std::cout << "Main function compile context var " <<  var.first << " " << (void*)var.second.variable << std::endl;
+				c.add_external_var(var.second.variable);
 			}
 		}
 

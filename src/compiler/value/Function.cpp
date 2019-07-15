@@ -322,11 +322,9 @@ void Function::compile_captures(Compiler& c) const {
 
 void Function::export_context(const Compiler& c) const {
 	int deepness = c.get_current_function_blocks();
-	// for (int i = c.variables.size() - 1; i >= (int) c.variables.size() - deepness; --i) {
-	// 	for (auto v = c.variables[i].begin(); v != c.variables[i].end(); ++v) {
-	// 		c.export_context_variable(v->first, c.insn_load(v->second->val));
-	// 	}
-	// }
+	for (const auto& variable : c.fun->body->variables) {
+		c.export_context_variable(variable.second->name, c.insn_load(variable.second->val));
+	}
 }
 
 std::unique_ptr<Value> Function::clone() const {

@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "LSValue.hpp"
+#include "../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
@@ -11,6 +12,7 @@ class ContextVar {
 public:
 	void* value;
 	const Type* type;
+	Variable* variable;
 };
 
 class Context {

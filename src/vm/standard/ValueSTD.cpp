@@ -905,6 +905,7 @@ void ValueSTD::export_context_variable_real(char* name, double v) {
 	VM::current()->context->add_variable(name, reinterpret_cast<void*&>(v), Type::real);
 }
 void ValueSTD::export_context_variable(char* name, LSValue* v) {
+	// std::cout << "export context variable " << name << " " << (void*) v << " " << v->refs << std::endl;
 	auto n = LSValue::obj_count;
 	v = v->move_inc();
 	// Don't count the object cloned

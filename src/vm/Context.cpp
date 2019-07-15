@@ -3,6 +3,7 @@
 #include <string.h>
 #include <vector>
 #include "../../lib/json.hpp"
+#include "../type/Type.hpp"
 
 namespace ls {
 
@@ -13,14 +14,26 @@ Context::Context(std::string ctx) {
 	Json value = Json::parse(ctx);
 
 	for (Json::iterator it = value.begin(); it != value.end(); ++it) {
-		//vars.insert({it.key(), ls::LSValue::parse(it.value())});
+		// vars.insert({it.key(), ls::LSValue::parse(it.value())});
 	}
 }
 
 Context::~Context() {}
 
 void Context::add_variable(char* name, void* v, const Type* type) {
-	vars.insert({ name, { v, type } });
+	// std::cout << "add_variable " << name << " " << v << " " << ((LSValue*) v)->refs << std::endl;
+	auto i = vars.find(name);
+	if (i != vars.end()) {
+		// std::cout << "variable already exists " << i->second.value << std::endl;
+		if (i->second.type->is_polymorphic()) {
+			// The previous object was deleted in the program, but we don't count the destruction
+			LSValue::obj_deleted--;
+		}
+		vars[name] = { v, type };
+	} else {
+		// std::cout << "variable doesn't exist" << std::endl;
+		vars.insert({ name, { v, type } });
+	}
 }
 
 }

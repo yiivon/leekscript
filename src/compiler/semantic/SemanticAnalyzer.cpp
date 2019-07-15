@@ -25,9 +25,10 @@ void SemanticAnalyzer::analyze(Program* program, Context* context) {
 
 	// Add context variables
 	if (context) {
-		for (auto var : context->vars) {
+		for (auto& var : context->vars) {
 			// std::cout << "Add context var " << var.first << std::endl;
-			add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr);
+			var.second.variable = add_var(new Token(TokenType::IDENT, program->main_file, 0, 0, 0, var.first), var.second.type, nullptr);
+			// std::cout << "variable added " << var.second.variable << " " << (void*) var.second.variable << std::endl;
 		}
 	}
 	leave_block();

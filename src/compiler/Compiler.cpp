@@ -2083,9 +2083,9 @@ Block* Compiler::current_block() const {
 // Variables
 
 Compiler::value Compiler::add_external_var(Variable* variable) {
-	// variable->val = get_symbol("ctx." + variable->name, variable->type->pointer());
-	// variables.back()[variable->name] = variable;
-	// return variable->val;
+	variable->val = create_entry("ctx." + variable->name, variable->type);
+	insn_store(variable->val, insn_load(get_symbol("ctx." + variable->name, variable->type->pointer())));
+	return variable->val;
 }
 
 void Compiler::export_context_variable(const std::string& name, Compiler::value v) const {
