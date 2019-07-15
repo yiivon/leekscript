@@ -7,6 +7,7 @@
 #include "../src/leekscript.h"
 
 std::vector<std::string> Test::failed_tests;
+std::vector<std::string> Test::disabled_tests;
 
 Test::Test() : vmv1(true) {
 	total = 0;
@@ -96,6 +97,12 @@ int Test::all() {
 		std::cout << " " << error << std::endl;
 	}
 	if (failed_tests.size()) {
+		std::cout << std::endl;
+	}
+	for (const auto& test : disabled_tests) {
+		std::cout << " " << test << std::endl;
+	}
+	if (disabled_tests.size()) {
 		std::cout << std::endl;
 	}
 	return result;
@@ -201,7 +208,10 @@ void Test::Input::fail(const std::string& expected, const std::string& actual) {
 void Test::Input::disable() {
 	test->total++;
 	test->disabled++;
-	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << label << std::endl;
+	std::ostringstream oss;
+	oss << C_PURPLE << "DISA" << END_COLOR << " : " << label;
+	std::cout << oss.str() << std::endl;
+	disabled_tests.push_back(oss.str());
 }
 
 void Test::Input::works() {

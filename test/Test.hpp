@@ -36,6 +36,7 @@ private:
 	int mpz_obj_created;
 	int mpz_obj_deleted;
 	static std::vector<std::string> failed_tests;
+	static std::vector<std::string> disabled_tests;
 
 public:
 
