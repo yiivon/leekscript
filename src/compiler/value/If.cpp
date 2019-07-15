@@ -99,7 +99,7 @@ Compiler::value If::compile(Compiler& c) const {
 	for (const auto& phi : phis) {
 		if (phi->variable1->block->branch != then->branch) {
 			// std::cout << "Variable export last value for phi " << phi->variable1 << std::endl;
-			phi->variable1->init_value = c.insn_convert(c.insn_load(phi->variable1->val), phi->variable->type);
+			phi->value1 = c.insn_convert(c.insn_load(phi->variable1->val), phi->variable->type);
 		}
 	}
 
@@ -148,17 +148,20 @@ Compiler::value If::compile(Compiler& c) const {
 	}}();
 
 	for (const auto& phi : phis) {
-		// std::cout << "phi variable " << phi.variable << " " << phi.variable->type << std::endl;
-		// std::cout << "value 1 " << phi.variable1 << " " << phi.variable1->type << " " << phi.variable1->val.t << std::endl;
-		// std::cout << "value 2 " << phi.variable2 << " " << phi.variable2->type << " " << phi.variable2->val.t << std::endl;
+		// std::cout << "phi " << phi->variable1 << " " << phi->value1.v << " " << phi->variable2 << " " << phi->value2.v << std::endl;
 		if (phi->variable1->root == phi->variable2->root and phi->variable1->type == phi->variable2->type) {
 			phi->variable->val = phi->variable1->val;
 		} else {
-			// auto phi_node = c.insn_phi(phi->variable->type, phi->variable1->init_value, phi->block1, phi->variable2->init_value, phi->block2);
-			auto phi_node = c.insn_phi(phi->variable->type, c.insn_convert(phi->variable1->init_value, phi->variable->type), phi->block1, c.insn_convert(phi->variable2->init_value, phi->variable->type), phi->block2);
-			// auto phi_node = c.insn_phi(phi.variable->type, c.insn_convert(c.insn_load(phi.variable1->val), type), phi.block1, c.insn_convert(c.insn_load(phi.variable2->val), type), phi.block2);
+			auto phi_node = c.insn_phi(phi->variable->type, c.insn_convert(phi->value1, phi->variable->type), phi->block1, c.insn_convert(phi->value2, phi->variable->type), phi->block2);
 			phi->variable->val = c.create_entry(phi->variable->name, phi->variable->type);
 			c.insn_store(phi->variable->val, phi_node);
+		}
+		if (phi->variable->phi and phi->variable->phi->variable2 == phi->variable) {
+			// std::cout << vv->var->phi->variable1 << " " << vv->var->phi->variable2 << std::endl;
+			// std::cout << vv->var->phi->value1.t << std::endl;
+			// std::cout << "phi delete unused var " << phi->variable->phi->variable1 << std::endl;
+			c.insn_delete_temporary(phi->variable->phi->value1);
+			// c.insn_delete_variable(phi->variable->phi->variable1->val);
 		}
 	}
 

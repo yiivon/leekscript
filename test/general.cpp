@@ -206,6 +206,7 @@ void Test::test_general() {
 	code("var b = 5 if 1 {} else { b = 'salut' } b").equals("5");
 	code("var b = 5 if 0 {} else { b = 'salut' } b").equals("'salut'");
 	code("var x = 5 if true if true x = 'a' x").equals("'a'");
+	code("var x = 5 if true if true if true if true if true x = 'a' x").equals("'a'");
 
 	section("Assignments with +=");
 	code("var a = 10 a += 0.5 a").equals("10.5");

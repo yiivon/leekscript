@@ -1,6 +1,7 @@
 #include "Variable.hpp"
 #include "../../colors.h"
 #include "../../type/Type.hpp"
+#include "../value/Phi.hpp"
 
 namespace ls {
 
@@ -49,10 +50,16 @@ void Variable::store_value(Compiler& c, Compiler::value value) {
 	if (value.t->is_mpz_ptr()) {
 		auto v = c.insn_load(value);
 		c.insn_store(val, v);
-		init_value = v;
+		if (phi) {
+			if (phi->variable1 == this) phi->value1 = v;
+			if (phi->variable2 == this) phi->value2 = v;
+		}
 	} else {
 		c.insn_store(val, value);
-		init_value = value;
+		if (phi) {
+			if (phi->variable1 == this) phi->value1 = value;
+			if (phi->variable2 == this) phi->value2 = value;
+		}
 	}
 }
 

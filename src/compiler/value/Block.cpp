@@ -193,7 +193,8 @@ Compiler::value Block::compile(Compiler& c) const {
 					if (variable.second->parent) {
 						if (variable.second->phi) {
 							// std::cout << "Variable export last value for phi " << variable.second << " " << variable.second->type << std::endl;
-							variable.second->init_value = c.insn_convert(c.insn_load(variable.second->val), variable.second->phi->variable->type);
+							if (variable.second->phi->variable1 == variable.second) variable.second->phi->value1 = c.insn_convert(c.insn_load(variable.second->val), variable.second->phi->variable->type);
+							if (variable.second->phi->variable2 == variable.second) variable.second->phi->value2 = c.insn_convert(c.insn_load(variable.second->val), variable.second->phi->variable->type);
 						}
 					}
 				}

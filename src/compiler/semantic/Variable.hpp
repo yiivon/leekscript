@@ -36,7 +36,6 @@ public:
 	LSValue* lsvalue = nullptr;
 	Call call;
 	Compiler::value val;
-	Compiler::value init_value;
 	Compiler::value addr_val;
 	int id = 0;
 	int generator = 0;

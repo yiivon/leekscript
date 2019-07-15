@@ -5,6 +5,7 @@
 #include "../compiler/semantic/Variable.hpp"
 #include "../type/Type.hpp"
 #include "Module.hpp"
+#include "../compiler/value/Phi.hpp"
 
 namespace ls {
 
@@ -29,6 +30,9 @@ int ConvertMutator::compile(Compiler& c, CallableVersion* callable, std::vector<
 		if (vv->var->scope == VarScope::INTERNAL) return 0;
 		if (store_array_size) {
 			callable->extra_arg = c.insn_array_size(vv->var->parent->get_value(c));
+		}
+		if (vv->var->phi and vv->var->phi->variable2 == vv->var) {
+			c.insn_delete_temporary(vv->var->phi->value1);
 		}
 		if (vv->var->scope == VarScope::CAPTURE) {
 			vv->var->val = vv->var->parent->val;
@@ -108,12 +112,18 @@ int ChangeValueMutator::compile(Compiler& c, CallableVersion* callable, std::vec
 	// std::cout << "ChangeValueMutator " << std::endl;
 	if (auto vv = dynamic_cast<VariableValue*>(values[0])) {
 		// std::cout << "ChangeValueMutator " << vv->var << " ||| " << vv->previous_type << " == " << vv->type << std::endl;
+		if (vv->var->phi and vv->var->phi->variable2 == vv->var) {
+			c.insn_delete_temporary(vv->var->phi->value1);
+		}
 		if (vv->previous_type == vv->type) {
 			if (vv->var->val.v) {
 				// std::cout << "ChangeValueMutator no change " << vv->var << std::endl;
 			} else {
 				// std::cout << "ChangeValueMutator take parent " << vv->var << std::endl;
 				vv->var->val = vv->var->parent->val;
+			}
+			if (vv->var->phi and vv->var->phi->variable2 == vv->var) {
+				vv->var->phi->value2 = c.insn_load(vv->var->val);
 			}
 			return 0;
 		} else {
