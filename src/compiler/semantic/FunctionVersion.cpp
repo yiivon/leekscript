@@ -95,6 +95,7 @@ void FunctionVersion::pre_analyze(SemanticAnalyzer* analyzer, const std::vector<
 	pre_analyzed = true;
 	// std::cout << "FunctionVersion " << body.get() << " ::pre_analyze " << args << std::endl;
 	analyzer->enter_function((FunctionVersion*) this);
+	parent->current_version = this;
 	// Create arguments
 	for (unsigned i = 0; i < parent->arguments.size(); ++i) {
 		auto type = i < args.size() ? args.at(i) : (i < parent->defaultValues.size() && parent->defaultValues.at(i) != nullptr ? parent->defaultValues.at(i)->type : Type::any);
