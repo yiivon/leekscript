@@ -18,6 +18,7 @@ public:
 	static LSSet<T>* constructor();
 
 	LSSet();
+	LSSet(std::initializer_list<T> values);
 	LSSet(const LSSet<T>& other);
 	virtual ~LSSet();
 

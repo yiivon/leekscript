@@ -31,6 +31,9 @@ LSSet<T>* LSSet<T>::constructor() {
 template <class T>
 inline LSSet<T>::LSSet() : LSValue(SET) {}
 
+template <class T>
+LSSet<T>::LSSet(std::initializer_list<T> values) : LSValue(SET), std::set<T, lsset_less<T>>(values) {}
+
 template <>
 inline LSSet<LSValue*>::LSSet(const LSSet<LSValue*>& other) : LSValue(other), std::set<LSValue*, lsset_less<LSValue*>>() {
 	for (LSValue* v : other) {
