@@ -45,6 +45,10 @@ namespace std {
 		for (const auto& v : context->vars) {
 			if (i++ > 0) os << ", ";
 			os << v.first << ": " << v.second.value << " " << v.second.type;
+			if (v.second.type == ls::Type::any) {
+				os << " " << (ls::LSValue*) v.second.value;
+				os << " " << ((ls::LSValue*) v.second.value)->refs;
+			}
 		}
 		os << "}";
 		return os;
