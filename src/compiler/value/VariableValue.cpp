@@ -277,6 +277,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 		return c.new_function(fun, type);
 	}
 	if (var->parent and not var->val.v) {
+		// std::cout << "get parent val " << var->parent->val.t << std::endl;
 		var->val = var->parent->val;
 	}
 
@@ -325,6 +326,7 @@ Compiler::value VariableValue::compile(Compiler& c) const {
 }
 
 Compiler::value VariableValue::compile_version(Compiler& c, std::vector<const Type*> version) const {
+	// std::cout << "VV compile_version " << var << std::endl;
 	if (class_method) {
 		return c.new_function(versions.at(version), Type::fun());
 	}

@@ -314,8 +314,15 @@ void Function::compile_captures(Compiler& c) const {
 	for (const auto& capture : captures) {
 		if (capture->parent->val.v) {
 			// std::cout << "Convert capture " << capture << " " << (void*) capture << " " << (int)capture->scope << " parent " << capture->parent << " " << capture->parent->val.v << " " << capture->parent->val.t << " " << (void*) capture->parent << std::endl;
-			capture->val = c.create_entry(capture->name, Type::any);
-			c.insn_store(capture->val, c.insn_convert(c.insn_load(capture->parent->val), Type::any));
+			if (capture->parent->type->is_polymorphic()) {
+				capture->val = capture->parent->val;
+				// c.insn_inc_refs(c.insn_load(capture->val));
+			} else {
+				capture->val = c.create_entry(capture->name, Type::any);
+				auto value = c.insn_convert(c.insn_load(capture->parent->val), Type::any);
+				c.insn_inc_refs(value);
+				c.insn_store(capture->val, value);
+			}
 		}
 	}
 }

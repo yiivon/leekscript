@@ -210,7 +210,6 @@ Variable* FunctionVersion::capture(SemanticAnalyzer* analyzer, Variable* var) {
 		analyzer->leave_block();
 		analyzer->leave_function();
 
-		converted_var->scope = VarScope::CAPTURE;
 		converted_var->index = parent->captures.size();
 		parent->captures.push_back(converted_var);
 		parent->captures_map.insert({ var->name, converted_var });
@@ -386,16 +385,19 @@ void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool 
 	for (size_t i = 0; i < type->arguments().size(); ++i) {
 		const auto& name = parent->arguments.at(i)->content;
 		const auto& arg = initial_arguments.at(name);
-		if (type->argument(i) == Type::tmp_mpz_ptr) {
-			// std::cout << "delete tmp arg " << name << " " << type->argument(i) << std::endl;
-			c.insn_delete_mpz(arg->val);
-		} else if (type->argument(i)->temporary) {
-			c.insn_delete(c.insn_load(arg->val));
-		}
 		const auto& arg2 = arguments.at(name);
-		if (arg2->val.v != arg->val.v) {
-			// std::cout << "delete argument " << arg2 << " " << arg2->type << std::endl;
-			c.insn_delete_variable(arg2->val);
+		if (arg2->val.v == arg->val.v) {
+			// std::cout << "delete tmp argument " << name << " " << type->argument(i) << std::endl;
+			if (type->argument(i) == Type::tmp_mpz_ptr) {
+				c.insn_delete_mpz(arg->val);
+			} else if (type->argument(i)->temporary) {
+				c.insn_delete(c.insn_load(arg->val));
+			}
+		} else {
+			if (arg2->val.v) {
+				// std::cout << "delete argument " << arg2 << " " << arg2->type << " " << arg2->val.t << std::endl;
+				c.insn_delete_variable(arg2->val);
+			}
 		}
 	}
 	// Delete function variables if needed

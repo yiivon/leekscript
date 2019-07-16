@@ -200,7 +200,7 @@ Variable* SemanticAnalyzer::update_var(Variable* variable) {
 		// a.1 = 5.5
 		// a.2 = 'salut'
 		auto root = variable->root ? variable->root : variable;
-		new_variable = new Variable(root->name, root->scope, Type::any, root->index, nullptr, current_function(), current_block(), nullptr);
+		new_variable = new Variable(root->name, variable->scope, Type::any, root->index, nullptr, current_function(), current_block(), nullptr);
 		new_variable->parent = variable;
 		new_variable->id = ++root->generator;
 		new_variable->root = root;
