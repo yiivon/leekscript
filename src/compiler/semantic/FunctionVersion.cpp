@@ -392,6 +392,11 @@ void FunctionVersion::compile_return(const Compiler& c, Compiler::value v, bool 
 		} else if (type->argument(i)->temporary) {
 			c.insn_delete(c.insn_load(arg->val));
 		}
+		const auto& arg2 = arguments.at(name);
+		if (arg2->val.v != arg->val.v) {
+			// std::cout << "delete argument " << arg2 << " " << arg2->type << std::endl;
+			c.insn_delete_variable(arg2->val);
+		}
 	}
 	// Delete function variables if needed
 	if (delete_variables) {
