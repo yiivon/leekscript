@@ -119,6 +119,7 @@ void For::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 
 	// Init
 	for (const auto& ins : init->instructions) {
+		ins->is_void = true;
 		ins->analyze(analyzer);
 		throws |= ins->throws;
 		if (ins->may_return) {
