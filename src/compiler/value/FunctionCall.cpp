@@ -173,9 +173,6 @@ void FunctionCall::analyze(SemanticAnalyzer* analyzer) {
 					}
 				}
 			}
-			if (type->is_mpz()) {
-				type = type == Type::tmp_mpz ? Type::tmp_mpz_ptr : Type::mpz_ptr;
-			}
 			// std::cout << "FC type " << type << std::endl;
 			return;
 		}
@@ -346,11 +343,6 @@ Compiler::value FunctionCall::compile(Compiler& c) const {
 	auto r = call.compile_call(c, callable_version, args, flags);
 	// std::cout << "FC compiled type " << r.t << std::endl;
 	c.inc_ops(1);
-	if (r.t->is_mpz()) {
-		auto r2 = c.create_entry("m", r.t);
-		c.insn_store(r2, r);
-		r = r2;
-	}
 	for (unsigned i = 0; i < callable_version->type->arguments().size(); ++i) {
 		if (i < arguments.size()) {
 			arguments.at(i)->compile_end(c);

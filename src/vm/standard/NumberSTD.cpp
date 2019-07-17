@@ -81,7 +81,10 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, mul_mpz_int},
 		{Type::const_integer, Type::const_integer, Type::integer, mul_real_real},
 		{Type::const_integer, Type::const_string, Type::string, (void*) mul_int_string},
-		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, mul_mpz_mpz}
+		{Type::mpz, Type::mpz_ptr, Type::tmp_mpz_ptr, mul_tmp_mpz_mpz},
+		{Type::mpz_ptr, Type::mpz, Type::tmp_mpz_ptr, mul_mpz_tmp_mpz},
+		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, mul_mpz_mpz},
+		{Type::mpz, Type::integer, Type::tmp_mpz_ptr, mul_tmp_mpz_int},
 	});
 	operator_("**", {
 		{Type::real, Type::real, Type::real, pow_real_real},
@@ -672,6 +675,27 @@ Compiler::value NumberSTD::mul_mpz_mpz(Compiler& c, std::vector<Compiler::value>
 	}();
 	c.insn_call(Type::void_, {r, args[0], args[1]}, "Number.mpz_mul");
 	if (args[1] != r) c.insn_delete_temporary(args[1]);
+	return r;
+}
+
+Compiler::value NumberSTD::mul_tmp_mpz_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
+	auto r = c.create_entry("m", Type::tmp_mpz);
+	c.insn_store(r, args[0]);
+	c.insn_call(Type::void_, {r, r, args[1]}, "Number.mpz_mul");
+	c.insn_delete_temporary(args[1]);
+	return r;
+}
+Compiler::value NumberSTD::mul_tmp_mpz_int(Compiler& c, std::vector<Compiler::value> args, int) {
+	auto r = c.create_entry("m", Type::tmp_mpz);
+	c.insn_store(r, args[0]);
+	c.insn_call(Type::void_, {r, r, args[1]}, "Number.mpz_mul_si");
+	return r;
+}
+Compiler::value NumberSTD::mul_mpz_tmp_mpz(Compiler& c, std::vector<Compiler::value> args, int) {
+	auto r = c.create_entry("m", Type::tmp_mpz);
+	c.insn_store(r, args[1]);
+	c.insn_call(Type::void_, {r, r, args[0]}, "Number.mpz_mul");
+	c.insn_delete_temporary(args[0]);
 	return r;
 }
 

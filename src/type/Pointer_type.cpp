@@ -38,7 +38,9 @@ int Pointer_type::distance(const Type* type) const {
 	auto p = dynamic_cast<const Pointer_type*>(type->folded);
 	if (_type->is_mpz()) {
 		if (p and p->pointed()->is_mpz()) return 0;
-		return _type->distance(type->folded);
+		if (not type->is_mpz()) {
+			return _type->distance(type->folded);
+		}
 	}
 	if (_type->is_function()) {
 		if (p and p->pointed()->is_function()) return 0;
