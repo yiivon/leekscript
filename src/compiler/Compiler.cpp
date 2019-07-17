@@ -1892,6 +1892,9 @@ Compiler::value Compiler::insn_call(Compiler::value fun, std::vector<Compiler::v
 			return builder.CreateCall((llvm::Function*) fun.v, llvm_args);
 		}
 	}}();
+	// TODO tail call elimination #197
+	// r->setTailCall(true);
+	// r->setTailCallKind(llvm::CallInst::TailCallKind::TCK_Tail);
 	if (fun.t->return_type()->is_void()) {
 		return {};
 	} else {
