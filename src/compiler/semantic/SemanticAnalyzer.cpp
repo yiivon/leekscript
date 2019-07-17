@@ -224,6 +224,7 @@ Variable* SemanticAnalyzer::update_var(Variable* variable) {
 	} else {
 		current_block()->variables[new_variable->name] = new_variable;
 	}
+	current_block()->mutations.push_back(new_variable);
 	return new_variable;
 }
 

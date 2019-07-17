@@ -26,6 +26,7 @@ public:
 	std::vector<Variable*> temporary_variables;
 	std::vector<Compiler::value> temporary_values;
 	std::vector<Compiler::value> temporary_expression_values;
+	std::vector<Variable*> mutations;
 
 	Block(bool is_function_block = false);
 
