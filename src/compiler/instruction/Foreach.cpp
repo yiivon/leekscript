@@ -28,8 +28,10 @@ void Foreach::print(std::ostream& os, int indent, bool debug, bool condensed) co
 
 	os << " ";
 	body->print(os, indent, debug);
-	os << " ";
-	body2->print(os, indent, debug);
+	if (body2_activated) {
+		os << " ";
+		body2->print(os, indent, debug);
+	}
 	for (const auto& assignment : assignments) {
 		os << std::endl << tabs(indent) << assignment.first << " " << assignment.first->type << " = " << assignment.second << " " << assignment.second->type;
 	}
@@ -48,15 +50,23 @@ void Foreach::pre_analyze(SemanticAnalyzer* analyzer) {
 	value_var = analyzer->add_var(value, Type::void_, nullptr);
 	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
-	body2 = std::move(unique_static_cast<Block>(body->clone()));
-	body2->is_loop_body = true;
-	for (const auto& variable : body->variables) {
-		if (variable.second->root and variable.second->root->block != body.get()) {
-			body2->variables.insert({ variable.first, variable.second });
+
+	for (const auto& variable : body->mutations) {
+		if ((variable->root ? variable->root : variable)->block != body.get()) {
+			mutations.push_back(variable);
 		}
 	}
-	body2->is_loop = true;
-	body2->pre_analyze(analyzer);
+	if (mutations.size()) {
+		body2 = std::move(unique_static_cast<Block>(body->clone()));
+		body2->is_loop_body = true;
+		for (const auto& variable : body->variables) {
+			if (variable.second->root and variable.second->root->block != body.get()) {
+				body2->variables.insert({ variable.first, variable.second });
+			}
+		}
+		body2->is_loop = true;
+		body2->pre_analyze(analyzer);
+	}
 	analyzer->leave_block();
 
 	for (const auto& variable : body->variables) {
@@ -76,7 +86,9 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	} else {
 		type = Type::void_;
 		body->is_void = true;
-		body2->is_void = true;
+		if (body2) {
+			body2->is_void = true;
+		}
 	}
 	analyzer->enter_block(wrapper_block.get());
 
@@ -101,7 +113,16 @@ void Foreach::analyze(SemanticAnalyzer* analyzer, const Type* req_type) {
 	if (req_type->is_array()) {
 		type = Type::tmp_array(body->type);
 	}
-	body2->analyze(analyzer);
+
+	body2_activated = std::any_of(mutations.begin(), mutations.end(), [&](Variable* variable) {
+		// std::cout << "mutation " << variable->parent << " " << variable->parent->type << " => " << variable << " " << variable->type << std::endl;
+		return variable->parent->type != variable->type;
+	});
+	if (body2_activated) {
+		body2->analyze(analyzer);
+	} else if (body2) {
+		body2->enabled = false;
+	}
 	analyzer->leave_loop();
 	analyzer->leave_block();
 
@@ -116,9 +137,9 @@ Compiler::value Foreach::compile(Compiler& c) const {
 	if (key_var) key_var->create_entry(c);
 	auto result = c.insn_foreach(container_v, type->element(), value_var, key_var, [&](Compiler::value value, Compiler::value key) {
 		return body->compile(c);
-	}, false, [&](Compiler::value value, Compiler::value key) {
+	}, false, body2_activated ? [&](Compiler::value value, Compiler::value key) {
 		return body2->compile(c);
-	});
+	} : (std::function<Compiler::value (Compiler::value, Compiler::value)>) nullptr);
 	for (const auto& assignment : assignments) {
 		// std::cout << "Store variable " << assignment.first << " = " << assignment.second << std::endl;
 		assignment.first->val = assignment.second->val;
