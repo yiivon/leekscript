@@ -66,6 +66,7 @@ NumberSTD::NumberSTD(VM* vm) : Module(vm, "Number") {
 		{Type::mpz_ptr, Type::mpz_ptr, Type::tmp_mpz_ptr, sub_mpz_mpz},
 		{Type::mpz_ptr, Type::integer, Type::tmp_mpz_ptr, sub_mpz_int},
 		{Type::real, Type::real, Type::real, sub_real_real},
+		{Type::long_, Type::long_, Type::long_, sub_real_real},
 		{Type::const_integer, Type::const_integer, Type::integer, sub_real_real},
 	});
 	operator_("-=", {
