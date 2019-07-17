@@ -227,29 +227,6 @@ void Test::test_functions() {
 	code("String.size").equals("<function>");
 	code("Number.cos").equals("<function>");
 
-	section("Function reflexion");
-	DISABLED_code("(x -> 12).return").equals("<class Number>");
-	DISABLED_code("(x -> true).return").equals("<class Boolean>");
-	DISABLED_code("(x -> 'salut').return").equals("<class String>");
-	code("(x -> x).args").equals("[<class Value>]");
-	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
-	code("let f = x, y -> x + y f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
-	code("let f = x, y -> x + y f([], <>) f.args").equals("[<class Array>, <class Set>]");
-	code("+.args").equals("[<class Value>, <class Value>]");
-	code("+.return").equals("<class Value>");
-	code("-.args").equals("[<class Value>, <class Value>]");
-	code("*.args").equals("[<class Value>, <class Value>]");
-	code("×.args").equals("[<class Value>, <class Value>]");
-	code("/.args").equals("[<class Value>, <class Value>]");
-	code("÷.args").equals("[<class Value>, <class Value>]");
-	code("%.args").equals("[<class Value>, <class Value>]");
-	code("**.args").equals("[<class Value>, <class Value>]");
-	code(">.args").equals("[<class Value>, <class Value>]");
-	code("<.args").equals("[<class Value>, <class Value>]");
-	code(">=.args").equals("[<class Value>, <class Value>]");
-	code("<=.args").equals("[<class Value>, <class Value>]");
-	code("let f = x -> x f(12) f('salut') f.args").equals("[<class Value>]");
-
 	section("Check argument count");
 	code("(x -> x)()").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
 	code("let f = x, y -> x + y f(5)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
