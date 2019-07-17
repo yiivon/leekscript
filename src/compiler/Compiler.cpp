@@ -524,7 +524,11 @@ Compiler::value Compiler::insn_lt(Compiler::value a, Compiler::value b) const {
 		return r;
 	}
 	Compiler::value r;
-	if (a.t->is_mpz_ptr() and b.t->is_integer()) {
+	if (a.t->is_integer() and b.t->is_mpz_ptr()) {
+		auto r = insn_gt(insn_call(Type::integer, {b, a}, "Number._mpz_cmp_si"), new_integer(0));
+		insn_delete_temporary(b);
+		return r;
+	} else if (a.t->is_mpz_ptr() and b.t->is_integer()) {
 		auto r = insn_lt(insn_call(Type::integer, {a, b}, "Number._mpz_cmp_si"), new_integer(0));
 		insn_delete_temporary(a);
 		return r;
