@@ -56,6 +56,12 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 	}
 	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
+	for (const auto& variable : body->variables) {
+		init->variables[variable.first] = variable.second;
+		if (variable.second->root and variable.second->root->block != body.get()) {
+			variable.second->assignment = true;
+		}
+	}
 	
 	increment->pre_analyze(analyzer);
 
@@ -63,11 +69,6 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 		body2 = std::move(unique_static_cast<Block>(body->clone()));
 		body2->is_loop_body = true;
 		body2->is_loop = true;
-		for (const auto& variable : body->variables) {
-			if (variable.second->root and variable.second->root->block != body.get()) {
-				init->variables.insert({ variable.first, variable.second });
-			}
-		}
 		body2->pre_analyze(analyzer);
 	}
 
@@ -95,7 +96,7 @@ void For::pre_analyze(SemanticAnalyzer* analyzer) {
 	}
 	for (const auto& variable : body->variables) {
 		// std::cout << "Foreach assignment " << variable.second << " " << (void*) variable.second->block->branch << " " << (void*) analyzer->current_block()->branch << std::endl;
-		if (variable.second->parent) {
+		if (variable.second->parent and variable.second->root->block != init.get()) {
 			auto new_var = analyzer->update_var(variable.second->parent);
 			variable.second->assignment = true;
 			assignments.push_back({ new_var, variable.second });

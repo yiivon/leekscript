@@ -83,6 +83,7 @@ void Block::create_assignments(SemanticAnalyzer* analyzer) {
 			auto root = variable.second->root ? variable.second->root : variable.second;
 			if (variable.second->parent and variable.second->block->branch == analyzer->current_block()->branch	and root->block != this) {
 				auto new_var = analyzer->update_var(variable.second->parent);
+				variable.second->assignment = true;
 				assignments.push_back({ new_var, variable.second });
 			}
 		}
@@ -201,8 +202,7 @@ Compiler::value Block::compile(Compiler& c) const {
 			}
 			for (const auto& assignment : assignments) {
 				// std::cout << "Store variable " << assignment.first << " = " << assignment.second << std::endl;
-				assignment.first->create_entry(c);
-				assignment.first->store_value(c, c.insn_move_inc(assignment.second->get_value(c)));
+				assignment.first->val = assignment.second->val;
 			}
 			c.leave_block();
 			if (is_function_block) {
