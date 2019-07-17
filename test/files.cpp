@@ -39,6 +39,7 @@ void Test::test_files() {
 	file("test/code/classes_simple.leek").equals("['Ferrari', 'Maserati', 'Lamborghini']");
 	file("test/code/classes_multiple.leek").equals("[4, 40, 80]");
 	file("test/code/match.leek").output("Yeah!\n");
+	file("test/code/fibonacci.leek").equals("832040");
 
 	section("Issues (fixed)");
 	file("test/code/issue/207_basic.leek").equals("[1, 2, 3]");
