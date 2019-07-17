@@ -15,7 +15,9 @@ public:
 	std::unique_ptr<Value> condition;
 	std::unique_ptr<Block> body;
 	std::unique_ptr<Block> body2;
+	bool body2_activated = false;
 	std::vector<std::pair<Variable*, Variable*>> assignments;
+	std::vector<Variable*> mutations;
 
 	While();
 

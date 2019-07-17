@@ -4,6 +4,7 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../semantic/SemanticAnalyzer.hpp"
 #include "../semantic/Variable.hpp"
+#include "../value/Phi.hpp"
 
 namespace ls {
 
@@ -17,7 +18,7 @@ void While::print(std::ostream& os, int indent, bool debug, bool condensed) cons
 	condition->print(os, indent + 1, debug);
 	os << " ";
 	body->print(os, indent, debug);
-	if (body2) {
+	if (body2_activated) {
 		os << " ";
 		body2->print(os, indent, debug);
 	}
@@ -36,7 +37,13 @@ void While::pre_analyze(SemanticAnalyzer* analyzer) {
 	body->is_loop_body = true;
 	body->pre_analyze(analyzer);
 
-	if (body->variables.size()) {
+	for (const auto& variable : body->mutations) {
+		if ((variable->root ? variable->root : variable)->block != body.get()) {
+			mutations.push_back(variable);
+		}
+	}
+
+	if (mutations.size()) {
 		body2 = std::move(unique_static_cast<Block>(body->clone()));
 		body2->is_loop_body = true;
 		body2->is_loop = true;
@@ -65,8 +72,15 @@ void While::analyze(SemanticAnalyzer* analyzer, const Type*) {
 	body->is_void = true;
 	if (body2) body2->is_void = true;
 	body->analyze(analyzer);
-	if (body2) {
+
+	body2_activated = std::any_of(mutations.begin(), mutations.end(), [&](Variable* variable) {
+		// std::cout << "mutation " << variable->parent << " " << variable->parent->type << " => " << variable << " " << variable->type << std::endl;
+		return variable->parent->type != variable->type;
+	});
+	if (body2_activated) {
 		body2->analyze(analyzer);
+	} else if (body2) {
+		body2->enabled = false;
 	}
 	analyzer->leave_loop();
 	
@@ -89,7 +103,7 @@ Compiler::value While::compile(Compiler& c) const {
 	auto loop_label = c.insn_init_label("loop");
 	Compiler::label cond2_label;
 	Compiler::label loop2_label;
-	if (body2) {
+	if (body2_activated) {
 		cond2_label = c.insn_init_label("cond2");
 		loop2_label = c.insn_init_label("loop2");
 	}
@@ -108,9 +122,9 @@ Compiler::value While::compile(Compiler& c) const {
 		c.insn_delete_temporary(body_v);
 	}
 	c.leave_loop();
-	c.insn_branch(body2 ? &cond2_label : &cond_label);
+	c.insn_branch(body2_activated ? &cond2_label : &cond_label);
 
-	if (body2) {
+	if (body2_activated) {
 		c.insn_label(&cond2_label);
 		auto cond2 = condition->compile(c);
 		condition->compile_end(c);
