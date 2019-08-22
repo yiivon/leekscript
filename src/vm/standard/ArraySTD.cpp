@@ -44,7 +44,9 @@ ArraySTD::ArraySTD(VM* vm) : Module(vm, "Array") {
 	auto pqE = Type::template_("E");
 	template_(pqT, pqE).
 	operator_("+=", {
+		// array<T> += E   ==> array<T | E>
 		{Type::array(pqT), pqE, Type::array(Type::meta_add(pqT, Type::meta_not_temporary(pqE))), array_add_eq, 0, { new ConvertMutator() }, true},
+		// array<T> += array<E>   ==> array<T | E>
 		{Type::array(pqT), Type::array(pqE), Type::array(Type::meta_add(pqT, pqE)), array_add_eq, 0, { new ConvertMutator() }, true},
 	});
 
