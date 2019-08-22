@@ -54,6 +54,8 @@ Compiler::Compiler(VM* vm) : vm(vm),
 					return llvm::JITSymbol((llvm::JITTargetAddress) s, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				}
 				if (Name == "null") return llvm::JITSymbol((llvm::JITTargetAddress) LSNull::get(), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				if (Name == "true") return llvm::JITSymbol((llvm::JITTargetAddress) LSBoolean::get(true), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
+				if (Name == "false") return llvm::JITSymbol((llvm::JITTargetAddress) LSBoolean::get(false), llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				if (Name == "mpzc") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_created, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 				if (Name == "mpzd") return llvm::JITSymbol((llvm::JITTargetAddress) &this->vm->mpz_deleted, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
 
@@ -915,7 +917,11 @@ Compiler::value Compiler::insn_to_any(Compiler::value v) const {
 	} else if (v.t->is_real()) {
 		return insn_call(Type::tmp_any, {v}, "Number.new");
 	} else if (v.t->is_bool()) {
-		return insn_call(Type::tmp_any, {v}, "Boolean.new");
+		if (auto* ci = llvm::dyn_cast<llvm::ConstantInt>(v.v)) {
+			if (ci->equalsInt(0)) return get_symbol("false", Type::tmp_any);
+			if (ci->equalsInt(1)) return get_symbol("true", Type::tmp_any);
+		}
+		return { builder.CreateSelect(v.v, get_symbol("true", Type::tmp_any).v, get_symbol("false", Type::tmp_any).v), Type::tmp_any };
 	} else if (v.t->is_mpz_ptr()) {
 		if (v.t->temporary) {
 			return insn_call(Type::tmp_any, {insn_load(v)}, "Number.new.1");

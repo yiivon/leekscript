@@ -10,13 +10,6 @@ BooleanSTD::BooleanSTD(VM* vm) : Module(vm, "Boolean") {
 
 	LSBoolean::clazz = clazz.get();
 
-	/*
-	 * Constructors
-	 */
-	constructor_({
-		{Type::any, {Type::boolean}, (void*) LSBoolean::create}
-	});
-
 	operator_("+", {
 		{Type::const_boolean, Type::const_string, Type::tmp_string, (void*) add},
 		{Type::const_boolean, Type::tmp_string, Type::tmp_string, (void*) add_tmp},
