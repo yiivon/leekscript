@@ -155,7 +155,7 @@ valgrind: build/leekscript-test
 # (coverage results are sent to coveralls.io).
 travis:
 	cd tool && docker build -t leekscript .
-	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
+	cd .. && docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
 	    leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
 	    && cpp-coveralls -i src/ --gcov-options='-rp'"
 travis-pr:
