@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
-#include "../../lib/json.hpp"
+#include "../util/json.hpp"
 #include "../constants.h"
 
 namespace ls {

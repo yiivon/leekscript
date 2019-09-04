@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string.h>
 #include <vector>
-#include "../../lib/json.hpp"
+#include "../util/json.hpp"
 #include "../type/Type.hpp"
 
 namespace ls {

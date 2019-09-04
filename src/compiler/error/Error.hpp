@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../lexical/Token.hpp"
-#include "../../../lib/json.hpp"
+#include "../../util/json.hpp"
 
 namespace ls {
 

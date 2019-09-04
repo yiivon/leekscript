@@ -1,6 +1,6 @@
 SRC_DIR := src/vm src/vm/value src/vm/standard src/doc \
 src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic src/compiler/resolver src/compiler/error \
-src/compiler/value src/compiler/instruction src/type src/util lib
+src/compiler/value src/compiler/instruction src/type src/util
 TEST_DIR := test
 
 SRC := $(foreach d,$(SRC_DIR),$(wildcard $(d)/*.cpp))

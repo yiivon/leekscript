@@ -5,7 +5,7 @@
 #include "../value/LSMpz.hpp"
 #include "../value/LSString.hpp"
 #include "../value/LSBoolean.hpp"
-#include "../../../lib/utf8.h"
+#include "../../util/utf8.h"
 #include "../../compiler/Compiler.hpp"
 #include "../VM.hpp"
 #include "../../type/Type.hpp"

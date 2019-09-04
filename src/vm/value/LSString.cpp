@@ -7,7 +7,7 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 #include <string.h>
-#include "../../../lib/utf8.h"
+#include "../../util/utf8.h"
 
 namespace ls {
 

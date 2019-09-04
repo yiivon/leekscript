@@ -5,7 +5,7 @@
 #include "Type.hpp"
 #include "../constants.h"
 #include "../colors.h"
-#include "../../lib/utf8.h"
+#include "../util/utf8.h"
 #include "Void_type.hpp"
 #include "Any_type.hpp"
 #include "Array_type.hpp"

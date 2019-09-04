@@ -1,6 +1,6 @@
 #include "LexicalAnalyzer.hpp"
 #include <iostream>
-#include "../../../lib/utf8.h"
+#include "../../util/utf8.h"
 #include <string.h>
 #include "../error/Error.hpp"
 

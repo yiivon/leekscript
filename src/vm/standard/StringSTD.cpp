@@ -2,7 +2,7 @@
 #include <vector>
 #include <math.h>
 #include <string.h>
-#include "../../../lib/utf8.h"
+#include "../../util/utf8.h"
 #include "StringSTD.hpp"
 #include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
