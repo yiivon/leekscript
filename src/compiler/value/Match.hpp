@@ -12,39 +12,40 @@ public:
 	class Pattern {
 	public:
 		bool interval;
-		Value* begin;
-		Value* end;
+		std::unique_ptr<Value> begin;
+		std::unique_ptr<Value> end;
 
-		Pattern(Value* value);
-		Pattern(Value* begin, Value* end);
+		Pattern(Pattern&& p) : interval(p.interval), begin(std::move(p.begin)), end(std::move(p.end)) {}
+		Pattern(std::unique_ptr<Value> value);
+		Pattern(std::unique_ptr<Value> begin, std::unique_ptr<Value> end);
 		~Pattern();
 
 		inline bool is_default() const { return !begin && !end; }
 
 		void print(std::ostream&, int indent, bool debug) const;
-		// jit_value_t match(Compiler &c, jit_value_t v) const;
+		Compiler::value match(Compiler &c, Compiler::value v) const;
 
-		Pattern clone() const {
+		Pattern&& clone() const {
 			Pattern p { begin->clone(), end->clone() };
 			p.interval = interval;
-			return p;
+			return std::move(p);
 		}
 	};
 
-	Value* value;
+	std::unique_ptr<Value> value;
 	std::vector<std::vector<Pattern>> pattern_list;
-	std::vector<Value*> returns;
-
-	Match();
-	virtual ~Match();
+	std::vector<std::unique_ptr<Value>> returns;
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*) override;
+	virtual void pre_analyze(SemanticAnalyzer*) override;
+	virtual void analyze(SemanticAnalyzer*) override;
+	Compiler::value construct_branch(Compiler& c, Compiler::value v, size_t i) const;
+	Compiler::value get_pattern_condition(Compiler& c, Compiler::value v, const std::vector<Pattern>&) const;
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

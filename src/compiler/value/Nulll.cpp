@@ -1,16 +1,15 @@
 #include "Nulll.hpp"
 #include "../../vm/value/LSNull.hpp"
-
-using namespace std;
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-Nulll::Nulll(std::shared_ptr<Token> token) : token(token) {
-	type = Type::NULLL;
+Nulll::Nulll(Token* token) : token(token) {
+	type = Type::null;
 	constant = true;
 }
 
-void Nulll::print(ostream& os, int, bool debug, bool condensed) const {
+void Nulll::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "null";
 	if (debug) {
 		os << " " << type;
@@ -25,8 +24,8 @@ Compiler::value Nulll::compile(Compiler& c) const {
 	return c.new_null();
 }
 
-Value* Nulll::clone() const {
-	return new Nulll(token);
+std::unique_ptr<Value> Nulll::clone() const {
+	return std::make_unique<Nulll>(token);
 }
 
 }

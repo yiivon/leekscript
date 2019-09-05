@@ -7,38 +7,31 @@
 
 namespace ls {
 
+class Callable;
+class CallableVersion;
+
 class Expression : public Value {
 public:
 
-	Value* v1;
-	Value* v2;
+	std::unique_ptr<Value> v1;
+	std::unique_ptr<Value> v2;
 	std::shared_ptr<Operator> op;
-
-	bool no_op;
 	int operations;
-	void* operator_fun = nullptr;
-	bool is_native_method = false;
-	bool native_method_v1_addr = false;
-	bool native_method_v2_addr = false;
-	Type v1_type;
-	Type v2_type;
-	Type return_type;
-	Type equal_previous_type;
+	const CallableVersion* callable_version = nullptr;
 
-	Expression();
-	Expression(Value*);
-	virtual ~Expression();
+	Expression(Value* = nullptr);
 
 	void append(std::shared_ptr<Operator>, Value*);
 
 	void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*) override;
+	virtual void pre_analyze(SemanticAnalyzer*) override;
+	virtual void analyze(SemanticAnalyzer*) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

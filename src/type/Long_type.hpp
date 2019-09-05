@@ -1,25 +1,23 @@
 #ifndef LONG_TYPE_HPP
 #define LONG_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Number_type.hpp"
 
 namespace ls {
 
-class Long_type : public Base_type {
+class Long_type : public Number_type {
 public:
 	Long_type() {}
-	virtual int id() const override { return 3; }
-	virtual const std::string getName() const { return "long"; }
-	virtual const std::string getJsonName() const { return "number"; }
-	virtual bool iterable() const { return true; }
-	virtual Type key() const override;
-	virtual Type element() const override;
-	virtual Type iterator() const override;
-	virtual bool operator == (const Base_type*) const override;
-	virtual int distance(const Base_type* type) const override;
-	virtual llvm::Type* llvm() const override;
-	virtual std::string clazz() const override;
+	virtual const std::string getName() const override { return "long"; }
+	virtual const Type* key() const override;
+	virtual const Type* element() const override;
+	virtual const Type* iterator() const override;
+	virtual bool operator == (const Type*) const override;
+	virtual int distance(const Type* type) const override;
+	virtual llvm::Type* llvm(const Compiler& c) const override;
+	virtual std::string class_name() const override;
 	virtual std::ostream& print(std::ostream& os) const override;
+	virtual Type* clone() const override;
 };
 
 }

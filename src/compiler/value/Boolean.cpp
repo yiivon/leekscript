@@ -1,15 +1,12 @@
 #include "Boolean.hpp"
-#include "../../vm/VM.hpp"
 #include "../../vm/value/LSBoolean.hpp"
-
-using namespace std;
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-Boolean::Boolean(std::shared_ptr<Token> token) {
-	this->token = token;
+Boolean::Boolean(Token* token) : token(token) {
 	this->value = token->type == TokenType::TRUE;
-	type = Type::BOOLEAN;
+	type = Type::boolean;
 	constant = true;
 }
 
@@ -28,8 +25,8 @@ Compiler::value Boolean::compile(Compiler& c) const {
 	return c.new_bool(value);
 }
 
-Value* Boolean::clone() const {
-	auto b = new Boolean(token);
+std::unique_ptr<Value> Boolean::clone() const {
+	auto b = std::make_unique<Boolean>(token);
 	b->value = value;
 	return b;
 }

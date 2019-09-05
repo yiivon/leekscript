@@ -9,8 +9,6 @@
 #include "value/LSObject.hpp"
 #include "value/LSFunction.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValueType LSValue::NULLL = 1;
@@ -25,16 +23,19 @@ LSValueType LSValue::FUNCTION = 9;
 LSValueType LSValue::OBJECT = 10;
 LSValueType LSValue::CLASS = 11;
 LSValueType LSValue::CLOSURE = 12;
+LSValueType LSValue::MPZ = 13;
 LSClass* LSValue::ValueClass = nullptr;
 
 int LSValue::obj_count = 0;
 int LSValue::obj_deleted = 0;
 
-LSValue::LSValue(LSValueType type) : type(type), refs(0) {
-	obj_count++;
-	#if DEBUG_LEAKS
-		objs().insert({this, this});
-	#endif
+LSValue::LSValue(LSValueType type, int refs, bool native) : type(type), refs(refs), native(native) {
+	if (not native) {
+		obj_count++;
+		#if DEBUG_LEAKS
+			objs().insert({this, this});
+		#endif
+	}
 }
 
 LSValue::LSValue(const LSValue& o) : type(o.type), refs(0) {
@@ -52,7 +53,14 @@ template <class T>
 LSValue* LSValue::get(T v) {
 	return LSNull::get();
 }
-
+template <>
+LSValue* LSValue::get(bool v) {
+	return LSBoolean::get(v);
+}
+template <>
+LSValue* LSValue::get(char v) {
+	return LSBoolean::get(v);
+}
 template <>
 LSValue* LSValue::get(int v) {
 	return LSNumber::get(v);
@@ -63,10 +71,12 @@ LSValue* LSValue::get(double v) {
 }
 
 LSValue::~LSValue() {
-	obj_deleted++;
-	#if DEBUG_LEAKS
-		objs().erase(this);
-	#endif
+	if (not native) {
+		obj_deleted++;
+		#if DEBUG_LEAKS
+			objs().erase(this);
+		#endif
+	}
 }
 
 LSValue* LSValue::ls_minus() {
@@ -300,7 +310,7 @@ LSValue* LSValue::get_from_json(Json& json) {
 		case Json::value_t::object: {
 			auto object = new LSObject();
 			for (Json::iterator it = json.begin(); it != json.end(); ++it) {
-				object->addField(it.key(), get_from_json(it.value()));
+				object->addField(it.key().c_str(), get_from_json(it.value()));
 			}
 			return object;
 		}
@@ -317,7 +327,7 @@ std::string LSValue::to_string() const {
 }
 
 LSString* LSValue::ls_json() {
-	LSString* json = new LSString(this->json());
+	auto json = new LSString(this->json());
 	LSValue::delete_temporary(this);
 	return json;
 }

@@ -1,21 +1,15 @@
-#include "../../compiler/instruction/Throw.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "Throw.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../value/Function.hpp"
 #include "../../vm/value/LSNull.hpp"
 
-using namespace std;
-
 namespace ls {
 
-Throw::Throw(std::shared_ptr<Token> token, Value* v) : token(token) {
-	expression = v;
+Throw::Throw(Token* token, std::unique_ptr<Value> v) : token(token), expression(std::move(v)) {
+	throws = true;
 }
 
-Throw::~Throw() {
-	delete expression;
-}
-
-void Throw::print(ostream& os, int indent, bool debug) const {
+void Throw::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "throw";
 	if (expression != nullptr) {
 		os << " ";
@@ -24,12 +18,22 @@ void Throw::print(ostream& os, int indent, bool debug) const {
 }
 
 Location Throw::location() const {
-	return expression->location();
+	if (expression != nullptr) {
+		return expression->location();
+	} else {
+		return token->location;
+	}
 }
 
-void Throw::analyse(SemanticAnalyser* analyser, const Type&) {
+void Throw::pre_analyze(SemanticAnalyzer* analyzer) {
 	if (expression != nullptr) {
-		expression->analyse(analyser);
+		expression->pre_analyze(analyzer);
+	}
+}
+
+void Throw::analyze(SemanticAnalyzer* analyzer, const Type*) {
+	if (expression != nullptr) {
+		expression->analyze(analyzer);
 	}
 }
 
@@ -43,13 +47,12 @@ Compiler::value Throw::compile(Compiler& c) const {
 
 	c.insn_throw(exception);
 
-	return {nullptr, {}};
+	return {};
 }
 
-Instruction* Throw::clone() const {
+std::unique_ptr<Instruction> Throw::clone() const {
 	auto ex = expression ? expression->clone() : nullptr;
-	auto t = new Throw(token, ex);
-	return t;
+	return std::make_unique<Throw>(token, std::move(ex));
 }
 
 }

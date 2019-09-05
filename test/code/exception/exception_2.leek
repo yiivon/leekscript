@@ -1,5 +1,5 @@
 function crash() {
-	null / 5
+	null - 5
 }
 
 function power(x) {

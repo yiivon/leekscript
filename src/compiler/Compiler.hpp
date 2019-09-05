@@ -19,6 +19,8 @@
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/ADT/STLExtras.h"
+#include "llvm-c/Transforms/Scalar.h"
+#include "llvm/Analysis/BasicAliasAnalysis.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
 #include "llvm/ExecutionEngine/RTDyldMemoryManager.h"
@@ -28,12 +30,16 @@
 #include "llvm/ExecutionEngine/Orc/LambdaResolver.h"
 #include "llvm/ExecutionEngine/Orc/RTDyldObjectLinkingLayer.h"
 #include "llvm/ExecutionEngine/Orc/GlobalMappingLayer.h"
+#include "llvm/ExecutionEngine/Orc/ExecutionUtils.h"
+#include "llvm/ExecutionEngine/Orc/IRTransformLayer.h"
+#include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/ExecutionEngine/Orc/IndirectionUtils.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Mangler.h"
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
-#include "../type/Type.hpp"
 #include "../vm/Exception.hpp"
 #include "../vm/LSValue.hpp"
 #include <gmp.h>
@@ -43,122 +49,88 @@ namespace ls {
 class Program;
 class VM;
 class Function;
+class Type;
+class FunctionVersion;
+class Variable;
+class Block;
 
 class Compiler {
 public:
-	// TODO private builder and context
-	static llvm::IRBuilder<> builder;
-	static llvm::LLVMContext context;
 	struct value {
 		llvm::Value* v;
-		Type t;
+		const Type* t;
 		bool operator == (const value& o) const {
 			return v == o.v and t == o.t;
 		}
 		bool operator != (const value& o) const {
 			return v != o.v or t != o.t;
 		}
-		value() : v(nullptr), t({}) {}
-		value(llvm::Value* v, Type t) : v(v), t(t) {}
+		value();
+		value(llvm::Value* v, const Type* t) : v(v), t(t) {}
 	};
 	struct label {
-		llvm::BasicBlock* block;
+		llvm::BasicBlock* block = nullptr;
 	};
 	struct catcher {
-		label start;
-		label end;
-		label handler;
-		label next;
+		llvm::BasicBlock* handler;
 	};
 	struct function_entry {
 		llvm::JITTargetAddress addr;
-		llvm::Value* function;
+		llvm::Function* function;
 	};
 
+	static llvm::orc::ThreadSafeContext Ctx;
+	static llvm::IRBuilder<> builder;
+
 	llvm::Function* F;
-	Function* fun;
+	FunctionVersion* fun;
 	std::stack<llvm::Function*> functions;
-	std::stack<Function*> functions2;
+	std::stack<FunctionVersion*> functions2;
 	std::stack<bool> function_is_closure;
 	std::vector<int> functions_blocks;
-	std::stack<std::map<std::string, value>> arguments;
+	std::stack<llvm::BasicBlock*> function_llvm_blocks;
 	std::vector<int> loops_blocks; // how many blocks are open in the current loop
 	std::vector<label*> loops_end_labels;
 	std::vector<label*> loops_cond_labels;
-	std::vector<std::vector<value>> function_variables;
-	std::vector<std::map<std::string, value>> variables;
-	std::vector<std::vector<catcher>> catchers;
-	bool output_assembly = false;
-	std::ostringstream assembly;
-	bool output_pseudo_code = false;
-	std::ostringstream pseudo_code;
-	bool log_instructions = false;
-	std::ostringstream instructions_debug;
-	std::map<label*, std::string> label_map;
-	std::map<void*, std::string> literals;
-	std::map<std::string, function_entry> mappings;
+	std::vector<std::vector<Block*>> blocks;
+	std::vector<std::vector<std::vector<catcher>>> catchers;
+	std::map<std::pair<std::string, const Type*>, function_entry> mappings;
+	std::stack<int> exception_line;
+	bool export_bitcode = false;
+	bool export_optimized_ir = false;
+	std::unordered_map<std::string, Compiler::value> global_strings;
 
 	VM* vm;
 	Program* program;
+
 	std::unique_ptr<llvm::TargetMachine> TM;
-	const llvm::DataLayout DL;
-	llvm::orc::RTDyldObjectLinkingLayer ObjectLayer;
-	llvm::orc::IRCompileLayer<decltype(ObjectLayer), llvm::orc::SimpleCompiler> CompileLayer;
-	using ModuleHandle = decltype(CompileLayer)::ModuleHandleT;
+	llvm::DataLayout DL;
+	llvm::orc::ExecutionSession ES;
+	llvm::orc::LegacyRTDyldObjectLinkingLayer ObjectLayer;
+	llvm::orc::LegacyIRCompileLayer<decltype(ObjectLayer), llvm::orc::SimpleCompiler> CompileLayer;
+	using OptimizeFunction = std::function<std::unique_ptr<llvm::Module>(std::unique_ptr<llvm::Module>)>;
+	llvm::orc::LegacyIRTransformLayer<decltype(CompileLayer), OptimizeFunction> OptimizeLayer;
+	
+	Compiler(VM* vm);
 
-	Compiler(VM* vm) : vm(vm), TM(llvm::EngineBuilder().selectTarget()), DL(TM->createDataLayout()), ObjectLayer([]() { return std::make_shared<llvm::SectionMemoryManager>(); }), CompileLayer(ObjectLayer, llvm::orc::SimpleCompiler(*TM)) {
-		llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
-	}
+	const llvm::DataLayout& getDataLayout() const { return DL; }
 
-	llvm::TargetMachine& getTargetMachine() {
-		return *TM;
-	}
+	llvm::LLVMContext& getContext() const { return *Ctx.getContext(); }
 
-	ModuleHandle addModule(std::shared_ptr<llvm::Module> M) {
-		// Build our symbol resolver:
-		// Lambda 1: Look back into the JIT itself to find symbols that are part of the same "logical dylib".
-		// Lambda 2: Search for external symbols in the host process.
-		auto Resolver = llvm::orc::createLambdaResolver(
-			[&](const std::string &Name) {
-				// std::cout << "resolve symbol 1 " << Name << std::endl;
-				if (auto Sym = CompileLayer.findSymbol(Name, false))
-					return Sym;
-				auto i = mappings.find(Name);
-				if (i != mappings.end()) {
-					return llvm::JITSymbol(i->second.addr, llvm::JITSymbolFlags(llvm::JITSymbolFlags::FlagNames::None));
-				}
-				return llvm::JITSymbol(nullptr);
-			},
-			[](const std::string &Name) {
-				// std::cout << "resolve symbol 2 " << Name << std::endl;
-				if (auto SymAddr = llvm::RTDyldMemoryManager::getSymbolAddressInProcess(Name))
-					return llvm::JITSymbol(SymAddr, llvm::JITSymbolFlags::Exported);
-				return llvm::JITSymbol(nullptr);
-		});
-		// Add the set to the JIT with the resolver we created above and a newly created SectionMemoryManager.
-		return cantFail(CompileLayer.addModule(std::move(M), std::move(Resolver)));
-	}
+	std::unique_ptr<llvm::Module> optimizeModule(std::unique_ptr<llvm::Module> M);
+	llvm::orc::VModuleKey addModule(std::unique_ptr<llvm::Module> M, bool optimize, bool export_bitcode = false, bool export_optimized_ir = false);
 
 	llvm::JITSymbol findSymbol(const std::string Name) {
-		std::string MangledName;
-		llvm::raw_string_ostream MangledNameStream(MangledName);
-		llvm::Mangler::getNameWithPrefix(MangledNameStream, Name, DL);
-		return CompileLayer.findSymbol(MangledNameStream.str(), true);
+		return OptimizeLayer.findSymbol(Name, false);
 	}
-
-	llvm::JITTargetAddress getSymbolAddress(const std::string Name) {
-		return cantFail(findSymbol(Name).getAddress());
+	void removeModule(llvm::orc::VModuleKey K) {
+		cantFail(OptimizeLayer.removeModule(K));
 	}
 
 	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of the function.  This is used for mutable variables etc.
-	static llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) {
-		auto function = builder.GetInsertBlock()->getParent();
-		llvm::IRBuilder<> builder(&function->getEntryBlock(), function->getEntryBlock().begin());
+	llvm::AllocaInst* CreateEntryBlockAlloca(const std::string& VarName, llvm::Type* type) const {
+		llvm::IRBuilder<> builder(&F->getEntryBlock(), F->getEntryBlock().begin());
 		return builder.CreateAlloca(type, nullptr, VarName);
-	}
-
-	void removeModule(ModuleHandle H) {
-		cantFail(CompileLayer.removeModule(H));
 	}
 
 	void init();
@@ -171,20 +143,26 @@ public:
 	value new_integer(int i) const;
 	value new_real(double r) const;
 	value new_long(long l) const;
-	value new_pointer(const void* p, Type type) const;
-	value new_function(const void* p, Type type) const;
-	value new_class(const void* p) const;
+	value new_mpz() const;
+	value new_const_string(std::string s) const;
+	value new_null_pointer(const Type* type) const;
+	value new_function(const Type* type) const;
+	value new_function(Compiler::value fun) const;
+	value new_function(std::string name, const Type* type) const;
+	value new_closure(Compiler::value fun, std::vector<value> captures) const;
+	value new_class(std::string name) const;
 	value new_object() const;
 	value new_object_class(value clazz) const;
-	value new_mpz(long value = 0) const;
-	value new_mpz_init(const mpz_t mpz) const;
-	value create_entry(const std::string& name, Type type) const;
+	value new_set() const;
+	value create_entry(const std::string& name, const Type* type) const;
+	value get_symbol(const std::string& name, const Type* type) const;
 
 	// Conversions
 	value to_int(value) const;
-	value to_real(value) const;
+	value to_real(value, bool delete_temporary = false) const;
 	value to_long(value) const;
-	value insn_convert(value, Type) const;
+	value insn_convert(value, const Type*, bool delete_temporary = false) const;
+	value to_numeric(value) const;
 
 	// Operators wrapping
 	value insn_not(value) const;
@@ -211,6 +189,7 @@ public:
 	value insn_lshr(value, value) const;
 	value insn_ashr(value, value) const;
 	value insn_mod(value, value) const;
+	value insn_double_mod(value, value) const;
 	value insn_cmpl(value, value) const;
 
 	// Math Functions
@@ -225,7 +204,6 @@ public:
 	value insn_acos(value) const;
 	value insn_asin(value) const;
 	value insn_atan(value) const;
-	value insn_sqrt(value) const;
 	value insn_pow(value, value) const;
 	value insn_min(value, value) const;
 	value insn_max(value, value) const;
@@ -243,20 +221,20 @@ public:
 	value insn_typeof(value v) const;
 	value insn_class_of(value v) const;
 	void  insn_delete(value v) const;
+	void  insn_delete_variable(value v) const;
 	void  insn_delete_temporary(value v) const;
-	value insn_get_capture(int index, Type type) const;
+	value insn_get_capture(int index, const Type* type) const;
+	value insn_get_capture_l(int index, const Type* type) const;
 	value insn_move_inc(value) const;
 	value insn_clone_mpz(value mpz) const;
 	void  insn_delete_mpz(value mpz) const;
 	value insn_inc_refs(value v) const;
-	value insn_dec_refs(value v, value previous = {nullptr, Type::NULLL}) const;
 	value insn_move(value v) const;
 	value insn_refs(value v) const;
 	value insn_native(value v) const;
-	value insn_get_argument(const std::string& name) const;
 
 	// Arrays
-	value new_array(Type type, std::vector<value> elements) const;
+	value new_array(const Type* type, std::vector<value> elements) const;
 	value insn_array_size(value v) const;
 	void  insn_push_array(value array, value element) const;
 	value insn_array_at(value array, value index) const;
@@ -264,14 +242,20 @@ public:
 
 	// Iterators
 	value iterator_begin(value v) const;
+	value iterator_rbegin(value v) const;
 	value iterator_end(value v, value it) const;
-	value iterator_get(Type collectionType, value it, value previous) const;
+	value iterator_rend(value v, value it) const;
+	value iterator_get(const Type* collectionType, value it, value previous) const;
+	value iterator_rget(const Type* collectionType, value it, value previous) const;
 	value iterator_key(value v, value it, value previous) const;
-	void iterator_increment(Type collectionType, value it) const;
+	value iterator_rkey(value v, value it, value previous) const;
+	void iterator_increment(const Type* collectionType, value it) const;
+	void iterator_rincrement(const Type* collectionType, value it) const;
+	value insn_foreach(value v, const Type* output, Variable* var, Variable* key, std::function<value(value, value)>, bool reversed = false, std::function<value(value, value)> body2 = nullptr);
 
 	// Controls
 	label insn_init_label(std::string name) const;
-	void insn_if(value v, std::function<void()> then) const;
+	void insn_if(value v, std::function<void()> then, std::function<void()> elze = nullptr) const;
 	void insn_if_new(value cond, label* then, label* elze) const;
 	void insn_if_not(value v, std::function<void()> then) const;
 	void insn_throw(value v) const;
@@ -280,38 +264,37 @@ public:
 	void insn_branch(label* l) const;
 	void insn_return(value v) const;
 	void insn_return_void() const;
+	value insn_phi(const Type* type, value v1, label l1, value v2, label l2) const;
+	value insn_phi(const Type* type, value v1, Block* b1, value v2, Block* b2) const;
 
 	// Call functions
-	template <typename R, typename... A>
-	value insn_call(Type return_type, std::vector<value> args, R(*func)(A...)) const {
-		return insn_call(return_type, args, (void*) func);
-	}
-	value insn_call(Type return_type, std::vector<value> args, void* func) const;
-	template <typename R, typename... A>
-	value insn_invoke(Type return_type, std::vector<value> args, R(*func)(A...)) const {
-		return insn_invoke(return_type, args, (void*) func);
-	}
-	value insn_invoke(Type return_type, std::vector<value> args, void* func) const;
-	value insn_call_indirect(Type return_type, value fun, std::vector<value> args) const;
-	void function_add_capture(value fun, value capture);
+	value insn_invoke(const Type* return_type, std::vector<value> args, std::string name) const;
+	value insn_invoke(const Type* return_type, std::vector<value> args, value func) const;
+	value insn_call(value fun, std::vector<value> args) const;
+	value insn_call(const Type* return_type, std::vector<value> args, std::string name, bool readonly = false) const;
+	void function_add_capture(value fun, value capture) const;
 	void log(const std::string&& str) const;
 
 	// Blocks
-	void enter_block();
-	void leave_block();
+	void enter_block(Block* block);
+	void leave_block(bool delete_vars = true);
 	void delete_variables_block(int deepness); // delete all variables in the #deepness current blocks
-	void enter_function(llvm::Function* F, bool is_closure, Function* fun);
+	void enter_function(llvm::Function* F, bool is_closure, FunctionVersion* fun);
 	void leave_function();
 	int get_current_function_blocks() const;
 	void delete_function_variables() const;
 	bool is_current_function_closure() const;
+	void insert_new_generation_block() const;
+	Block* current_block() const;
 
 	// Variables
-	value add_var(const std::string& name, value value);
-	value create_and_add_var(const std::string& name, Type type);
-	void add_function_var(value value);
-	value get_var(const std::string& name);
-	void update_var(std::string& name, value value);
+	value add_external_var(Variable*);
+	void export_context_variable(const std::string& name, Compiler::value v) const;
+	void add_temporary_variable(Variable* variable);
+	void add_temporary_value(value);
+	void pop_temporary_value();
+	void add_temporary_expression_value(value);
+	void pop_temporary_expression_value();
 
 	// Loops
 	void enter_loop(label*, label*);
@@ -326,22 +309,22 @@ public:
 
 	/** Exceptions **/
 	void mark_offset(int line);
-	void add_catcher(label start, label end, label handler);
+	void insn_try_catch(std::function<void()> try_, std::function<void()> catch_);
 	void insn_check_args(std::vector<value> args, std::vector<LSValueType> types) const;
+	const catcher* find_catcher() const;
 
 	// Utils
-	std::ostringstream& _log_insn(int indent) const;
-	std::string dump_val(value v) const;
-	void register_label(label* v) const;
-	void log_insn_code(std::string instruction) const;
-	void add_literal(void* ptr, std::string value) const;
 	static void print_mpz(__mpz_struct value);
+	bool check_value(value) const;
+	void increment_mpz_created() const;
+	void increment_mpz_deleted() const;
 };
 
 }
 
 namespace std {
 	std::ostream& operator << (std::ostream&, const __mpz_struct);
+	std::ostream& operator << (std::ostream&, const std::vector<ls::Compiler::value>&);
 }
 
 #endif

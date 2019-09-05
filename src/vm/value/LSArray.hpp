@@ -6,7 +6,6 @@
 
 #include <vector>
 #include <iterator>
-
 #include "../LSValue.hpp"
 
 namespace ls {
@@ -16,11 +15,13 @@ class LSArray : public LSValue, public std::vector<T> {
 public:
 
 	static LSValue* clazz;
+	static LSArray<T>* constructor(int);
 
 	LSArray();
 	LSArray(std::initializer_list<T>);
 	LSArray(const std::vector<T>&);
 	LSArray(const LSArray<T>&);
+	LSArray(size_t);
 
 	virtual ~LSArray();
 
@@ -49,6 +50,8 @@ public:
 	LSArray<T>* ls_unique();
 	LSArray<T>* ls_sort();
 	template <class F>
+	LSArray<T>* ls_sort_fun(F function);
+	template <class F>
 	void ls_iter(F fun);
 	bool ls_contains(T val);
 	LSArray<T>* ls_push(T val);
@@ -64,8 +67,6 @@ public:
 	template <class F, class R>
 	R ls_foldRight(F function, R initial);
 	LSArray<T>* ls_insert(T value, int pos);
-	template <class F>
-	LSArray<LSValue*>* ls_partition(F function);
 	template <class F, class R, class T2>
 	LSArray<R>* ls_map2(LSArray<T2>*, F function);
 	int ls_search(T needle, int start);
@@ -78,6 +79,8 @@ public:
 	template <class T2>
 	LSValue* add_set(LSSet<T2>* set);
 	LSArray<T>* ls_random(int n);
+	LSArray<LSValue*>* to_any_array() const;
+	LSArray<double>* to_real_array() const;
 
 	/*
 	 * LSValue methods

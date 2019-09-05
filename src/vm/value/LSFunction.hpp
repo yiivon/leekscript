@@ -14,6 +14,7 @@ class LSFunction : public LSValue {
 public:
 
 	static LSClass* clazz;
+	static LSFunction* constructor(void* f);
 
 	void* function;
 	// For reflexion

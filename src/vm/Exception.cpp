@@ -1,5 +1,4 @@
 #include "Exception.hpp"
-#include "VM.hpp"
 #include "../colors.h"
 
 namespace ls {

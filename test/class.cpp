@@ -6,7 +6,7 @@ void Test::test_classes() {
 	section("type ID");
 	code("Number.typeID()").equals("11");
 	code("[Number, ''][0].typeID()").equals("11");
-	code("Number = 12").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"Number"});
+	code("Number = 12").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"Number"});
 
 	section(".class attribute");
 	code("true.class").equals("<class Boolean>");
@@ -43,7 +43,7 @@ void Test::test_classes() {
 	code("[Array, ''][0].name").equals("'Array'");
 
 	section("Class.attr");
-	code("Number.toto").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"toto", "Number"});
+	code("Number.toto").error(ls::Error::NO_SUCH_ATTRIBUTE, {"toto", "Number"});
 
 	section("Class.operator ==");
 	code("Number == 12").equals("false");
@@ -72,17 +72,16 @@ void Test::test_classes() {
 	code("class A { let b = 2 } let a = new A a").equals("A {b: 2}");
 	code("class A { let b = 2 } let a = new A a.class").equals("<class A>");
 	code("class A { let b = 2 } let a = new A a.b").equals("2");
-	DISABLED_code("class A { let b = 'a' } let t = [A] let a = new t[0] a").equals("A {b: 'a'}");
-	DISABLED_code("class A { let b = [1] } let t = [A] let c = t[0] let a = new c a").equals("A {b: [1]}");
+	code("class A { let b = 'a' } let t = [A] let a = new t[0] a").equals("A {b: 'a'}");
+	code("class A { let b = [1] } let t = [A] let c = t[0] let a = new c a").equals("A {b: [1]}");
 	code("class A {} let a = new A let b = new a.class b.class").equals("<class A>");
 
 	section("Methods access");
 	code("['hello', 2][0].toto").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
 	code("[].map").equals("<function>");
-	code("[].azertyuiop").semantic_error(ls::SemanticError::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
+	code("[].azertyuiop").error(ls::Error::NO_SUCH_ATTRIBUTE, {"azertyuiop", "Array"});
 	code("[[], ''][0].azertyuiop").exception(ls::vm::Exception::NO_SUCH_ATTRIBUTE);
-	// TODO
-	DISABLED_code("let my_map = [].map; my_map([1, 2, 3], x -> x ^ 2)").equals("[1, 4, 9]");
+	code("let my_map = [].map; my_map([1, 2, 3], x -> x ** 2)").equals("[1, 4, 9]");
 	code("[].map == [].map").equals("true");
 	code("{}.map == {}.map").equals("true");
 	code("[].map == {}.map").equals("false");

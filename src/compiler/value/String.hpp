@@ -11,20 +11,18 @@ namespace ls {
 class String : public Value {
 public:
 
-	std::shared_ptr<Token> token;
-	LSString* ls_string;
+	Token* token;
 
-	String(std::shared_ptr<Token> token);
-	virtual ~String();
+	String(Token* token);
 
 	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual bool will_store(SemanticAnalyser* analyser, const Type& type) override;
+	virtual bool will_store(SemanticAnalyzer* analyzer, const Type* type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Value* clone() const override;
+	virtual std::unique_ptr<Value> clone() const override;
 };
 
 }

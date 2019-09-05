@@ -3,67 +3,67 @@
 #include "Context.hpp"
 #include "value/LSNull.hpp"
 #include "value/LSArray.hpp"
-#include "../compiler/lexical/LexicalAnalyser.hpp"
-#include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
+#include "../compiler/lexical/LexicalAnalyzer.hpp"
+#include "../compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "Context.hpp"
-#include "../compiler/semantic/SemanticAnalyser.hpp"
-#include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/semantic/SemanticAnalyzer.hpp"
+#include "../compiler/error/Error.hpp"
 #include "../util/Util.hpp"
 #include "../constants.h"
 #include "../colors.h"
-
-using namespace std;
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
+#include "../compiler/value/Expression.hpp"
+#include "../compiler/instruction/ExpressionInstruction.hpp"
+#include "../compiler/value/VariableValue.hpp"
+#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/Bitcode/BitcodeReader.h"
+#include "../compiler/semantic/Variable.hpp"
+#include "../compiler/semantic/FunctionVersion.hpp"
 
 namespace ls {
 
 Program::Program(const std::string& code, const std::string& file_name) {
 	this->code = code;
 	this->file_name = file_name;
-	main = nullptr;
 	closure = nullptr;
 }
 
 Program::~Program() {
-	if (main != nullptr) {
-		delete main;
-		if (closure != nullptr) {
-			// vm->compiler.removeModule(main->function_handle);
-		}
+	if (handle_created) {
+		vm->compiler.removeModule(module_handle);
 	}
 }
 
-VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool pseudo_code, bool log_instructions) {
+VM::Result Program::compile_leekscript(VM& vm, Context* ctx, bool bitcode, bool pseudo_code, bool optimized_ir) {
 
-	this->vm = &vm;
+	auto parse_start = std::chrono::high_resolution_clock::now();
+
+	auto resolver = new Resolver();
 	VM::Result result;
+	main_file = new File(file_name, code, new FileContext());
+	SyntaxicAnalyzer syn { resolver };
+	auto block = syn.analyze(main_file);
 
-	// Lexical analysis
-	LexicalAnalyser lex;
-	auto tokens = lex.analyse(code);
-
-	if (lex.errors.size()) {
+	if (main_file->errors.size() > 0) {
 		result.compilation_success = false;
-		result.lexical_errors = lex.errors;
-		for (auto& t : tokens) delete t;
+		result.errors = main_file->errors;
 		return result;
 	}
 
-	// Syntaxical analysis
-	SyntaxicAnalyser syn;
-	this->main = syn.analyse(tokens);
+	auto token = new Token(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	this->main = std::make_unique<Function>(std::move(token));
+	this->main->body = block;
 	this->main->is_main_function = true;
 
-	if (syn.getErrors().size() > 0) {
-		result.compilation_success = false;
-		result.syntaxical_errors = syn.getErrors();
-		return result;
-	}
-
 	// Semantical analysis
-	Context context { ctx };
-	SemanticAnalyser sem;
+	SemanticAnalyzer sem;
 	sem.vm = &vm;
-	sem.analyse(this, &context);
+	sem.analyze(this, ctx);
 
 	std::ostringstream oss;
 	print(oss, true);
@@ -71,101 +71,216 @@ VM::Result Program::compile(VM& vm, const std::string& ctx, bool assembly, bool 
 
 	if (sem.errors.size()) {
 		result.compilation_success = false;
-		result.semantical_errors = sem.errors;
+		result.errors = sem.errors;
 		return result;
 	}
+
+	// print(std::cout, true); std::cout << std::endl;
 
 	// Compilation
 	vm.internals.clear();
 	vm.compiler.program = this;
 	vm.compiler.init();
-	vm.compiler.output_assembly = assembly;
-	vm.compiler.output_pseudo_code = pseudo_code;
-	vm.compiler.log_instructions = log_instructions;
-	vm.compiler.instructions_debug.str("");
-	vm.compiler.label_map.clear();
-	main->compile(vm.compiler);
-	closure = main->default_version->function->function;
-	// vm.compiler.leave_function();
 
-	// Result
+	module = new llvm::Module(file_name, vm.compiler.getContext());
+	module->setDataLayout(vm.compiler.DL);
+
+	main->compile(vm.compiler);
+
+	auto parse_end = std::chrono::high_resolution_clock::now();
+	auto parse_time = std::chrono::duration_cast<std::chrono::nanoseconds>(parse_end - parse_start).count();
+	result.parse_time = (((double) parse_time / 1000) / 1000);
+
+	if (pseudo_code) {
+		std::error_code EC2;
+		llvm::raw_fd_ostream ir(file_name + ".ll", EC2, llvm::sys::fs::F_None);
+		module->print(ir, nullptr);
+		ir.flush();
+	}
+
+	auto compilation_start = std::chrono::high_resolution_clock::now();
+
+	module_handle = vm.compiler.addModule(std::unique_ptr<llvm::Module>(module), true, bitcode, optimized_ir);
+	handle_created = true;
+	auto ExprSymbol = vm.compiler.findSymbol("main");
+	assert(ExprSymbol && "Function not found");
+	closure = (void*) cantFail(ExprSymbol.getAddress());
+	// std::cout << "program type " << main->type->return_type() << std::endl;
+	type = main->type->return_type()->fold();
+	// std::cout << "program type " << type << std::endl;
+
+	auto compilation_end = std::chrono::high_resolution_clock::now();
+	auto compilation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(compilation_end - compilation_start).count();
+	result.compilation_time = (((double) compilation_time / 1000) / 1000);
+
 	result.compilation_success = true;
-	result.assembly = vm.compiler.assembly.str();
-	result.pseudo_code = vm.compiler.pseudo_code.str();
-	result.instructions_log = vm.compiler.instructions_debug.str();
+
 	return result;
 }
 
-void Program::analyse(SemanticAnalyser* analyser) {
+VM::Result Program::compile_ir_file(VM& vm) {
+	VM::Result result;
+	llvm::SMDiagnostic Err;
+	auto Mod = llvm::parseIRFile(file_name, Err, vm.compiler.getContext());
+	if (!Mod) {
+		Err.print("main", llvm::errs());
+		result.compilation_success = false;
+		result.program = "<error>";
+		return result;
+	}
+	auto llvm_type = Mod->getFunction("main")->getReturnType();
+	vm.compiler.addModule(std::move(Mod), true);
+	auto symbol = vm.compiler.findSymbol("main");
+	closure = (void*) cantFail(symbol.getAddress());
+
+	if (llvm_type->isPointerTy() and llvm_type->getPointerElementType()->isFunctionTy()) {
+		type = Type::fun();
+	} else if (llvm_type->isPointerTy()) {
+		type = Type::any;
+	} else if (llvm_type->isStructTy()) {
+		type = Type::mpz;
+	} else if (llvm_type->isFloatingPointTy()) {
+		type = Type::real;
+	} else {
+		type = Type::integer;
+	}
+
+	result.compilation_success = true;
+	std::ostringstream oss;
+	oss << llvm_type;
+	result.program = type->to_string() + " " + oss.str();
+	return result;
+}
+
+VM::Result Program::compile_bitcode_file(VM& vm) {
+	VM::Result result;
+	auto EMod = llvm::parseBitcodeFile(llvm::MemoryBufferRef { *llvm::MemoryBuffer::getFile(file_name).get() }, vm.compiler.getContext());
+	if (!EMod) {
+		llvm::errs() << EMod.takeError() << '\n';
+		result.compilation_success = false;
+		result.program = "<error>";
+		return result;
+	}
+	auto Mod = std::move(EMod.get());
+	auto llvm_type = Mod->getFunction("main")->getReturnType();
+	vm.compiler.addModule(std::move(Mod), false); // Already optimized
+	auto symbol = vm.compiler.findSymbol("main");
+	closure = (void*) cantFail(symbol.getAddress());
+
+	type = llvm_type->isPointerTy() ? Type::any : (llvm_type->isStructTy() ? Type::mpz : Type::integer);
+
+	result.compilation_success = true;
+	std::ostringstream oss;
+	oss << llvm_type;
+	result.program = type->to_string() + " " + oss.str();
+	return result;
+}
+
+VM::Result Program::compile(VM& vm, Context* ctx, bool export_bitcode, bool pseudo_code, bool optimized_ir, bool ir, bool bitcode) {
+	this->vm = &vm;
+
+	if (ir) {
+		return compile_ir_file(vm);
+	} else if (bitcode) {
+		return compile_bitcode_file(vm);
+	} else {
+		return compile_leekscript(vm, ctx, export_bitcode, pseudo_code, optimized_ir);
+	}
+}
+
+Variable* Program::get_operator(const std::string& name) {
+	// std::cout << "Program::get_operator(" << name << ")" << std::endl;
+
+	auto op = operators.find(name);
+	if (op != operators.end()) {
+		return op->second;
+	}
+
+	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\", "~", ">", "<", ">=", "<="};
+	std::vector<TokenType> token_types = {TokenType::PLUS, TokenType::MINUS, TokenType::TIMES, TokenType::TIMES, TokenType::DIVIDE, TokenType::DIVIDE, TokenType::POWER, TokenType::MODULO, TokenType::INT_DIV, TokenType::TILDE, TokenType::GREATER, TokenType::LOWER, TokenType::GREATER_EQUALS, TokenType::LOWER_EQUALS};
+	
+	auto o = std::find(ops.begin(), ops.end(), name);
+	if (o == ops.end()) return nullptr;
+
+	auto token = new Token(TokenType::FUNCTION, main_file, 0, 0, 0, "function");
+	auto f = new Function(token);
+	f->addArgument(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"), nullptr);
+	f->addArgument(new Token(TokenType::IDENT, main_file,2, 1, 2, "y"), nullptr);
+	f->body = new Block(true);
+	auto ex = std::make_unique<Expression>();
+	ex->v1 = std::make_unique<VariableValue>(new Token(TokenType::IDENT, main_file, 0, 1, 0, "x"));
+	ex->v2 = std::make_unique<VariableValue>(new Token(TokenType::IDENT, main_file, 2, 1, 2, "y"));
+	ex->op = std::make_shared<Operator>(new Token(token_types.at(std::distance(ops.begin(), o)), main_file, 1, 1, 1, name));
+	f->body->instructions.emplace_back(new ExpressionInstruction(std::move(ex)));
+	auto type = Type::fun(Type::any, {Type::any, Type::any});
+
+	auto var = new Variable(name, VarScope::INTERNAL, type, 0, f, nullptr, nullptr, nullptr);
+	operators.insert({name, var});
+	return var;
+}
+
+void Program::analyze(SemanticAnalyzer* analyzer) {
 	main->name = "main";
-	main->file = file_name;
-	main->body->analyse_global_functions(analyser);
-	main->analyse(analyser);
+	main->analyze(analyzer);
 }
 
 std::string Program::execute(VM& vm) {
 
-	const auto output_type = main->type.return_type();
+	assert(!type->reference && "Program return type shouldn't be a reference!");
 
-	assert(!output_type.reference && "Program return type shouldn't be a reference!");
-
-	if (output_type._types.size() == 0) {
+	if (type->is_void()) {
 		auto fun = (void (*)()) closure;
 		fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return "(void)";
 	}
-
-	if (output_type.not_temporary() == Type::BOOLEAN) {
+	if (type->is_bool()) {
 		auto fun = (bool (*)()) closure;
 		bool res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return res ? "true" : "false";
 	}
-
-	if (output_type.not_temporary() == Type::INTEGER) {
+	if (type->is_integer()) {
 		auto fun = (int (*)()) closure;
 		int res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
-
-	if (output_type.not_temporary() == Type::MPZ) {
+	if (type->is_mpz()) {
 		auto fun = (__mpz_struct (*)()) closure;
-		__mpz_struct ret = fun();
-		// if (vm.last_exception) throw vm.last_exception;
+		auto ret = fun();
 		char buff[1000000];
 		mpz_get_str(buff, 10, &ret);
-		// mpz_clear(&ret);
-		// vm.mpz_deleted++;
+		mpz_clear(&ret);
+		vm.mpz_deleted++;
 		return std::string(buff);
 	}
-
-	if (output_type.not_temporary() == Type::REAL) {
+	if (type->is_real()) {
 		auto fun = (double (*)()) closure;
 		double res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return LSNumber::print(res);
 	}
-
-	if (output_type.not_temporary() == Type::LONG) {
+	if (type->is_long()) {
 		auto fun = (long (*)()) closure;
 		long res = fun();
-		// if (vm.last_exception) throw vm.last_exception;
 		return std::to_string(res);
 	}
-
+	if (type->is_function_pointer()) {
+		auto fun = (long (*)()) closure;
+		fun();
+		return "<function>";
+	}
 	auto fun = (LSValue* (*)()) closure;
 	auto ptr = fun();
-	// if (vm.last_exception) throw vm.last_exception;
 	std::ostringstream oss;
 	ptr->dump(oss, 5);
 	LSValue::delete_ref(ptr);
 	return oss.str();
 }
 
-void Program::print(ostream& os, bool debug) const {
-	main->body->print(os, 0, debug, false);
+void Program::print(std::ostream& os, bool debug) const {
+	if (main) {
+		main->default_version->body->print(os, 0, debug, false);
+	} else {
+		os << "(ll file)";
+	}
 }
 
 std::ostream& operator << (std::ostream& os, const Program* program) {
@@ -174,6 +289,7 @@ std::ostream& operator << (std::ostream& os, const Program* program) {
 }
 
 std::string Program::underline_code(Location location, Location focus) const {
+	// std::cout << "underline " << location.start.column << " " << location.end.column << " " << focus.start.column << " " << focus.end.column << std::endl;
 	auto padding = 10ul;
 	auto start = padding > location.start.raw ? 0ul : location.start.raw - padding;
 	auto end = std::min(code.size(), location.end.raw + padding);
@@ -201,7 +317,7 @@ std::string Program::underline_code(Location location, Location focus) const {
 	auto focus_start = focus.start.raw - location.start.raw;
 	auto focus_size = focus.end.raw - focus.start.raw;
 	underlined = underlined.substr(0, focus_start)
-		+ C_YELLOW + underlined.substr(focus_start, focus_size) + END_COLOR
+		+ C_RED + underlined.substr(focus_start, focus_size) + END_COLOR
 		+ UNDERLINE + underlined.substr(focus_size + focus_start);
 
 	if (before.size() and before.front() != ' ')
@@ -213,99 +329,5 @@ std::string Program::underline_code(Location location, Location focus) const {
 		+ before + UNDERLINE + underlined + END_STYLE + after
 		+ (ellipsis_right ? (C_GREY "[...]" END_COLOR) : "");
 }
-
-// void Program::compile_jit(VM& vm, Compiler& c, Context&, bool) {
-
-	// User context variables
-	/*
-	if (toplevel) {
-		for (auto var : context.vars) {
-
-			string name = var.first;
-			LSValue* value = var.second;
-
-			jit_value_t jit_var = jit_value_create(c.F, LS_POINTER);
-			jit_value_t jit_val = LS_CREATE_POINTER(c.F, value);
-			jit_insn_store(c.F, jit_var, jit_val);
-
-			c.add_var(name, jit_var, Type(value->getRawType(), POINTER), false);
-
-			value->refs++;
-		}
-	}
-	*/
-
-	// jit_value_t res = main->body->compile(c).v;
-	// jit_insn_return(c.F, res);
-
-	/*
-	if (toplevel) {
-
-		// Push program res
-		jit_type_t array_sig = jit_type_create_signature(jit_abi_cdecl, JIT_POINTER, {}, 0, 0);
-		jit_value_t array = jit_insn_call_native(F, "new", (void*) &Program_create_array, array_sig, {}, 0, JIT_CALL_NOTHROW);
-
-		jit_type_t push_args_types[2] = {JIT_POINTER, JIT_POINTER};
-		jit_type_t push_sig_pointer = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-
-		jit_value_t push_args[2] = {array, res};
-		jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, push_args, 2, 0);
-
-		VM::delete_obj(F, res);
-
-//		cout << "GLOBALS : " << globals.size() << endl;
-
-		for (auto g : c.get_vars()) {
-
-			string name = g.first;
-			Type type = globals_types[name];
-
-			if (globals_ref[name] == true) {
-//				cout << name << " is ref, continue" << endl;
-				continue;
-			}
-
-//			cout << "save in context : " << name << ", type: " << type << endl;
-//			cout << "jit_val: " << g.second << endl;
-
-			jit_value_t var_args[2] = {array, g.second};
-
-			if (type.nature == POINTER) {
-
-//				cout << "save pointer" << endl;
-				jit_insn_call_native(F, "push", (void*) &Program_push_pointer, push_sig_pointer, var_args, 2, 0);
-
-//				cout << "delete global " << g.first << endl;
-				if (type.must_manage_memory()) {
-					VM::delete_obj(F, g.second);
-				}
-
-			} else {
-//				cout << "save value" << endl;
-				if (type.raw_type == RawType::NULLL) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_null, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::BOOLEAN) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_boolean, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::INTEGER) {
-					jit_type_t push_args_types[2] = {JIT_POINTER, JIT_INTEGER};
-					jit_type_t push_sig = jit_type_create_signature(jit_abi_cdecl, jit_type_void, push_args_types, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_integer, push_sig, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.raw_type == RawType::REAL) {
-					jit_type_t args_float[2] = {JIT_POINTER, JIT_REAL};
-					jit_type_t sig_push_float = jit_type_create_signature(jit_abi_cdecl, jit_type_void, args_float, 2, 0);
-					jit_insn_call_native(F, "push", (void*) &Program_push_float, sig_push_float, var_args, 2, JIT_CALL_NOTHROW);
-				} else if (type.is_function()) {
-					jit_insn_call_native(F, "push", (void*) &Program_push_function, push_sig_pointer, var_args, 2, JIT_CALL_NOTHROW);
-				}
-			}
-		}
-		jit_insn_return(F, array);
-	}
-	*/
-// }
 
 }

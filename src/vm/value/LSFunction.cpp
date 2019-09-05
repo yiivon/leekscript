@@ -3,12 +3,19 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
+#include "../../vm/VM.hpp"
 
 namespace ls {
 
 LSClass* LSFunction::clazz;
 
-LSFunction::LSFunction(void* function) : LSValue(FUNCTION) {
+LSFunction* LSFunction::constructor(void* f) {
+	auto fun = new LSFunction(f);
+	VM::current()->function_created.push_back(fun);
+	return fun;
+}
+
+LSFunction::LSFunction(void* function) : LSValue(FUNCTION, 1, true) {
 	this->function = function;
 }
 

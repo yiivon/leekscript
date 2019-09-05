@@ -1,8 +1,6 @@
 #include "Operator.hpp"
 #include <iostream>
 
-using namespace std;
-
 namespace ls {
 
 /*
@@ -65,9 +63,7 @@ static int operator_priorities[] = {
 	9, /* %%= */
 };
 
-Operator::Operator(Token* token) {
-
-	this->token.reset(token);
+Operator::Operator(Token* token) : token(token) {
 	this->type = token->type;
 	this->character = token->content;
 	this->priority = operator_priorities[(int) token->type];

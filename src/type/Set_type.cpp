@@ -6,63 +6,82 @@
 
 namespace ls {
 
-Set_type::Set_type(Type element) : Pointer_type(Type {
-	std::make_shared<const Struct_type>(std::string("_set"), std::initializer_list<Type> {
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::INTEGER, // ?
-		Type::BOOLEAN, // native
-		element.pointer(),
-		element.pointer(),
-		element.pointer(),
-		Type({ std::make_shared<const Struct_type>("set_node", std::initializer_list<Type> {
-			Type::LONG, Type::LONG,	Type::LONG,	Type::LONG,
-			element	
-		}) }).pointer()
-	})
-}), _element(element) {}
+std::unordered_map<const Type*, const Type*> Set_type::nodes;
+std::unordered_map<const Type*, const Type*> Set_type::iterators;
 
-Type Set_type::key() const {
-	return Type::INTEGER;
+Set_type::Set_type(const Type* element) : Pointer_type(Type::structure("set<" + element->getName() + ">", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::boolean, // native
+	element->pointer(),
+	element->pointer(),
+	element->pointer(),
+	get_node_type(element)
+})), _element(element) {}
+
+const Type* Set_type::key() const {
+	return Type::integer;
 }
-Type Set_type::element() const {
+const Type* Set_type::element() const {
 	return _element;
 }
-Type Set_type::iterator() const {
-	const auto merged = _element.fold();
-	if (merged.is_integer()) return Type::INT_SET_ITERATOR;
-	if (merged.is_real()) return Type::REAL_SET_ITERATOR;
-	return Type::PTR_SET_ITERATOR;
+const Type* Set_type::iterator() const {
+	const auto merged = _element->fold();
+	return get_iterator(merged);
 }
-bool Set_type::operator == (const Base_type* type) const {
+bool Set_type::operator == (const Type* type) const {
 	if (auto array = dynamic_cast<const Set_type*>(type)) {
 		return _element == array->_element;
 	}
 	return false;
 }
-bool Set_type::compatible(const Base_type* type) const {
-	if (auto set = dynamic_cast<const Set_type*>(type)) {
-		return _element.compatible(set->_element);
-	}
-	return false;
-}
-int Set_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1000; }
-	if (auto set = dynamic_cast<const Set_type*>(type)) {
-		if (set->_element._types.size() == 0) {
+int Set_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1000; }
+	if (auto set = dynamic_cast<const Set_type*>(type->folded)) {
+		if (set->_element->is_void()) {
 			return 999;
 		}
-		return _element.distance(set->_element);
+		return _element->distance(set->_element);
 	}
 	return -1;
 }
-std::string Set_type::clazz() const {
+std::string Set_type::class_name() const {
 	return "Set";
+}
+const std::string Set_type::getName() const {
+	return "set<" + _element->getName() + ">";
 }
 std::ostream& Set_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "set" << END_COLOR << "<" << _element << ">";
 	return os;
+}
+Type* Set_type::clone() const {
+	return new Set_type { _element };
+}
+
+const Type* Set_type::get_iterator(const Type* element) {
+	auto i = iterators.find(element);
+	if (i != iterators.end()) return i->second;
+	auto type = Type::structure("set_iterator<" + element->getName() + ">", {
+		get_node_type(element),
+		Type::integer
+	});
+	iterators.insert({ element, type });
+	return type;
+}
+
+const Type* Set_type::get_node_type(const Type* element) {
+	auto i = nodes.find(element);
+	if (i != nodes.end()) return i->second;
+	auto type = Type::structure("set_node<" + element->getName() + ">", {
+		Type::long_, Type::long_, Type::long_, Type::long_,
+		element
+	})->pointer();
+	nodes.insert({ element, type });
+	return type;
 }
 
 }

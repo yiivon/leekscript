@@ -1,6 +1,0 @@
-{
-    "UNKNOWN_ERROR": "Erreur inconnue",
-    "UNTERMINATED_STRING": "Chaîne de caractère non terminée",
-    "UNKNOWN_ESCAPE_SEQUENCE": "Séquence d'échappement inconnue",
-    "NUMBER_INVALID_REPRESENTATION": "Représentation invalide de nombre"
-}

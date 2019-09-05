@@ -4,13 +4,16 @@
 #include "../src/constants.h"
 #include "../src/colors.h"
 #include "../src/vm/Program.hpp"
+#include "../src/leekscript.h"
 
 std::vector<std::string> Test::failed_tests;
+std::vector<std::string> Test::disabled_tests;
 
 Test::Test() : vmv1(true) {
 	total = 0;
 	success_count = 0;
-	exeTime = 0;
+	compilation_time = 0;
+	execution_time = 0;
 	disabled = 0;
 	obj_deleted = 0;
 	obj_created = 0;
@@ -21,19 +24,12 @@ Test::Test() : vmv1(true) {
 Test::~Test() {}
 
 int main(int, char**) {
-
-	llvm::InitializeNativeTarget();
-	llvm::InitializeNativeTargetAsmPrinter();
-	llvm::InitializeNativeTargetAsmParser();
-
+	ls::init();
 	srand(time(0));
 	return Test().all();
 }
 
 int Test::all() {
-
-	clock_t begin = clock();
-	exeTime = 0;
 
 	test_types();
 	test_general();
@@ -54,17 +50,18 @@ int Test::all() {
 	test_system();
 	test_json();
 	test_files();
+	test_toplevel();
 	test_doc();
 	test_utils();
 
-	double elapsed_secs = double(clock() - begin) / CLOCKS_PER_SEC;
+	double total_time = parse_time + compilation_time + execution_time;
 	int errors = (total - success_count - disabled);
 	int leaks = (obj_created - obj_deleted);
 	int mpz_leaks = (mpz_obj_created - mpz_obj_deleted);
 
 	std::ostringstream line1, line2, line3, line4;
 	line1 << "Total: " << total << ", success: " << success_count << ", errors: " << errors << ", disabled: " << disabled;
-	line2 << "Total time: " << elapsed_secs * 1000 << " ms";
+	line2 << "Time: " << total_time << " ms (" << std::fixed << std::setprecision(1) << parse_time << " ms + " << std::fixed << std::setprecision(1) << compilation_time << " ms + " << std::fixed << std::setprecision(1) << execution_time << " ms)";
 	line3 << "Objects destroyed: " << obj_deleted << " / " << obj_created << " (" << leaks << " leaked)";
 	line4 << "MPZ objects destroyed: " << mpz_obj_deleted << " / " << mpz_obj_created << " (" << mpz_leaks << " leaked)";
 	unsigned w = std::max(line1.str().size(), std::max(line2.str().size(), std::max(line3.str().size(), line4.str().size())));
@@ -102,49 +99,55 @@ int Test::all() {
 	if (failed_tests.size()) {
 		std::cout << std::endl;
 	}
+	for (const auto& test : disabled_tests) {
+		std::cout << " " << test << std::endl;
+	}
+	if (disabled_tests.size()) {
+		std::cout << std::endl;
+	}
 	return result;
 }
 
 Test::Input Test::code(const std::string& code) {
-	return Test::Input(this, code, code);
+	return Test::Input(this, code, "test", code);
 }
 Test::Input Test::DISABLED_code(const std::string& code) {
-	return Test::Input(this, code, code, false, false, true);
+	return Test::Input(this, code, "test", code, false, false, true);
 }
 Test::Input Test::code_v1(const std::string& code) {
-	return Test::Input(this, code, code, false, true);
+	return Test::Input(this, code, "test", code, false, true);
 }
 Test::Input Test::DISABLED_code_v1(const std::string& code) {
-	return Test::Input(this, code, code, false, true, true);
+	return Test::Input(this, code, "test", code, false, true, true);
 }
 Test::Input Test::file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true);
+	return Test::Input(this, file_name, file_name, code, true);
 }
 Test::Input Test::DISABLED_file(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true, false, true);
+	return Test::Input(this, file_name, file_name, code, true, false, true);
 }
 
 Test::Input Test::file_v1(const std::string& file_name) {
 	std::ifstream ifs(file_name);
 	std::string code = std::string((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 	ifs.close();
-	return Test::Input(this, file_name, code, true, true);
+	return Test::Input(this, file_name, file_name, code, true, true);
 }
 
-ls::VM::Result Test::Input::run(bool display_errors) {
+ls::VM::Result Test::Input::run(bool display_errors, bool ops) {
 	test->total++;
 
 	// std::cout << C_BLUE << "RUN " << END_COLOR << code << C_GREY << "..." << END_COLOR << std::endl;
 
 	auto vm = v1 ? &test->vmv1 : &test->vm;
-	vm->operation_limit = this->operation_limit;
-	auto result = vm->execute(code, "{}", "test", false, true);
+	vm->operation_limit = this->operation_limit > 0 ? this->operation_limit : ls::VM::DEFAULT_OPERATION_LIMIT;
+	auto result = vm->execute(code, ctx, file_name, false, ops or this->operation_limit > 0);
 	vm->operation_limit = ls::VM::DEFAULT_OPERATION_LIMIT;
 
 	this->result = result;
@@ -153,17 +156,15 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	test->mpz_obj_created += result.mpz_objects_created;
 	test->mpz_obj_deleted += result.mpz_objects_deleted;
 
-	compilation_time = round((float) result.compilation_time / 1000) / 1000;
-	execution_time = round((float) result.execution_time / 1000) / 1000;
+	parse_time = result.parse_time;
+	compilation_time = result.compilation_time;
+	execution_time = result.execution_time;
+	test->parse_time += result.parse_time;
+	test->compilation_time += result.compilation_time;
+	test->execution_time += result.execution_time;
 
 	if (display_errors) {
-		for (const auto& error : result.lexical_errors) {
-			std::cout << "Line " << error.line << ": " << error.message() << std::endl;
-		}
-		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Line " << error.token->location.start.line << ": " << error.message() << std::endl;
-		}
-		for (const auto& error : result.semantical_errors) {
+		for (const auto& error : result.errors) {
 			std::cout << "Line " << error.location.start.line << ": " << error.message() << std::endl;
 		}
 	}
@@ -173,28 +174,31 @@ ls::VM::Result Test::Input::run(bool display_errors) {
 	return result;
 }
 
-void Test::Input::pass(std::string expected) {
+void Test::Input::pass(const std::string& expected) {
 	std::ostringstream oss;
-	oss << C_GREEN << "OK   " << END_COLOR << ": " << name;
+	oss << C_GREEN << "OK   " << END_COLOR << ": " << label;
 	if (v1) oss << C_BLUE << " [V1]" << END_COLOR;
 	oss <<  "  ===>  " << expected;
 	std::cout << oss.str();
-	std::cout <<  C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout <<  C_GREY << " (" << std::fixed << std::setprecision(2) << compilation_time << " ms + " << std::fixed << std::setprecision(2) << execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	test->success_count++;
-	if (result.objects_created != result.objects_deleted) {
-		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+	if (result.objects_created != result.objects_deleted or result.mpz_objects_created != result.mpz_objects_deleted) {
+		if (result.objects_created != result.objects_deleted)
+			oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
+		if (result.mpz_objects_created != result.mpz_objects_deleted)
+			oss << C_RED << " (" << (result.mpz_objects_created - result.mpz_objects_deleted) << " mpz leaked)" << END_COLOR;
 		failed_tests.push_back(oss.str());
 	}
 }
 
-void Test::Input::fail(std::string expected, std::string actual) {
+void Test::Input::fail(const std::string& expected, const std::string& actual) {
 	std::ostringstream oss;
-	oss << C_RED << "FAIL " << END_COLOR << ": " << name;
+	oss << C_RED << "FAIL " << END_COLOR << ": " << label;
 	if (v1) std::cout << C_BLUE << " [V1]" << END_COLOR;
 	oss << "  =/=>  " << expected << "  got  " << actual;
 	std::cout << oss.str();
-	std::cout << C_GREY << " (" << this->compilation_time << " ms + " << this->execution_time << " ms)" << END_COLOR;
+	std::cout << C_GREY << " (" << std::fixed << std::setprecision(2) << compilation_time << " ms + " << std::fixed << std::setprecision(2) << execution_time << " ms)" << END_COLOR;
 	std::cout << std::endl;
 	if (result.objects_created != result.objects_deleted)
 		oss << C_RED << " (" << (result.objects_created - result.objects_deleted) << " leaked)" << END_COLOR;
@@ -204,12 +208,15 @@ void Test::Input::fail(std::string expected, std::string actual) {
 void Test::Input::disable() {
 	test->total++;
 	test->disabled++;
-	std::cout << C_PURPLE << "DISA" << END_COLOR << " : " << name << std::endl;
+	std::ostringstream oss;
+	oss << C_PURPLE << "DISA" << END_COLOR << " : " << label;
+	std::cout << oss.str() << std::endl;
+	disabled_tests.push_back(oss.str());
 }
 
 void Test::Input::works() {
 	if (disabled) return disable();
-	std::cout << "Try " << code << " ..." << std::endl;
+	// std::cout << "Try " << code << " ..." << std::endl;
 	try {
 		run();
 	} catch (...) {
@@ -219,29 +226,15 @@ void Test::Input::works() {
 	pass("works");
 }
 
-void Test::Input::equals(std::string expected) {
+void Test::Input::equals(const std::string& expected) {
 	if (disabled) return disable();
 	
 	auto result = run();
 
 	std::string errors;
-	if (result.lexical_errors.size()) {
-		for (const auto& error : result.lexical_errors) {
-			std::cout << "Lexical error: " << error.message() << std::endl;
-			errors += error.message();
-		}
-	}
-	if (result.syntaxical_errors.size()) {
-		for (const auto& error : result.syntaxical_errors) {
-			std::cout << "Syntaxical error: " << error.message() << std::endl;
-			errors += error.message();
-		}
-	}
-	if (result.semantical_errors.size()) {
-		for (const auto& error : result.semantical_errors) {
-			std::cout << "Semantic error: " << error.message() << std::endl;
-			errors += error.message();
-		}
+	for (const auto& error : result.errors) {
+		std::cout << "Error: " << error.message() << std::endl;
+		errors += error.message();
 	}
 	if (result.value == expected) {
 		pass(expected);
@@ -276,11 +269,11 @@ void Test::Input::almost(T expected, T delta) {
 
 void Test::Input::quine() {
 	if (disabled) return disable();
-	std::ostringstream oss;
+	OutputStringStream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;
 	auto result = run();
-	vm->output = &std::cout;
+	vm->output = ls::VM::default_output;
 
 	if (oss.str() == code) {
 		pass(code);
@@ -289,18 +282,19 @@ void Test::Input::quine() {
 	}
 }
 
-void Test::Input::type(ls::Type type) {
+void Test::Input::type(const ls::Type* type) {
 	if (disabled) return disable();
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	
 	test->total++;
-	auto result = vm->execute(code, "{}", name);
+	auto result = vm->execute(code, ctx, file_name, false, false);
 
 	std::ostringstream oss;
 	oss << type;
 	std::ostringstream oss_actual;
 	oss_actual << result.type;
 
+	// std::cout << (void*) result.type << " " << (void*) type << std::endl;
 	if (result.type == type) {
 		pass(oss.str());
 	} else {
@@ -308,14 +302,14 @@ void Test::Input::type(ls::Type type) {
 	}
 }
 
-void Test::Input::output(std::string expected) {
+void Test::Input::output(const std::string& expected) {
 	if (disabled) return disable();
 
-	std::ostringstream oss;
+	OutputStringStream oss;
 	auto vm = v1 ? &test->vmv1 : &test->vm;
 	vm->output = &oss;
 	auto result = run();
-	vm->output = &std::cout;
+	vm->output = ls::VM::default_output;
 
 	if (oss.str() == expected) {
 		pass(expected);
@@ -329,60 +323,22 @@ void Test::Input::between(T a, T b) {
 
 }
 
-void Test::Input::semantic_error(ls::SemanticError::Type expected_type, std::vector<std::string> parameters) {
+void Test::Input::error(ls::Error::Type expected_type, std::vector<std::string>&& parameters) {
 	if (disabled) return disable();
 	
 	auto result = run(false);
 
-	std::string expected_message = ls::SemanticError::build_message(expected_type, parameters);
+	auto expected_message = ls::Error::build_message(expected_type, parameters);
 
-	if (result.semantical_errors.size()) {
-		ls::SemanticError e = result.semantical_errors[0];
+	if (result.errors.size()) {
+		ls::Error e = result.errors[0];
 		if (expected_type != e.type or parameters != e.parameters) {
 			fail(expected_message, e.message());
 		} else {
 			pass(e.message());
 		}
 	} else {
-		fail(expected_message, "(no semantical error)");
-	}
-}
-
-void Test::Input::syntaxic_error(ls::SyntaxicalError::Type expected_type, std::vector<std::string> parameters) {
-	if (disabled) return disable();
-
-	auto result = run(false);
-
-	std::string expected_message = ls::SyntaxicalError::build_message(expected_type, parameters);
-
-	if (result.syntaxical_errors.size()) {
-		ls::SyntaxicalError e = result.syntaxical_errors[0];
-		if (expected_type != e.type or parameters != e.parameters) {
-			fail(expected_message, e.message());
-		} else {
-			pass(e.message());
-		}
-	} else {
-		fail(std::to_string(expected_type), "(no syntaxical error)");
-	}
-}
-
-void Test::Input::lexical_error(ls::LexicalError::Type expected_type) {
-	if (disabled) return disable();
-
-	auto result = run(false);
-
-	std::string expected_message = ls::LexicalError::build_message(expected_type);
-
-	if (result.lexical_errors.size()) {
-		ls::LexicalError e = result.lexical_errors[0];
-		if (expected_type != e.type) {
-			fail(expected_message, e.message());
-		} else {
-			pass(e.message());
-		}
-	} else {
-		fail(expected_message, "(no lexical error)");
+		fail(expected_message, "(no error)");
 	}
 }
 
@@ -393,8 +349,8 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 
 	auto actual_type = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.type : ls::vm::Exception::NO_EXCEPTION;
 	auto actual_frames = result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.frames : std::vector<ls::vm::exception_frame>();
-
-	if (actual_type == expected /*&& (actual_frames == frames || expected == ls::vm::Exception::NO_EXCEPTION) || actual_frames.size() == 0*/) {
+	
+	if (actual_type == expected and (actual_frames == frames or expected == ls::vm::Exception::NO_EXCEPTION)) {
 		pass(result.exception.type != ls::vm::Exception::NO_EXCEPTION ? result.exception.to_string() : "(no exception)");
 	} else {
 		ls::vm::ExceptionObj expected_exception(expected);
@@ -411,7 +367,7 @@ void Test::Input::exception(ls::vm::Exception expected, std::vector<ls::vm::exce
 void Test::Input::operations(int expected) {
 	if (disabled) return disable();
 	
-	auto result = run();
+	auto result = run(true, true);
 
 	if (result.operations != expected) {
 		fail(std::to_string(expected) + " ops", std::to_string(result.operations) + " ops");
@@ -422,12 +378,16 @@ void Test::Input::operations(int expected) {
 Test::Input& Test::Input::timeout(int) {
 	return *this;
 }
-Test::Input&  Test::Input::ops_limit(long int ops) {
+Test::Input& Test::Input::ops_limit(long int ops) {
 	this->operation_limit = ops;
 	return *this;
 }
+Test::Input& Test::Input::context(ls::Context* ctx) {
+	this->ctx = ctx;
+	return *this;
+}
 
-void Test::header(std::string text) {
+void Test::header(const std::string& text) {
 	std::cout << "╔";
 	for (unsigned i = 0; i < text.size() + 2; ++i) std::cout << "═";
 	std::cout << "╗" << std::endl;
@@ -438,7 +398,7 @@ void Test::header(std::string text) {
 	std::cout << std::endl;
 }
 
-void Test::section(std::string text) {
+void Test::section(const std::string& text) {
 	std::cout << "┌";
 	for (unsigned i = 0; i < text.size() + 2; ++i) std::cout << "─";
 	std::cout << "┐" << std::endl;

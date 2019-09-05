@@ -7,14 +7,14 @@ namespace ls {
 
 class MapSTD : public Module {
 public:
-	MapSTD();
+	MapSTD(VM* vm);
 
-	static Compiler::value insert_any_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_any_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_any_int(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_any(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_real(Compiler&, std::vector<Compiler::value>);
-	static Compiler::value insert_int_int(Compiler&, std::vector<Compiler::value>);
+	static Compiler::value look(Compiler&, std::vector<Compiler::value>, int);
+
+	static Compiler::value fold_left(Compiler&, std::vector<Compiler::value>, int);
+	static Compiler::value fold_right(Compiler&, std::vector<Compiler::value>, int);
+	
+	static Compiler::value iter(Compiler& c, std::vector<Compiler::value>, int);
 };
 
 }

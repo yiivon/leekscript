@@ -1,22 +1,23 @@
 #ifndef NUMBER_TYPE_HPP
 #define NUMBER_TYPE_HPP
 
-#include "Base_type.hpp"
+#include "Pointer_type.hpp"
 
 namespace ls {
 
-class Number_type : public Base_type {
+class Number_type : public Type {
 public:
-	Number_type() {}
+	Number_type();
 	virtual int id() const override { return 3; }
-	virtual const std::string getName() const { return "number"; }
+	virtual const std::string getName() const override { return "number"; }
 	virtual const std::string getJsonName() const { return "number"; }
 	virtual bool iterable() const { return true; }
-	virtual bool operator == (const Base_type*) const override;
-	virtual int distance(const Base_type* type) const override;
-	virtual llvm::Type* llvm() const override;
-	virtual std::string clazz() const override;
+	virtual bool operator == (const Type*) const override;
+	virtual int distance(const Type* type) const override;
+	virtual std::string class_name() const override;
+	virtual llvm::Type* llvm(const Compiler& c) const override;
 	virtual std::ostream& print(std::ostream& os) const override;
+	virtual Type* clone() const override;
 };
 
 }

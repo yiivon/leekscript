@@ -11,6 +11,7 @@ class LSInterval : public LSValue {
 public:
 
 	static LSValue* clazz;
+	static LSInterval* constructor(int a, int b);
 
 	int a = 0;
 	int b = 0;

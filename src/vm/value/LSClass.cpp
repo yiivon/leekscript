@@ -3,16 +3,23 @@
 #include "LSNumber.hpp"
 #include "LSFunction.hpp"
 #include "../Module.hpp"
-#include "../../type/Function_type.hpp"
+#include "../../compiler/semantic/Callable.hpp"
+#include "../../vm/VM.hpp"
+#include "../../compiler/semantic/CallableVersion.hpp"
+#include "../../compiler/semantic/SemanticAnalyzer.hpp"
+#include "../../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
 LSValue* LSClass::clazz;
 
-LSClass::LSClass(std::string name) : LSValue(CLASS), name(name) {
+LSClass* LSClass::constructor(char* name) {
+	auto clazz = new LSClass(name);
+	VM::current()->function_created.push_back(clazz);
+	return clazz;
+}
+LSClass::LSClass(std::string name) : LSValue(CLASS, 1, true), name(name) {
 	parent = nullptr;
-	refs = 1;
-	native = true;
 }
 
 LSClass::~LSClass() {
@@ -28,91 +35,57 @@ LSClass::~LSClass() {
 	}
 }
 
-void LSClass::addMethod(std::string& name, std::vector<Method> method) {
-	methods.insert({name, method});
-}
-
-void LSClass::addStaticMethod(std::string& name, std::vector<StaticMethod> method) {
-	static_methods.insert({name, method});
-
+void LSClass::addMethod(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates, bool legacy) {
+	Callable callable;
+	for (const auto& v : impl) {
+		if ((v.flags & Module::LEGACY) and not legacy) continue;
+		callable.add_version(new CallableVersion { v });
+	}
+	methods.insert({name, callable});
+	int i = 0;
+	for (auto& m : methods.at(name).versions) {
+		((CallableVersion*) m)->name = this->name + "." + name + "." + std::to_string(i++);
+		if (templates.size()) {
+			((CallableVersion*) m)->templates = templates;
+		}
+	}
 	// Add first implementation as default method
-	auto fun = new LSFunction(method[0].addr);
-	fun->refs = 1;
-	fun->native = true;
-	Type type = method[0].type;
-	static_fields.insert({name, ModuleStaticField(name, type, fun)});
+	auto fun = new LSFunction(impl.begin()->addr);
+	auto type = impl.begin()->type;
+	static_fields.insert({name, {name, type, fun}});
 }
 
-void LSClass::addField(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
-	fields.insert({name, field(name, type, fun, nullptr)});
+void LSClass::addField(std::string name, const Type* type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
+	fields.insert({name, {name, type, fun, nullptr}});
 }
-void LSClass::addField(std::string name, Type type, void* fun) {
-	fields.insert({name, field(name, type, fun, nullptr)});
+void LSClass::addField(std::string name, const Type* type, void* fun) {
+	fields.insert({name, {name, type, fun, nullptr}});
 }
 
-void LSClass::addStaticField(ModuleStaticField f) {
+void LSClass::addStaticField(field f) {
 	static_fields.insert({f.name, f});
 }
 
-void LSClass::addOperator(std::string name, std::vector<Operator> impl) {
-	operators.insert({name, impl});
-}
-
-Method* LSClass::getMethod(SemanticAnalyser* analyser, std::string& name, Type obj_type, std::vector<Type> arguments) {
-	// std::cout << "getMethod " << name << " in class " << this->name <<  " obj type " << obj_type << " with args " << args << std::endl;
-	try {
-		Method* best = nullptr;
-		for (auto& implementation : methods.at(name)) {
-			if (implementation.obj_type.may_be_compatible(obj_type)) {
-				for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
-					const auto& a = arguments.at(i);
-					if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
-						if (fun->function()) {
-							auto version = implementation.type.arguments().at(i).arguments();
-							((Function*) fun->function())->will_take(analyser, version, 1);
-							arguments.at(i) = fun->function()->versions.at(version)->type;
-						}
-					}
-				}
-				if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
-					best = &implementation;
-				}
-			}
-		}
-		return best;
-	} catch (std::exception&) {
-		return nullptr;
+void LSClass::addOperator(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates, bool legacy) {
+	std::vector<CallableVersion> versions;
+	for (const auto& v : impl) {
+		if ((v.flags & Module::LEGACY) and not legacy) continue;
+		versions.push_back(v);
 	}
-}
-
-StaticMethod* LSClass::getStaticMethod(SemanticAnalyser* analyser, std::string& name, std::vector<Type> arguments) {
-	try {
-		StaticMethod* best = nullptr;
-		for (auto& implementation : static_methods.at(name)) {
-			for (size_t i = 0; i < std::min(implementation.type.arguments().size(), arguments.size()); ++i) {
-				const auto a = arguments.at(i);
-				const auto implem_arg = implementation.type.arguments().at(i);
-				if (auto fun = dynamic_cast<const Function_type*>(a._types[0].get())) {
-					if (fun->function() and implem_arg.is_function()) {
-						auto version = implem_arg.arguments();
-						((Function*) fun->function())->will_take(analyser, version, 1);
-						arguments.at(i) = fun->function()->versions.at(version)->type;
-					}
-				}
-			}
-			if (Type::list_may_be_compatible(implementation.type.arguments(), arguments)) {
-				best = &implementation;
-			}
+	if (not versions.size()) return;
+	operators.insert({name, versions});
+	int i = 0;
+	for (auto& m : operators.at(name)) {
+		m.name = this->name + ".operator" + name + "." + std::to_string(i++);
+		if (templates.size()) {
+			m.templates = templates;
 		}
-		return best;
-	} catch (std::exception&) {
-		return nullptr;
 	}
 }
 
 LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	try {
-		auto f = static_fields.at(name);
+		auto& f = static_fields.at(name);
 		f.value->refs++;
 		return (LSFunction*) f.value;
 	} catch (...) {
@@ -120,36 +93,37 @@ LSFunction* LSClass::getDefaultMethod(const std::string& name) {
 	}
 }
 
-const LSClass::Operator* LSClass::getOperator(std::string& name, Type& obj_type, Type& operand_type) {
-	// std::cout << "getOperator(" << name << ", " << obj_type << ", " << operand_type << ")" << std::endl;
+const Callable* LSClass::getOperator(SemanticAnalyzer* analyzer, std::string& name) {
+	// std::cout << "getOperator(" << name << ")" << std::endl;
 	if (name == "is not") name = "!=";
-	std::vector<const Operator*> implementations;
-	if (operators.find(name) != operators.end()) {
-		for (const auto& i : operators.at(name)) implementations.push_back(&i);
+	else if (name == "÷") name = "/";
+	else if (name == "×") name = "*";
+	auto o = operators_callables.find(name);
+	if (o != operators_callables.end()) {
+		return o->second;
 	}
-	auto parent = name == "Value" ? nullptr : LSValue::ValueClass;
-	if (parent && parent->operators.find(name) != parent->operators.end()) {
-		for (const auto& i : parent->operators.at(name)) implementations.push_back(&i);
-	}
-	const Operator* best = nullptr;
-	int best_score = std::numeric_limits<int>::max();
-	for (const Operator* m : implementations) {
-		auto d1 = obj_type.distance(m->object_type);
-		auto d2 = operand_type.distance(m->operand_type);
-		if (d1 >= 0 and d2 >= 0) {
-			int score = d1 + d2;
-			// std::cout << " + " << m->object_type << ", " << m->operand_type << " / " << score << std::endl;
-			if (best == nullptr or score <= best_score) {
-				best_score = score;
-				best = m;
-			}
-			// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
-		} else {
-			// std::cout << " - " << m->object_type << ", " << m->operand_type << std::endl;
+	auto callable = new Callable();
+	auto i = operators.find(name);
+	if (i != operators.end()) {
+		for (const auto& impl : i->second) {
+			callable->add_version(&impl);
 		}
 	}
-	// if (best) std::cout << " = " << best->object_type << ", " << best->operand_type << std::endl;
-	return best;
+	if (this->name != "Value") {
+		auto value_class = (LSClass*) analyzer->vm->internal_vars["Value"]->lsvalue;
+		auto i = value_class->operators.find(name);
+		if (i != value_class->operators.end()) {
+			for (const auto& impl : i->second) {
+				callable->add_version(&impl);
+			}
+		}
+	}
+	if (callable->versions.size()) {
+		operators_callables.insert({ name, callable });
+		// oppa oppa gangnam style tetetorettt tetetorett ! blank pink in the areaaahhh !! bombayah bomm bayah bom bayahh yah yahh yahhh yahh ! bom bom ba BOMBAYAH !!!ya ya ya ya ya ya OPPA !!
+		return callable;
+	}
+	return nullptr;
 }
 
 bool LSClass::to_bool() const {

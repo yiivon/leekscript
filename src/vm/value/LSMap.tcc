@@ -22,6 +22,11 @@ template <class K, class T>
 LSValue* LSMap<K, T>::clazz;
 
 template <class K, class T>
+LSMap<K, T>* LSMap<K, T>::constructor() {
+	return new LSMap<K, T>();
+}
+
+template <class K, class T>
 LSMap<K, T>::LSMap() : LSValue(MAP) {}
 
 template <class K, class V>
@@ -47,6 +52,17 @@ bool LSMap<K, V>::ls_insert(K key, V value) {
 	ls::release(value);
 	if (refs == 0) delete this;
 	return false;
+}
+
+template <class K, class V>
+void LSMap<K, V>::ls_emplace(K key, V value) {
+	auto it = this->lower_bound(key);
+	if (it == this->end() || !ls::equals(it->first, key)) {
+		this->emplace_hint(it, ls::move_inc(key), ls::move_inc(value));
+	} else {
+		ls::release(key);
+		ls::release(value);
+	}
 }
 
 template <class K, class V>
@@ -200,7 +216,9 @@ bool LSMap<K, T>::to_bool() const {
 
 template <class K, class T>
 bool LSMap<K, T>::ls_not() const {
-	return this->size() == 0;
+	auto r = this->size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <class K, class T>
@@ -349,8 +367,8 @@ inline T* LSMap<K, T>::atL_base(K key) const {
 		ls::release(key);
 		return r;
 	} catch (std::exception&) {
-		ls::move_inc(key);
-		auto r = map->insert({key, ls::construct<T>()});
+		auto k = ls::move_inc(key);
+		auto r = map->insert({k, ls::construct<T>()});
 		return &r.first->second;
 	}
 }

@@ -1,8 +1,6 @@
 #include "../../compiler/instruction/Break.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticError.hpp"
-
-using namespace std;
+#include "../semantic/SemanticAnalyzer.hpp"
+#include "../error/Error.hpp"
 
 namespace ls {
 
@@ -10,9 +8,7 @@ Break::Break() {
 	deepness = 1;
 }
 
-Break::~Break() {}
-
-void Break::print(ostream& os, int, bool) const {
+void Break::print(std::ostream& os, int, bool, bool) const {
 	os << "break";
 	if (deepness > 1) {
 		os << " " << deepness;
@@ -23,11 +19,11 @@ Location Break::location() const {
 	return token->location;
 }
 
-void Break::analyse(SemanticAnalyser* analyser, const Type&) {
+void Break::analyze(SemanticAnalyzer* analyzer, const Type*) {
 
 	// break must be in a loop
-	if (!analyser->in_loop(deepness)) {
-		analyser->add_error({SemanticError::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
+	if (!analyzer->in_loop(deepness)) {
+		analyzer->add_error({Error::Type::BREAK_MUST_BE_IN_LOOP, token->location, token->location});
 	}
 }
 
@@ -49,12 +45,13 @@ Compiler::value Break::compile(Compiler& c) const {
 	c.delete_variables_block(c.get_current_loop_blocks(deepness));
 
 	c.insn_branch(c.get_current_loop_end_label(deepness));
-
+	c.insert_new_generation_block();
+	
 	return {};
 }
 
-Instruction* Break::clone() const {
-	auto b = new Break();
+std::unique_ptr<Instruction> Break::clone() const {
+	auto b = std::make_unique<Break>();
 	b->token = token;
 	b->deepness = deepness;
 	return b;

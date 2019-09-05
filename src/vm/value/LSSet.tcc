@@ -5,6 +5,7 @@
 #include "LSClass.hpp"
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
+#include "LSBoolean.hpp"
 
 namespace ls {
 
@@ -21,8 +22,17 @@ inline bool lsset_less<T>::operator()(T lhs, T rhs) const {
 template <typename T>
 LSValue* LSSet<T>::clazz;
 
+
+template <typename T>
+LSSet<T>* LSSet<T>::constructor() {
+	return new LSSet<T>();
+}
+
 template <class T>
 inline LSSet<T>::LSSet() : LSValue(SET) {}
+
+template <class T>
+LSSet<T>::LSSet(std::initializer_list<T> values) : LSValue(SET), std::set<T, lsset_less<T>>(values) {}
 
 template <>
 inline LSSet<LSValue*>::LSSet(const LSSet<LSValue*>& other) : LSValue(other), std::set<LSValue*, lsset_less<LSValue*>>() {
@@ -56,19 +66,37 @@ inline bool LSSet<LSValue*>::ls_insert(LSValue* value) {
 	auto it = lower_bound(value);
 	if (it == end() || (**it != *value)) {
 		insert(it, value->move_inc());
-		if (refs == 0) delete this;
+		LSValue::delete_temporary(this);
 		return true;
 	}
 	LSValue::delete_temporary(value);
-	if (refs == 0) delete this;
+	LSValue::delete_temporary(this);
 	return false;
+}
+
+template <>
+inline LSValue* LSSet<LSValue*>::ls_insert_ptr(LSValue* value) {
+	return LSBoolean::get(ls_insert(value));
 }
 
 template <typename T>
 inline bool LSSet<T>::ls_insert(T value) {
 	bool r = this->insert(value).second;
-	if (refs == 0) delete this;
 	return r;
+}
+
+template <>
+inline void LSSet<LSValue*>::vinsert(LSValue* value) {
+	auto it = lower_bound(value);
+	if (it == end() || (**it != *value)) {
+		insert(it, value->move_inc());
+	} else {
+		LSValue::delete_temporary(value);
+	}
+}
+template <typename T>
+inline void LSSet<T>::vinsert(T value) {
+	this->insert(value);
 }
 
 template <class T>
@@ -116,7 +144,9 @@ bool LSSet<T>::to_bool() const {
 
 template <typename T>
 bool LSSet<T>::ls_not() const {
-	return this->empty();
+	auto r = this->empty();
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <>
@@ -247,6 +277,16 @@ bool LSSet<T>::set_lt(const LSSet<T2>* set) const {
 		++j;
 	}
 	return j != set->end();
+}
+
+
+template <typename T>
+LSSet<LSValue*>* LSSet<T>::to_any_set() const {
+	auto result = new LSSet<LSValue*>();
+	for (const auto& e : *this) {
+		result->emplace(ls::convert<LSValue*>(e));
+	}
+	return result;
 }
 
 template <>

@@ -1,24 +1,16 @@
 #include "String.hpp"
 #include "../../vm/value/LSString.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
-#include "../../type/RawType.hpp"
-
-using namespace std;
+#include "../semantic/SemanticAnalyzer.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-String::String(std::shared_ptr<Token> token) : token(token) {
-	type = Type::STRING;
-	type.temporary = true;
+String::String(Token* token) : token(token) {
+	type = Type::tmp_string;
 	constant = true;
-	ls_string = new LSString(token->content);
 }
 
-String::~String() {
-	delete ls_string;
-}
-
-void String::print(ostream& os, int, bool debug, bool condensed) const {
+void String::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << "'" << token->content << "'";
 	if (debug) {
 		os << " " << type;
@@ -29,23 +21,20 @@ Location String::location() const {
 	return token->location;
 }
 
-bool String::will_store(SemanticAnalyser* analyser, const Type& type) {
-	if (!type.is_string()) {
-		analyser->add_error({SemanticError::Type::NO_SUCH_OPERATOR, location(), location(), {}});
+bool String::will_store(SemanticAnalyzer* analyzer, const Type* type) {
+	if (!type->is_string()) {
+		analyzer->add_error({Error::Type::NO_SUCH_OPERATOR, location(), location(), {this->type->to_string(), "=", type->to_string()}});
 	}
 	return false;
 }
 
 Compiler::value String::compile(Compiler& c) const {
-	c.add_literal(ls_string, std::string("'") + *ls_string + std::string("'"));
-	auto base = c.new_pointer(ls_string, Type::ANY);
-	return c.insn_call(Type::STRING_TMP, {base}, (void*) +[](LSString* s) {
-		return s->clone();
-	});
+	auto s = c.new_const_string(token->content);
+	return c.insn_call(Type::tmp_string, {s}, "String.new.1");
 }
 
-Value* String::clone() const {
-	return new String(token);
+std::unique_ptr<Value> String::clone() const {
+	return std::make_unique<String>(token);
 }
 
 }

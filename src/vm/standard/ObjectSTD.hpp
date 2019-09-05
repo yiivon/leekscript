@@ -9,12 +9,13 @@ class LSObject;
 
 class ObjectSTD : public Module {
 public:
-	ObjectSTD();
+	ObjectSTD(VM* vm);
 
-	static LSObject readonly;
+	static LSObject* readonly;
 	static LSNumber* readonly_value;
 
-	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args);
+	static Compiler::value in_any(Compiler& c, std::vector<Compiler::value> args, int);
+	static LSValue* object_new(LSClass* clazz);
 };
 
 }

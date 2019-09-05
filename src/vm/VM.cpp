@@ -1,14 +1,13 @@
 #include <sstream>
 #include <chrono>
-
 #include "VM.hpp"
 #include "../constants.h"
 #include "../colors.h"
-#include "../compiler/lexical/LexicalAnalyser.hpp"
-#include "../compiler/syntaxic/SyntaxicAnalyser.hpp"
+#include "../compiler/lexical/LexicalAnalyzer.hpp"
+#include "../compiler/syntaxic/SyntaxicAnalyzer.hpp"
 #include "Context.hpp"
-#include "../compiler/semantic/SemanticAnalyser.hpp"
-#include "../compiler/semantic/SemanticError.hpp"
+#include "../compiler/semantic/SemanticAnalyzer.hpp"
+#include "../compiler/error/Error.hpp"
 #include "value/LSNumber.hpp"
 #include "value/LSArray.hpp"
 #include "Program.hpp"
@@ -28,127 +27,76 @@
 #include "standard/ClassSTD.hpp"
 #include "standard/IntervalSTD.hpp"
 #include "standard/JsonSTD.hpp"
-#include "legacy/Functions.hpp"
-#include "../type/RawType.hpp"
-
-using namespace std;
+#include "../compiler/semantic/Callable.hpp"
+#include "../compiler/semantic/CallableVersion.hpp"
+#include "../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
 const unsigned long int VM::DEFAULT_OPERATION_LIMIT = 20000000;
 VM* VM::current_vm = nullptr;
+OutputStream* VM::default_output = new OutputStream();
 
-LSValue* op_add(LSValue* x, LSValue* y) {
-	return x->add(y);
-}
-LSValue* op_sub(LSValue* x, LSValue* y) {
-	return x->sub(y);
-}
-LSValue* op_mul(LSValue* x, LSValue* y) {
-	return x->mul(y);
-}
-LSValue* op_div(LSValue* x, LSValue* y) {
-	return x->div(y);
-}
-LSValue* op_int_div(LSValue* x, LSValue* y) {
-	return x->int_div(y);
-}
-LSValue* op_pow(LSValue* x, LSValue* y) {
-	return x->pow(y);
-}
-LSValue* op_mod(LSValue* x, LSValue* y) {
-	return x->mod(y);
-}
-
-LSValue* ptr_fun(LSValue* v) {
-	return v->move();
-}
-
-VM::VM(bool v1) : compiler(this) {
+VM::VM(bool legacy) : compiler(this), legacy(legacy) {
 
 	operation_limit = VM::DEFAULT_OPERATION_LIMIT;
 
-	null_value = LSNull::create();
-	true_value = LSBoolean::create(true);
-	false_value = LSBoolean::create(false);
+	null_value = std::unique_ptr<LSNull>(LSNull::create());
+	true_value = std::unique_ptr<LSBoolean>(LSBoolean::create(true));
+	false_value = std::unique_ptr<LSBoolean>(LSBoolean::create(false));
+	LSNull::set_null_value(null_value.get());
+	LSBoolean::set_true_value(true_value.get());
+	LSBoolean::set_false_value(false_value.get());
 
 	// Include STD modules
-	add_module(new ValueSTD());
-	add_module(new NullSTD());
-	add_module(new BooleanSTD());
-	add_module(new NumberSTD());
-	add_module(new StringSTD());
-	add_module(new ArraySTD());
-	add_module(new MapSTD());
-	add_module(new SetSTD());
-	add_module(new ObjectSTD());
-	add_module(new FunctionSTD());
-	add_module(new ClassSTD());
-	add_module(new SystemSTD());
-	add_module(new IntervalSTD());
-	add_module(new JsonSTD());
+	add_module(std::make_unique<ValueSTD>(this));
+	add_module(std::make_unique<NullSTD>(this));
+	add_module(std::make_unique<BooleanSTD>(this));
+	add_module(std::make_unique<NumberSTD>(this));
+	add_module(std::make_unique<StringSTD>(this));
+	add_module(std::make_unique<ArraySTD>(this));
+	add_module(std::make_unique<MapSTD>(this));
+	add_module(std::make_unique<SetSTD>(this));
+	add_module(std::make_unique<ObjectSTD>(this));
+	add_module(std::make_unique<FunctionSTD>(this));
+	add_module(std::make_unique<ClassSTD>(this));
+	add_module(std::make_unique<SystemSTD>(this));
+	add_module(std::make_unique<IntervalSTD>(this));
+	add_module(std::make_unique<JsonSTD>(this));
 
-	// Add function operators
-	std::vector<std::string> ops = {"+", "-", "*", "×", "/", "÷", "**", "%", "\\"};
-	std::vector<void*> ops_funs = {(void*) &op_add, (void*) &op_sub, (void*) &op_mul, (void*) &op_mul, (void*) &op_div, (void*) &op_div, (void*) &op_pow, (void*) &op_mod, (void*) &op_int_div};
-
-	auto op_type = Type::fun(Type::ANY, {Type::ANY, Type::ANY});
-	auto value_class = internal_vars["Value"]->lsvalue;
-
-	for (unsigned o = 0; o < ops.size(); ++o) {
-		auto fun = new LSFunction(ops_funs[o]);
-		fun->refs = 1;
-		fun->native = true;
-		fun->args = {value_class, value_class};
-		fun->return_type = value_class;
-		add_internal_var(ops[o], op_type, fun);
-	}
-
-	auto ptr_type = Type::fun(Type::ANY, {Type::ANY});
-	auto fun = new LSFunction((void*) ptr_fun);
-	fun->refs = 1;
-	fun->native = true;
-	fun->args = {value_class};
-	fun->return_type = value_class;
-	add_internal_var("ptr", ptr_type, fun);
-
-	// Add v1 functions
-	if (v1) {
-		legacy::Functions::create(this);
-	}
+	auto ptr_type = Type::fun(Type::tmp_any, {Type::any});
+	add_internal_var("ptr", ptr_type, nullptr, {
+		new CallableVersion {"Value.ptr", ptr_type }
+	});
 }
 
-VM::~VM() {
-	for (auto& module : modules) {
-		delete module;
-	}
-	for (auto& fun : system_vars) {
-		delete fun;
-	}
-	delete null_value;
-	delete true_value;
-	delete false_value;
-}
+VM::~VM() {}
 
 VM* VM::current() {
 	return current_vm;
 }
 
-void VM::add_module(Module* m) {
-	modules.push_back(m);
-	Type const_class = Type::CLASS;
-	const_class.constant = true;
-	add_internal_var(m->name, const_class, m->clazz);
+void VM::static_init() {
+	// Global initialization
+	llvm::InitializeNativeTarget();
+	llvm::InitializeNativeTargetAsmPrinter();
+	llvm::InitializeNativeTargetAsmParser();
 }
 
-VM::Result VM::execute(const std::string code, std::string ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool log_instructions) {
+void VM::add_module(std::unique_ptr<Module> m) {
+	auto const_class = Type::const_class(m->name);
+	add_internal_var(m->name, const_class, m->clazz.get());
+	modules.push_back(std::move(m));
+}
+
+VM::Result VM::execute(const std::string code, Context* ctx, std::string file_name, bool debug, bool ops, bool assembly, bool pseudo_code, bool optimized_ir, bool execute_ir, bool execute_bitcode) {
 
 	// Reset
 	this->file_name = file_name;
 	VM::current_vm = this;
-	LSNull::set_null_value(this->null_value);
-	LSBoolean::set_true_value(this->true_value);
-	LSBoolean::set_false_value(this->false_value);
+	LSNull::set_null_value(null_value.get());
+	LSBoolean::set_true_value(true_value.get());
+	LSBoolean::set_false_value(false_value.get());
 	LSValue::obj_count = 0;
 	LSValue::obj_deleted = 0;
 	VM::mpz_created = 0;
@@ -159,17 +107,12 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	#if DEBUG_LEAKS
 		LSValue::objs().clear();
 	#endif
+	this->context = ctx;
 
 	auto program = new Program(code, file_name);
 
 	// Compile
-	auto compilation_start = chrono::high_resolution_clock::now();
-	VM::Result result = program->compile(*this, ctx, assembly, pseudo_code, log_instructions);
-	auto compilation_end = chrono::high_resolution_clock::now();
-
-	if (log_instructions) {
-		std::cout << result.instructions_log;
-	}
+	auto result = program->compile(*this, ctx, assembly, pseudo_code, optimized_ir, execute_ir, execute_bitcode);
 
 	if (debug) {
 		std::cout << "main() " << result.program << std::endl; // LCOV_EXCL_LINE
@@ -184,32 +127,32 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 	}
 
 	// Execute
-	std::string value = "";
 	if (result.compilation_success) {
-
-		auto exe_start = chrono::high_resolution_clock::now();
+		std::string value = "";
+		auto exe_start = std::chrono::high_resolution_clock::now();
 		try {
 			value = program->execute(*this);
 			result.execution_success = true;
 		} catch (vm::ExceptionObj& ex) {
 			result.exception = ex;
 		}
-		auto exe_end = chrono::high_resolution_clock::now();
+		auto exe_end = std::chrono::high_resolution_clock::now();
 
-		result.execution_time = chrono::duration_cast<chrono::nanoseconds>(exe_end - exe_start).count();
-		result.execution_time_ms = (((double) result.execution_time / 1000) / 1000);
+		auto execution_time = std::chrono::duration_cast<std::chrono::nanoseconds>(exe_end - exe_start).count();
+		result.execution_time = (((double) execution_time / 1000) / 1000);
 		result.value = value;
-		result.type = program->main->body->type;
+		result.type = program->type;
 	}
 
 	// Set results
-	result.context = ctx;
-	result.compilation_time = chrono::duration_cast<chrono::nanoseconds>(compilation_end - compilation_start).count();
-	result.compilation_time_ms = (((double) result.compilation_time / 1000) / 1000);
 	result.operations = VM::operations;
 
 	// Cleaning
 	delete program;
+	for (const auto& f : function_created) {
+		delete f;
+	}
+	function_created.clear();
 	VM::enable_operations = true;
 	Type::clear_placeholder_types();
 
@@ -221,31 +164,74 @@ VM::Result VM::execute(const std::string code, std::string ctx, std::string file
 
 	if (ls::LSValue::obj_deleted != ls::LSValue::obj_count) {
 		// LCOV_EXCL_START
-		cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << endl;
+		std::cout << C_RED << "/!\\ " << LSValue::obj_deleted << " / " << LSValue::obj_count << " (" << (LSValue::obj_count - LSValue::obj_deleted) << " leaked)" << END_COLOR << std::endl;
 		#if DEBUG_LEAKS
 			for (auto o : LSValue::objs()) {
-				std::cout << o.second << " (" << o.second->refs << " refs)" << endl;
+				std::cout << o.second << " (" << o.second->refs << " refs) " << (void*) o.second << std::endl;
 			}
 		#endif
 		// LCOV_EXCL_STOP
 	}
 	if (VM::mpz_deleted != VM::mpz_created) {
-		cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << endl; // LCOV_EXCL_LINE
+		std::cout << C_RED << "/!\\ " << VM::mpz_deleted << " / " << VM::mpz_created << " (" << (VM::mpz_created - VM::mpz_deleted) << " mpz leaked)" << END_COLOR << std::endl; // LCOV_EXCL_LINE
 	}
 	return result;
 }
 
-void VM::add_internal_var(std::string name, Type type, LSValue* value) {
+void VM::add_internal_var(std::string name, const Type* type, LSValue* value, Call call) {
 	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
-	internal_vars.insert({ name, std::make_shared<SemanticVar>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value) });
-	system_vars.push_back(value);
+	internal_vars.insert({ name, std::make_unique<Variable>(name, VarScope::INTERNAL, type, 0, nullptr, nullptr, nullptr, value, call) });
 }
 
-int VM_boolean_to_value(LSBoolean* b) {
-	return b->value;
+void VM::add_internal_var(std::string name, const Type* type, Function* function) {
+	// std::cout << "add_interval_var "<< name << " " << type << " " << value << std::endl;
+	internal_vars.insert({ name, std::make_unique<Variable>(name, VarScope::INTERNAL, type, 0, function, nullptr, nullptr, nullptr) });
 }
-int VM_integer_to_value(LSNumber* n) {
-	return n->value;
+
+void* VM::resolve_symbol(std::string name) {
+	// std::cout << "VM::resolve_symbol " << name << std::endl;
+	const auto& p = name.find(".");
+	if (p != std::string::npos) {
+		const auto& module = name.substr(0, p);
+		// std::cout << "module = " << module << std::endl;
+		auto method = name.substr(p + 1);
+		const auto& h = method.find(".");
+		int version = 0;
+		if (h != std::string::npos) {
+			version = std::stoi(method.substr(h + 1));
+			method = method.substr(0, h);
+		}
+		// std::cout << "method = " << method << std::endl;
+		// std::cout << "version = " << version << std::endl;
+		if (module == "ctx") {
+			return &context->vars.at(method).value;
+		} else if (internal_vars.find(module) != internal_vars.end()) {
+			const auto& clazz = (LSClass*) internal_vars.at(module)->lsvalue;
+			if (method.substr(0, 8) == "operator") {
+				const auto& op = method.substr(8);
+				const auto& implems = clazz->operators.at(op);
+				return implems.at(version).addr;
+			} else {
+				if (clazz->methods.find(method) != clazz->methods.end()) {
+					const auto& implems = clazz->methods.at(method);
+					return implems.versions.at(version)->addr;
+				} else if (clazz->static_fields.find(method) != clazz->static_fields.end()) {
+					if (clazz->static_fields.at(method).native_fun) {
+						return clazz->static_fields.at(method).native_fun;
+					} else {
+						return clazz->static_fields.at(method).addr;
+					}
+				} else if (clazz->fields.find(method) != clazz->fields.end()) {
+					return clazz->fields.at(method).native_fun;
+				}
+			}
+		}
+	} else {
+		if (internal_vars.find(name) != internal_vars.end()) {
+			return internal_vars.at(name)->lsvalue;
+		}
+	}
+	return nullptr;
 }
 
 }

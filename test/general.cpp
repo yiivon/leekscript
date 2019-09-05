@@ -3,32 +3,24 @@
 #include <sstream>
 #include "Test.hpp"
 #include "../src/vm/Context.hpp"
-#include "../src/compiler/lexical/LexicalAnalyser.hpp"
-#include "../src/compiler/syntaxic/SyntaxicAnalyser.hpp"
-#include "../src/compiler/semantic/SemanticAnalyser.hpp"
-#include "../src/compiler/semantic/SemanticError.hpp"
+#include "../src/compiler/lexical/LexicalAnalyzer.hpp"
+#include "../src/compiler/syntaxic/SyntaxicAnalyzer.hpp"
+#include "../src/compiler/semantic/SemanticAnalyzer.hpp"
+#include "../src/compiler/error/Error.hpp"
 #include "../src/vm/Program.hpp"
 #include "../src/vm/value/LSNumber.hpp"
 #include "../src/vm/value/LSObject.hpp"
-
-using namespace std;
 
 void Test::test_general() {
 
 	header("General");
 	// Print a syntaxical error
-	auto lexError = new ls::LexicalError(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE, 0, 0);
-	auto synError = new ls::SyntaxicalError(nullptr, ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"truc"});
-	auto semError = new ls::SemanticError(ls::SemanticError::Type::NO_SUCH_ATTRIBUTE, {{0, 0, 0}, {0, 0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {"key", "obj_fake"});
-	std::cout << lexError->message() << std::endl;
-	std::cout << synError->message() << std::endl;
-	std::cout << semError->message() << std::endl;
-	delete lexError;
-	delete synError;
-	delete semError;
+	auto error = new ls::Error(ls::Error::Type::NO_SUCH_ATTRIBUTE, {nullptr, {0, 0, 0}, {0, 0, 0}}, {nullptr, {0, 0, 0}, {0, 0, 0}}, {"key", "obj_fake"});
+	std::cout << error->message() << std::endl;
+	delete error;
 	// Print a program
 	auto program = new ls::Program("2 + 2", "test");
-	program->compile(vm, "{}");
+	program->compile(vm);
 	std::cout << program << std::endl;
 	delete program;
 	// LSObject getField
@@ -42,8 +34,7 @@ void Test::test_general() {
 	code(" ").equals("(void)"); // unbreakable space
 	code("	").equals("(void)"); // tab
 	code("null").equals("null");
-	// TODO syntaxical error
-	// DISABLED_code("()").syntaxic_error();
+	code("()").error(ls::Error::Type::EXPECTED_VALUE, {")"});
 	code("12").equals("12");
 	code("1212m").equals("1212");
 	code("true").equals("true");
@@ -94,21 +85,23 @@ void Test::test_general() {
 	code("global a = 2, b = 'a'").equals("(void)");
 
 	section("Variable already defined");
-	code("a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
-	code("let a = 2 let a = 5").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"a"});
-	code("let Number = 2").semantic_error(ls::SemanticError::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
+	code("a").error(ls::Error::Type::UNDEFINED_VARIABLE, {"a"});
+	code("let a = 2 let a = 5").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"a"});
+	code("let Number = 2").error(ls::Error::Type::VARIABLE_ALREADY_DEFINED, {"Number"});
 
+	section("Sub-blocks");
 	code("let a = 12 a").equals("12");
 	code("let a = 12 { let a = 5 } a").equals("12");
 	code("let a = 12 var b = 0 { let a = 5 b = a } b").equals("5");
-	code("{let a = 5} a").semantic_error(ls::SemanticError::Type::UNDEFINED_VARIABLE, {"a"});
+	code("{let a = 5} a").error(ls::Error::Type::UNDEFINED_VARIABLE, {"a"});
+	code("{ var x = [] x.push(4) x } x").error(ls::Error::Type::UNDEFINED_VARIABLE, {"x"});
 
 	section("Syntaxic errors");
-	code("{").syntaxic_error(ls::SyntaxicalError::Type::BLOCK_NOT_CLOSED, {});
-	code("2 + ()").syntaxic_error(ls::SyntaxicalError::Type::EXPECTED_VALUE, {")"});
-	code("let 2 = 5").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {"2"});
-	code("(654321").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
-	code("fun(1234").syntaxic_error(ls::SyntaxicalError::Type::UNEXPECTED_TOKEN, {""});
+	code("{").error(ls::Error::Type::BLOCK_NOT_CLOSED, {});
+	code("2 + ()").error(ls::Error::Type::EXPECTED_VALUE, {")"});
+	code("let 2 = 5").error(ls::Error::Type::UNEXPECTED_TOKEN, {"2"});
+	code("(654321").error(ls::Error::Type::UNEXPECTED_TOKEN, {""});
+	code("fun(1234").error(ls::Error::Type::UNEXPECTED_TOKEN, {""});
 
 	section("Syntaxic edge cases");
 	code("let toto = 2; toto'salut'").equals("'salut'"); // string just after a ident
@@ -153,10 +146,10 @@ void Test::test_general() {
 
 	section("Const values");
 	code("var c = 2 c++").equals("2");
-	code("let c = 2 c++").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; ++c").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; c = 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
-	code("let c = 2; c += 5").semantic_error(ls::SemanticError::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2 c++").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; ++c").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c = 5").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
+	code("let c = 2; c += 5").error(ls::Error::Type::CANT_MODIFY_CONSTANT_VALUE, {"c"});
 
 	section("Type changes");
 	code("var a a = 12").equals("12");
@@ -174,7 +167,7 @@ void Test::test_general() {
 	code("var a = 5.5 a = {} a").equals("{}");
 	code("var a = [5, 7] a = 7 System.print(a)").output("7\n");
 	code("var a = 7 a = [5, 12] a").equals("[5, 12]");
-	DISABLED_code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
+	code("var a = 7 System.print(a) a = <5, 12> System.print(a)").output("7\n<5, 12>\n");
 	code("var a = 5 a = 200l").equals("200");
 	code("var a = 5 a = 200l a").equals("200");
 	code("var a = 200l a = 5").equals("5");
@@ -184,8 +177,8 @@ void Test::test_general() {
 	code("var a = 5.5 a = 1000m").equals("1000");
 	code("var a = 5.5 a = 2m ** 100").equals("1267650600228229401496703205376");
 	code("var a = 2m a = 5").equals("5");
-	DISABLED_code("var a = 5.5 System.print(a) a = 2 System.print(a) a = 200l System.print(a) a = 1000m System.print(a) a = 'hello' System.print(a)").output("5.5\n2\n200\n1000\nhello\n");
-	DISABLED_code("var a = [] a = 5m").equals("5");
+	code("var a = 5.5 System.print(a) a = 2 System.print(a) a = 200l System.print(a) a = 1000m System.print(a) a = 'hello' System.print(a)").output("5.5\n2\n200\n1000\nhello\n");
+	code("var a = [] a = 5m").equals("5");
 
 	section("Value.copy()");
 	code("2.copy()").equals("2");
@@ -201,4 +194,20 @@ void Test::test_general() {
 	code("{}.copy()").equals("{}");
 	code("(x -> x).copy()").equals("<function>");
 	code("Number.copy()").equals("<class Number>");
+
+	section("Assignments");
+	code("var b = 0 { b = 12 } b").equals("12");
+	code("var i = 12 { i = 'salut' } i").equals("'salut'");
+	code("var b = 5 if 1 { b = 'salut' } b").equals("'salut'");
+	code("var b = 5 if 0 { b = 'salut' } b").equals("5");
+	code("var a = 12 if 1 { a = 5 a++ } else { a = 3 } a").equals("6");
+	code("var a = 12 if 0 { a = 5 a++ } else { a = 5.5 } a").equals("5.5");
+	code("var a = 12 if 0 { a = 5 a++ } else { a = 7l } a").equals("7");
+	code("var b = 5 if 1 {} else { b = 'salut' } b").equals("5");
+	code("var b = 5 if 0 {} else { b = 'salut' } b").equals("'salut'");
+	code("var x = 5 if true if true x = 'a' x").equals("'a'");
+	code("var x = 5 if true if true if true if true if true x = 'a' x").equals("'a'");
+
+	section("Assignments with +=");
+	code("var a = 10 a += 0.5 a").equals("10.5");
 }

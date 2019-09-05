@@ -1,11 +1,12 @@
 #include "Test.hpp"
+#include "../src/type/Type.hpp"
 
 void Test::test_strings() {
 
 	header("Strings");
-	code("'").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
-	code("\"").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
-	code("'hello world").lexical_error(ls::LexicalError::Type::UNTERMINATED_STRING);
+	code("'").error(ls::Error::Type::UNTERMINATED_STRING);
+	code("\"").error(ls::Error::Type::UNTERMINATED_STRING);
+	code("'hello world").error(ls::Error::Type::UNTERMINATED_STRING);
 
 	section("Escape sequences");
 	code("'\\\\'").equals("'\\'");
@@ -31,14 +32,14 @@ void Test::test_strings() {
 	code("'\\r'").equals("''");
 	code("\"\\r\"").equals("''");
 	code("'salut\\rhello'").equals("'saluthello'");
-	code("'\\y'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\A'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\ '").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\	'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\2'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\-'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\*'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
-	code("'\\#'").lexical_error(ls::LexicalError::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\y'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\A'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\ '").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\	'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\2'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\-'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\*'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
+	code("'\\#'").error(ls::Error::Type::UNKNOWN_ESCAPE_SEQUENCE);
 
 	/*
 	 * Operators
@@ -50,7 +51,7 @@ void Test::test_strings() {
 	code("-'hello'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x++");
-	code("'hello'++").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
+	code("'hello'++").error(ls::Error::Type::VALUE_MUST_BE_A_LVALUE, {"'hello'"});
 	code("var a = 'hello' a++").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator x--");
@@ -80,7 +81,7 @@ void Test::test_strings() {
 	code("'abc.' / '.'").equals("['abc', '']");
 	code("'.aaaaa.bbbb.ccc.dd.e.' / '.'").equals("['', 'aaaaa', 'bbbb', 'ccc', 'dd', 'e', '']");
 	code("('hello.world.how.are.you' / '.').size()").equals("5");
-	code("'hello' / 2").semantic_error(ls::SemanticError::NO_SUCH_OPERATOR, {ls::Type::STRING.add_temporary().to_string(), "/", ls::Type::INTEGER.to_string()});
+	code("'hello' / 2").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	section("String.operator \\");
 	code("'azerty' \\ ''").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
@@ -93,12 +94,12 @@ void Test::test_strings() {
 
 	section("String.operator []");
 	code("'bonjour'[3]").equals("'j'");
-	code("'bonjour'['hello']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::STRING_TMP.to_string()});
+	code("'bonjour'['hello']").error(ls::Error::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "'bonjour'", ls::Type::tmp_string->to_string()});
 	code("~('salut' + ' ca va ?')").equals("'? av ac tulas'");
 	code("'bonjour'[2:5]").equals("'njou'");
-	code("'bonjour'['a':5]").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
-	code("'bonjour'[2:'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
-	code("'bonjour'['a':'b']").semantic_error(ls::SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
+	code("'bonjour'['a':5]").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
+	code("'bonjour'[2:'b']").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 2>"});
+	code("'bonjour'['a':'b']").error(ls::Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, {"<key 1>"});
 	code("let a = ['bonjour', 2][0] a[3]").equals("'j'");
 	code("'hello'[-1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("''[0]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -157,6 +158,7 @@ void Test::test_strings() {
 	code("String.size('salut')").equals("5");
 	code("'a'.size == 'b'.size").equals("true");
 	code("[1, 'salut tout le monde'][1].size()").equals("19");
+	code("size('hello')").equals("5");
 
 	section("String.toUpper()");
 	code("String.toUpper('')").equals("''");
@@ -185,6 +187,17 @@ void Test::test_strings() {
 
 	section("String.replace()");
 	code("String.replace('bonjour à tous', 'o', '_')").equals("'b_nj_ur à t_us'");
+	code("replace('\\\\\\\\', '\\\\', '.')").equals("'..'");
+	code("replace('hello\\\\', '\\\\\\\\', 'R')").equals("'hello\\'");
+	code("replace('hello.', '.', '\\\\\\\\\')").equals("'hello\\\\'");
+	code("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\'");
+	
+	section("v1 string replace()");
+	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', 'R')").equals("'helloR'");
+	code_v1("replace('hello.', '.', '\\\\\\\\\')").equals("'hello\\'");
+	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	code_v1("replace('\\\\\\\\', '\\\\', '.')").equals("'..'");
 
 	section("String.map()");
 	code("String.map('salut', x -> '(' + x + ')')").equals("'(s)(a)(l)(u)(t)'");
@@ -227,9 +240,9 @@ void Test::test_strings() {
 	code("let a = '_' let f = (x, y) => x + a + y 'abc'.fold(f, '.')").equals("'._a_b_c'");
 	code("'1234567'.fold((x, y) => x + y.number(), 0)").equals("28");
 	code("'1234567'.fold((x, y) => x + y.number(), 0.12)").equals("28.12");
-	// Leaks
-	DISABLED_code("'salut'.fold((x, y) => '%', '')").equals("'%'");
-	DISABLED_code("'salut'.fold(=> '%', '')").equals("'%'");
+	code("'salut'.fold((x, y) => '%', '')").equals("'%'");
+	code("'salut'.fold(=> '%', '')").equals("'%'");
+	code("'salut'.fold((x, y) => y, '')").equals("'t'");
 
 	section("String.indexOf()");
 	code("'bonjour'.indexOf('jour')").equals("3");
@@ -288,7 +301,19 @@ void Test::test_strings() {
 	section("v1 string charAt");
 	code_v1("charAt('hello', 3)").equals("'l'");
 
-	section("v1 string replace()");
-	code_v1("replace('bonjour', 'o', 'u')").equals("'bunjuur'");
-	code_v1("replace('hello\\\\', '\\\\\\\\', '\\\\\\\\o')").equals("'hello\\o'");
+	section("String.left()");
+	code("'bonjour'.left(0)").equals("''");
+	code("'bonjour'.left(2)").equals("'bo'");
+	code("'bonjour'.left(4)").equals("'bonj'");
+	code("'bonjour'.left(1000)").equals("'bonjour'");
+	code("'bonjour'.left(-1)").equals("''");
+	code("String.left('hello how are you?', 5)").equals("'hello'");
+
+	section("String.right()");
+	code("'bonjour'.right(0)").equals("''");
+	code("'bonjour'.right(2)").equals("'ur'");
+	code("'bonjour'.right(4)").equals("'jour'");
+	code("'bonjour'.right(1000)").equals("'bonjour'");
+	code("'bonjour'.right(-1)").equals("''");
+	code("String.right('hello how are you?', 8)").equals("'are you?'");
 }

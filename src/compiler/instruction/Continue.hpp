@@ -1,8 +1,7 @@
 #ifndef CONTINUE_HPP
 #define CONTINUE_HPP
 
-#include "../../compiler/instruction/Instruction.hpp"
-#include "../../compiler/value/Expression.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 
@@ -12,16 +11,15 @@ public:
 	int deepness;
 
 	Continue();
-	virtual ~Continue();
 
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Instruction* clone() const override;
+	virtual std::unique_ptr<Instruction> clone() const override;
 };
 
 }

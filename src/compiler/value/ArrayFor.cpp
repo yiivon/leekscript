@@ -1,15 +1,10 @@
 #include "ArrayFor.hpp"
-using namespace std;
 
 namespace ls {
 
-ArrayFor::~ArrayFor() {
-	delete forr;
-}
-
-void ArrayFor::print(ostream& os, int indent, bool debug, bool condensed) const {
+void ArrayFor::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "[";
-	forr->print(os, indent, debug);
+	forr->print(os, indent, debug, condensed);
 	os << "]";
 
 	if (debug) {
@@ -18,20 +13,25 @@ void ArrayFor::print(ostream& os, int indent, bool debug, bool condensed) const 
 }
 
 Location ArrayFor::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void ArrayFor::analyse(SemanticAnalyser* analyser) {
-	forr->analyse(analyser, Type::PTR_ARRAY);
+void ArrayFor::pre_analyze(SemanticAnalyzer* analyzer) {
+	forr->pre_analyze(analyzer);
+}
+
+void ArrayFor::analyze(SemanticAnalyzer* analyzer) {
+	forr->analyze(analyzer, Type::array());
 	type = forr->type;
+	throws = forr->throws;
 }
 
 Compiler::value ArrayFor::compile(Compiler& c) const {
 	return forr->compile(c);
 }
 
-Value* ArrayFor::clone() const {
-	auto af = new ArrayFor();
+std::unique_ptr<Value> ArrayFor::clone() const {
+	auto af = std::make_unique<ArrayFor>();
 	af->forr = forr->clone();
 	return af;
 }

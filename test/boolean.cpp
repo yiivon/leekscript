@@ -22,10 +22,11 @@ void Test::test_booleans() {
 	section("Boolean.operator !");
 	code("!true").equals("false");
 	code("!false").equals("true");
-	// TODO
-	DISABLED_code("!!!!!false").equals("true");
+	code("!!!!!false").equals("true");
+	code("!!!!!true").equals("false");
 	code("var a = [true, ''] var b = a[0]; !b").equals("false");
 	code("var a = true ['', !a]").equals("['', false]");
+	code("not 12.5").equals("false");
 
 	section("Boolean.operator -");
 	code("var a = [true, ''] var b = a[0]; -b").equals("-1");
@@ -64,8 +65,8 @@ void Test::test_booleans() {
 	code("var a = [true, ''][0] var b = [12, ''][0] a + b").equals("13");
 	code("var a = [false, ''][0] var b = [12, ''][0] a + b").equals("12");
 	code("var a = [false, ''][0] a + 12").equals("12");
-	code("true / 'hello'").semantic_error(ls::SemanticError::Type::NO_SUCH_OPERATOR, {ls::Type::BOOLEAN.to_string(), "/", ls::Type::STRING_TMP.to_string()});
-
+	code("true / 'hello'").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	
 	section("Boolean.operator -");
 	code("true - 1").equals("0");
 	code("1 - true").equals("0");

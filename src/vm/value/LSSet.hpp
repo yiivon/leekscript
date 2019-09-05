@@ -15,8 +15,10 @@ template <typename T>
 class LSSet : public LSValue, public std::set<T, lsset_less<T>> {
 public:
 	static LSValue* clazz;
+	static LSSet<T>* constructor();
 
 	LSSet();
+	LSSet(std::initializer_list<T> values);
 	LSSet(const LSSet<T>& other);
 	virtual ~LSSet();
 
@@ -25,16 +27,19 @@ public:
 	 */
 	int ls_size();
 	bool ls_insert(T value);
+	LSValue* ls_insert_ptr(T value);
+	void vinsert(T value);
 	LSSet<T>* ls_clear();
 	bool ls_erase(T value);
 	bool ls_contains(T value);
 	template <class T2>
 	bool set_lt(const LSSet<T2>* set) const;
+	LSSet<LSValue*>* to_any_set() const;
 
 	/*
 	 * LSValue methods
 	 */
- 	virtual bool to_bool() const override;
+	virtual bool to_bool() const override;
 	virtual bool ls_not() const override;
 	virtual LSValue* add_eq(LSValue* v) override;
 	LSValue* add_eq_int(int v);

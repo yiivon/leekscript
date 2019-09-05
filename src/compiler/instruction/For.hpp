@@ -2,8 +2,6 @@
 #define FOR_HPP
 
 #include <vector>
-
-#include "../semantic/SemanticAnalyser.hpp"
 #include "../value/Value.hpp"
 #include "../value/Block.hpp"
 #include "Instruction.hpp"
@@ -11,27 +9,30 @@
 namespace ls {
 
 class Block;
-class SemanticVar;
+class Variable;
 
 class For : public Instruction {
 public:
 
-	std::vector<Instruction*> inits;
-	Value* condition;
-	std::vector<Instruction*> increments;
-	Block* body = nullptr;
+	Token* token;
+	std::unique_ptr<Block> init;
+	std::unique_ptr<Value> condition;
+	std::unique_ptr<Value> condition2;
+	std::unique_ptr<Block> increment;
+	std::unique_ptr<Block> increment2;
+	std::unique_ptr<Block> body;
+	std::unique_ptr<Block> body2;
+	std::vector<std::pair<Variable*, Variable*>> assignments;
 
-	For();
-	virtual ~For();
-
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
+	virtual void pre_analyze(SemanticAnalyzer* analyzer) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Instruction* clone() const override;
+	virtual std::unique_ptr<Instruction> clone() const override;
 };
 
 }

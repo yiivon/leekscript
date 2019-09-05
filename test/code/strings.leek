@@ -1,6 +1,6 @@
 let m = ['A', 'T', 'C', 'G']
 var count = 0
-var tests = 1000
+var tests = 500
 
 for var k = 0; k < tests; k++ {
 

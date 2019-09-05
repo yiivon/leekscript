@@ -17,6 +17,8 @@ void Test::test_arrays() {
 	code("[true, false, true]").equals("[true, false, true]");
 	code("[23, true, '', {}, 123]").equals("[23, true, '', {}, 123]");
 	code("let a = x -> x [1, 2, a]").equals("[1, 2, <function>]");
+	code("[1m, 34324234m, 231232131232132134379897874534243257343341432423m]").equals("[1, 34324234, 231232131232132134379897874534243257343341432423]");
+	code("[true, 'hello', 231232131232132134379897874534243257343341432423m]").equals("[true, 'hello', 231232131232132134379897874534243257343341432423]");
 
 	section("No commas");
 	code("[1 2 3]").equals("[1, 2, 3]");
@@ -118,6 +120,9 @@ void Test::test_arrays() {
 	code("['', [2][0]]").equals("['', 2]");
 	code("['', [2.5][0]]").equals("['', 2.5]");
 	code("let a = [1, 2, 3] a[true]").equals("2");
+	code("[1, 2.5][1]").equals("2.5");
+	code("[1, true][0]").equals("1");
+	code("[1, true][1]").equals("true");
 
 	section("[] operator on unknown arrays");
 	code("let v = [['a', 'b'], 12] v[0][0]").equals("'a'");
@@ -127,6 +132,7 @@ void Test::test_arrays() {
 	code("[['a', 'b'], 12][0][2]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let v = [['a', 'b'], 12] v[0][0] = 5 v").equals("[[5, 'b'], 12]");
 	code("let v = [['a', 'b'], 12] v[0][2] = 5 v").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("let a = [[12], [1..10]][1] a[5]").equals("6");
 
 	section("Out of bounds exception");
 	code("[][1]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -137,7 +143,7 @@ void Test::test_arrays() {
 	code("let a = [1, 2, 3] a[100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let a = [1, 2, 3] a[-100] = 12").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("let a = [[12], ''][0] a[100]++ a").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	DISABLED_code("let a = [5] let e = a[1] !? 5 e").equals("5");
+	code("let a = [5] let e = a[1] !? 5 e").equals("5");
 
 	section("Access with booleans");
 	code("[1, 2, 3][false]").equals("1");
@@ -152,11 +158,14 @@ void Test::test_arrays() {
 	code("var a = [] a[] = 'a' a").equals("['a']");
 	code("var a = ['a', 'b'] a[] = 'c' a").equals("['a', 'b', 'c']");
 	code("var a = [1, 'b', true] a[] = x -> x a").equals("[1, 'b', true, <function>]");
+	code("var a = ['a', 'b', 'c'] a[] = ['d'][0] a").equals("['a', 'b', 'c', 'd']");
 
 	section("Methods calls on unknown array");
 	code("var a = [1, [1, 2]] a[1].size()").equals("2");
 	code("var a = [1, [1, 2]] a[1].push(3)").equals("[1, 2, 3]");
 	code("var a = [1, [1, 2]] a[1].push(3) a[1]").equals("[1, 2, 3]");
+	code("var a = [1, ['a', 'b']] a[1].push('c') a[1]").equals("['a', 'b', 'c']");
+	code("var a = [[], ['a']] a[1].push('b') a").equals("[[], ['a', 'b']]");
 
 	section("Array.operator +=");
 	code("var a = [1.55] a += 12.9 a").equals("[1.55, 12.9]");
@@ -165,7 +174,7 @@ void Test::test_arrays() {
 	code("var v = 12 var a = [v, 2, 3] a[0] += 5 a[0]").equals("17");
 	code("var a = [1, 2, 3] a += 'hello' a").equals("[1, 2, 3, 'hello']");
 	code("var a = [1.5] a += ['a', 'b'] a").equals("[1.5, 'a', 'b']");
-	DISABLED_code("var a = [1.5] a += false a").equals("[1.5, false]");
+	code("var a = [1.5] a += false a").equals("[1.5, false]");
 	code("var a = [1] a += <2, 3> a").equals("[1, 2, 3]");
 	code("var a = [1] a += <5.5, 7.314> a").equals("[1, 5.5, 7.314]");
 	code("var a = [1] a += <5, 7.314, 'hello'> a").equals("[1, 5, 7.314, 'hello']");
@@ -189,9 +198,12 @@ void Test::test_arrays() {
 	code("var a = [[1.5], ''][0] var b = ['a'] a + b").equals("[1.5, 'a']");
 	code("var a = [['a'], ''][0] var b = [12] a + b").equals("['a', 12]");
 	code("var a = [['a'], ''][0] var b = [12.9] a + b").equals("['a', 12.9]");
-	// TODO
-	DISABLED_code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
+	code("var a = [1, 2, 3] a[1] += 0.5 a").equals("[1, 2.5, 3]");
 	code("var a = [1, 2, 3] a += [4] a").equals("[1, 2, 3, 4]");
+	code("var a = [1, 2, 3] a[1] += 500l a").equals("[1, 502, 3]");
+	code("var a = [] if (true) a += 12 a").equals("[12]");
+	code("var a = [1] if (true) a += 12 a").equals("[1, 12]");
+	code("var a = ['a'] if (true) a += 12 a").equals("['a', 12]");
 
 	section("Array.operator ~~");
 	code("[1, 2, 3, 4, 5] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25]");
@@ -205,12 +217,13 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5] ~~ x -> x.max(3)").equals("[3, 3, 3, 4, 5]");
 	code("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ~~ x -> x.max(3).min(8)").equals("[3, 3, 3, 4, 5, 6, 7, 8, 8, 8]");
 	code("[1, 2, 3, 4] ~~ x -> x + 0.5").equals("[1.5, 2.5, 3.5, 4.5]");
-	DISABLED_code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
+	code("[1, 2, 3] ~~ (x -> x * 5) ~~ (x -> x - 1)").equals("[4, 9, 14]");
 	code("let f = x -> x + 10 let g = x -> x ** 2 [1, 2, 3] ~~ f ~~ g").equals("[121, 144, 169]");
 	code("[1, 2, 3] ~~ Number.sqrt").equals("[1, 1.41421, 1.73205]");
 	code("[1, 2, 3] ~~ x -> [x, x]").equals("[[1, 1], [2, 2], [3, 3]]");
-	DISABLED_code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
-	DISABLED_code("let s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
+	code("[1, 2, 3] ~~ System.print").output("1\n2\n3\n");
+	code("var s = '0' let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("'01234'");
+	code("var s = 0 let a = [1, 2, 3, 4] let f = x -> s += x a ~~ f s").equals("10");
 
 	section("Array.operator <");
 	code("[1] < [1, 2]").equals("true");
@@ -253,8 +266,8 @@ void Test::test_arrays() {
 	code("'yo' in ['ya', 'yu', 'yo']").equals("true");
 	code("let a = 2 if (a in [1, 2, 3]) { 'ok' } else { 'no' }").equals("'ok'");
 	code("'a' in [['a', 'b', 'c'], ''][0]").equals("true");
-	code("2★ in [1, 2, 3]").equals("true");
-	code("4★ in [1, 2, 3]").equals("false");
+	code("2$ in [1, 2, 3]").equals("true");
+	code("4$ in [1, 2, 3]").equals("false");
 	code("'salut' in [1, 2, 3]").equals("false");
 	code("let f = x -> x[0]; [f([1]), f([0..3])]").equals("[1, 0]");
 	code("let f = x -> x[0]; [f([1]), f([0..3]), f(['a'])]").equals("[1, 0, 'a']");
@@ -271,6 +284,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3].size").equals("<function>");
 	code("Array.size([1, [1, 2, 3]][1])").equals("3");
 	code("[[1, 2, 3], 'foo'][0].size()").equals("3");
+	code("size([1, 2, 3, 4])").equals("4");
 
 	section("Array.average()");
 	code("Array.average([1, 2, 3, 4, 5, 6])").equals("3.5");
@@ -301,8 +315,14 @@ void Test::test_arrays() {
 	code("['a' 'b' 'c'].map(x -> x)").equals("['a', 'b', 'c']");
 	code("let a = ['a' 'b' 'c'] a.map(x -> x)").equals("['a', 'b', 'c']");
 	code("[65 66 67].map(x -> x.char()).join('')").equals("'ABC'");
-	// TODO
-	DISABLED_code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
+	code("[['a', 'b', 'c'], 'foo'][0].map(x -> x + '.')").equals("['a.', 'b.', 'c.']");
+	code("[{}, [], true, '42'].map(_ => 42)").equals("[42, 42, 42, 42]");
+	code("[2.5, 4.7, 8.19].map(x => x > 5)").equals("[false, false, true]");
+	code("[true, false, true].map(x => x + 1)").equals("[2, 1, 2]");
+	code("[2, 6, 7, 12, 15].map(Number.isPrime)").equals("[true, false, true, false, false]");
+	code("[[5], [1, 2], [4]].map(x => x.sum())").equals("[5, 3, 4]");
+	code("[5, 7, 9, 11].map(x => [[x], [x]]).map(x => x[0] + x[1])").equals("[[5, 5], [7, 7], [9, 9], [11, 11]]");
+	code("[5, 7, 9, 11].map(x => [[x], [x]]).map(x => x[0][0] + x[1][0])").equals("[10, 14, 18, 22]");
 
 	section("Array.map2()");
 	code("Array.map2([1, 'yo ', []], [12, 55, 9], (x, y -> x + y))").equals("[13, 'yo 55', [9]]");
@@ -349,6 +369,22 @@ void Test::test_arrays() {
 	code("var x = [[1, 2, 3], [3, 1, 2], [2, 3, 1]]; x.sort() x").equals("[[1, 2, 3], [2, 3, 1], [3, 1, 2]]");
 	code("Array.sort([3, 2, 1])").equals("[1, 2, 3]");
 
+	section("Array.sort(<callback>)");
+	code("[5, 1, 3, 2, 4].sort((a, b) => a < b)").equals("[1, 2, 3, 4, 5]");
+	code("[5, 1, 3, 2, 4].sort((a, b) => a > b)").equals("[5, 4, 3, 2, 1]");
+	code("[5, 1, 3, 2, 4].sort(<)").equals("[1, 2, 3, 4, 5]");
+	code("[5, 1, 3, 2, 4].sort(>)").equals("[5, 4, 3, 2, 1]");
+	code("['d', 'a', 'c', 'e', 'b'].sort((a, b) => a < b)").equals("['a', 'b', 'c', 'd', 'e']");
+	code("['d', 'a', 'c', 'e', 'b'].sort((a, b) => a > b)").equals("['e', 'd', 'c', 'b', 'a']");
+	code("['bonjour', 'tout', 'le', 'monde', '!'].sort((a, b) => |a| < |b|)").equals("['!', 'le', 'tout', 'monde', 'bonjour']");
+	code("['bonjour', 'tout', 'le', 'monde', '!'].sort((a, b) => |a| > |b|)").equals("['bonjour', 'monde', 'tout', 'le', '!']");
+	code("Array.sort([5, 1, 3, 2, 4], (a, b) => a < b)").equals("[1, 2, 3, 4, 5]");
+	code("Array.sort([5, 1, 3, 2, 4], >)").equals("[5, 4, 3, 2, 1]");
+	code("let f = (x, y) => x < y [5, 1, 3, 2, 4].sort(f)").equals("[1, 2, 3, 4, 5]");
+	code("let f = (x, y) => x < y ['a', 'b', 'c', 'd', 'e'].sort(f)").equals("['a', 'b', 'c', 'd', 'e']");
+	code("[{a: 5, b: 7}, {a: 12, b: 1}, {a: 9, b: 4}].sort((x, y) -> x.a < y.a)").equals("[{a: 5, b: 7}, {a: 9, b: 4}, {a: 12, b: 1}]");
+	code("[{a: 5, b: 7}, {a: 12, b: 1}, {a: 9, b: 4}].sort((x, y) -> x.b < y.b)").equals("[{a: 12, b: 1}, {a: 9, b: 4}, {a: 5, b: 7}]");
+
 	section("Array.filter()");
 	code("Array.filter([1, 2, 3, 10, true, 'yo'], x -> x > 2)").equals("[3, 10, 'yo']");
 	code("[3, 4, 5].filter(x -> x > 6)").equals("[]");
@@ -371,13 +407,10 @@ void Test::test_arrays() {
 	section("Array.iter()");
 	code("Array.iter([1, 2, 3], x -> System.print(x))").output("1\n2\n3\n");
 	code("[4, 5, 6].iter(x -> System.print(x))").output("4\n5\n6\n");
-	// TODO will work with capture references in closures
-	DISABLED_code("let a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
-	// TODO crash
-	DISABLED_code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
-	// TODO works but leaks
-	DISABLED_code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("");
-	DISABLED_code("var s = 0 [1, 2, 3, 4, 5].iter(x -> s += x)").equals("15");
+	code("var a = 0 Array.iter([1, 2, 3], x -> a += x) a").equals("6");
+	code("var a = 2 [1, 2, 3].iter(x -> a *= x) a").equals("12");
+	code("var a = '' Array.iter([1, 2, 3], x -> a += x) a").equals("'123'");
+	code("var s = 0 [1, 2, 3, 4, 5].iter(x -> s += x) s").equals("15");
 
 	section("Array.partition()");
 	code("Array.partition([1, 2, 3, 4, 5], (x -> x < 3))").equals("[[1, 2], [3, 4, 5]]");
@@ -385,8 +418,7 @@ void Test::test_arrays() {
 	code("[1, 2, 3, 4, 5].partition(x -> x > 3)").equals("[[4, 5], [1, 2, 3]]");
 	code("[1, 2, 3, 4, 5].partition(x -> x == 3)").equals("[[3], [1, 2, 4, 5]]");
 	code("[1, 2, 3, 4, 5, 6].filter(x -> x > 2).partition(x -> x > 4)").equals("[[5, 6], [3, 4]]");
-	// TODO convert return to boolean
-	DISABLED_code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("[[1, 2, 3, 4, 5], []]");
+	code("[1, 2, 3, 4, 5].partition(x -> 'yolo')").equals("[[1, 2, 3, 4, 5], []]");
 
 	section("Array.first()");
 	code("Array.first([1, 2, 3, 10, true, 'yo', null])").equals("1");
@@ -396,6 +428,8 @@ void Test::test_arrays() {
 	code("[].first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().first()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[5, true].first()").equals("5");
+	code("[[5, true], [6, false], [7, true]].first().first()").equals("5");
 
 	section("Array.last()");
 	code("Array.last([1, 2, 3, 10, true, 'yo', null])").equals("null");
@@ -405,22 +439,32 @@ void Test::test_arrays() {
 	code("[].last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[12.5].clear().last()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	// TODO : the return type of first() must be the element type of the array if it's homogeneous
-	DISABLED_code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
+	code("[[321, 21], [23, 212], [654, 9876]].first().last()").equals("21");
+	code("[[321, 21], [23, 212], [654, 9876]].last().first()").equals("654");
+	code("[[321, 'a'], [23, 'b'], [654, 'c']].first().last()").equals("'a'");
+	code("[[321, 'a'], [23, 'b'], [654, 'c']].last().first()").equals("654");
 
 	section("Array.foldLeft()");
 	code("Array.foldLeft([1, 2, 3, 10, true, 'yo', null], (x, y -> x + y), 'concat:')").equals("'concat:12310trueyonull'");
 	code("Array.foldLeft([2, 2, 3], (x, y -> x ** y), 1)").equals("1");
 	code("Array.foldLeft([2.5, 3.5], (x, y -> x ** y), 1.5)").equals("34.7374965567");
 	code("Array.foldLeft(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'Xabcd'");
-	DISABLED_code("[1, 2, 3, 4, 5].foldLeft(+, 0)").equals("15");
+	code("['1', '2', '3'].foldLeft(+, '0')").equals("'0123'");
+	code("[1, 2, 3, 4, 5].foldLeft(+, 0)").equals("15");
+	code("let a = +; [1, 2, 3, 4, 5].foldLeft(a, 0)").equals("15");
+	code("[1, 2, 3, 4, 5].foldLeft(-, 0)").equals("-15");
+	code("let a = -; [1, 2, 3, 4, 5].foldLeft(a, 0)").equals("-15");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((+), 0)").equals("45");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft((-), 0)").equals("-45");
+	code("[1, 3, 4, 2, 7, 5, 8, 9, 6].foldLeft(*, 1)").equals("362880");
+	code("['a', 'b', 'c'].foldLeft(=> '%', '')").equals("'%'");
+	code("[1, 2, 3].foldLeft((acc, x) -> acc.push(x), [])").equals("[1, 2, 3]");
 
 	section("Array.foldRight()");
 	code("Array.foldRight([2, 2, 3], (x, y -> x ** y), 1)").equals("256");
 	code("Array.foldRight(['a', 'b', 'c', 'd'], (x, y -> x + y), 'X')").equals("'abcdX'");
 	code("Array.foldRight([1.5, 2.0, 2.5], (x, y -> x ** y), 1.5)").equals("533.166813742");
-	// TODO
-	DISABLED_code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
+	code("[1, 2, 3].foldRight((x, acc -> acc.push({w: x})), [])").equals("[{w: 3}, {w: 2}, {w: 1}]");
 
 	section("Array.shuffle()");
 	code("[].shuffle()");
@@ -468,15 +512,22 @@ void Test::test_arrays() {
 	code("var a = [1, 2, 3] Array.push(a, 4)").equals("[1, 2, 3, 4]");
 	code("[].push([])").equals("[[]]");
 	code("var a = [1, 2] a.push(3) a").equals("[1, 2, 3]");
-	// TODO
-	DISABLED_code("let a = [1, 2] a.push(3.5) a").equals("[1, 2, 3]");
+	code("var a = [1, 2] a.push(3.5) a").equals("[1, 2, 3.5]");
 	code("var a = [1.5, -2.9] a.push(3.5) a").equals("[1.5, -2.9, 3.5]");
 	code("var s = new Array() Array.push(s, 'a')").equals("['a']");
+	code("var a = [] a.push(1) a").equals("[1]");
+	code("var a = [] a.push(1)").equals("[1]");
+	code("var a = [] a.push('a') a").equals("['a']");
+	code("var a = [] a.push('a')").equals("['a']");
+	code("var a = [1] a.push('a') a").equals("[1, 'a']");
+	code("var a = [1] a.push('a')").equals("[1, 'a']");
+	code("var a = [] for i in [1..10] { a = a.push(i) } a").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
+	code("let p = (a, e) => a.push(e) var a = [] for i in [1..10] { a = p(a, i) } a").equals("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 
 	section("Array.pushAll()");
 	code("Array.pushAll([], [true, 'yo'])").equals("[true, 'yo']");
 	code("[0].pushAll([1, 2, 3])").equals("[0, 1, 2, 3]");
-	code("[0].pushAll([3.5])").equals("[0, 3]");
+	code("[0].pushAll([3.5])").equals("[0, 3.5]");
 	code("[0.5].pushAll(['a'])").equals("[0.5, 'a']");
 
 	section("Array.join()");
@@ -493,12 +544,24 @@ void Test::test_arrays() {
 	code("var a = [1, 'yo', true] a.clear() a").equals("[]");
 
 	section("Array.fill()");
+	code("var a = [] a.fill('lol') a").equals("[]");
 	code("var a = [1, 2, 3] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
-	// TODO should be possible
-	DISABLED_code("let a = [1, 2, 3] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
+	code("var a = [1, 2, 3] a.fill(12) a").equals("[12, 12, 12]");
+	code("var a = [1, 2, 3] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
+	code("var a = [1, 2, 3] a.fill(12.5) a").equals("[12.5, 12.5, 12.5]");
 	code("var a = [] Array.fill(a, 'test', 2)").equals("['test', 'test']");
 	code("var a = [1.5] a.fill(12.5, 4) a").equals("[12.5, 12.5, 12.5, 12.5]");
 	code("var a = [1.5] a.fill(12, 4) a").equals("[12, 12, 12, 12]");
+	code("var a = [] a.fill('test', true) a").equals("['test']");
+	code("var a = [1, 2, 3] a.fill('a', 4) a").equals("['a', 'a', 'a', 'a']");
+	code("var a = [1, 2, 3] a.fill('a') a").equals("['a', 'a', 'a']");
+	code("var a = ['a', 'b', 'c'] a.fill(true, 4) a").equals("[true, true, true, true]");
+	code("var a = ['a', 'b', 'c'] a.fill(true) a").equals("[true, true, true]");
+	code("var a = ['a', 'b', 'c'] a.fill(1, 3) a").equals("[1, 1, 1]");
+
+	section("fill() v1");
+	code_v1("var a = ['a', 'b'] fill(a, 'hello') a").equals("['hello', 'hello']");
+	code_v1("var a = [] fill(a, 'hello', 5) a").equals("['hello', 'hello', 'hello', 'hello', 'hello']");
 
 	section("Array.insert()");
 	code("var a = ['a', 'b', 'c'] Array.insert(a, 'hello', 1)").equals("['a', 'hello', 'b', 'c']");
@@ -555,6 +618,14 @@ void Test::test_arrays() {
 	code("[true, 'hello', [1, 2, 3]].removeElement('hello')").equals("true");
 	code("[true, 'hello', [1, 2, 3]].removeElement('yolo')").equals("false");
 
+	section("inArray");
+	code("inArray([1, 2, 3, 4], 3)").equals("true");
+	code("inArray([1, 2, 3, 4], 5)").equals("false");
+	code("inArray([1.5, 2.2, 3.7, 4.6], 2.2)").equals("true");
+	code("inArray([1.5, 2.2, 3.7, 4.6], 2.1)").equals("false");
+	code("inArray(['a', 'b', 'c', 'd'], 'd')").equals("true");
+	code("inArray(['a', 'b', 'c', 'd'], 'e')").equals("false");
+
 	section("Postfix expressions");
 	code("let a = [10, ''] a[0]++").equals("10");
 	code("let a = [10, ''] a[0]++ a[0]").equals("11");
@@ -574,8 +645,7 @@ void Test::test_arrays() {
 	code("let a = ['hello', 1] a[0].reverse()").equals("'olleh'");
 	code("let a = [['a', 'b', 'c'], 1] a[0].reverse()").equals("['c', 'b', 'a']");
 	code("let a = [['a', 'b', 'c'], 'hello'] [a[0].reverse(), a[1].reverse()]").equals("[['c', 'b', 'a'], 'olleh']");
-	// TODO not working
-	DISABLED_code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])]").equals("[]");
+	code("let h = [1, 'text', [1,2,3], x -> x + 1] h[2].push('test') h[0] = [h[3](h[0]), h[3](h[1])] h").equals("[[2, 'text1'], 'text', [1, 2, 3, 'test'], <function>]");
 
 	section("Array v1 pushAll");
 	code_v1("var a = [] pushAll(a, ['a', 'b', 'c']) a").equals("['a', 'b', 'c']");

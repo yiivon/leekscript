@@ -15,6 +15,7 @@ template <typename K, typename V>
 class LSMap : public LSValue, public std::map<K, V, lsmap_less<K>> {
 public:
 	static LSValue* clazz;
+	static LSMap<K, V>* constructor();
 
 	LSMap();
 	virtual ~LSMap();
@@ -23,6 +24,7 @@ public:
 	 * Map methods;
 	 */
 	bool ls_insert(K key, V value);
+	void ls_emplace(K key, V value);
 	LSMap<K, V>* ls_clear();
 	bool ls_erase(K key);
 	V ls_look(K key, V def);

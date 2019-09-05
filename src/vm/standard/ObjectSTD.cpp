@@ -2,55 +2,69 @@
 #include "ValueSTD.hpp"
 #include "../value/LSObject.hpp"
 #include "../value/LSNumber.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-LSObject ObjectSTD::readonly;
+LSObject* ObjectSTD::readonly = new LSObject();
 LSNumber* ObjectSTD::readonly_value = LSNumber::get(12);
 
-ObjectSTD::ObjectSTD() : Module("Object") {
+ObjectSTD::ObjectSTD(VM* vm) : Module(vm, "Object") {
 
-	LSObject::object_class = clazz;
+	LSObject::object_class = clazz.get();
 
-	readonly.addField("v", readonly_value);
-	readonly.readonly = true;
-	readonly.native = true;
+	readonly->addField("v", readonly_value);
+	readonly->readonly = true;
+	readonly->native = true;
 
-	static_field("readonly", Type::OBJECT, [&](Compiler& c) {
-		return c.new_pointer(&ObjectSTD::readonly, Type::OBJECT);
+	static_field("readonly", Type::object, (void*) &readonly);
+
+	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_object, {}, (void*) &LSObject::constructor},
+		{Type::tmp_object, {Type::clazz()}, (void*) object_new},
 	});
 
 	/*
 	 * Operators
 	 */
 	operator_("in", {
-		{Type::OBJECT, Type::ANY, Type::BOOLEAN, (void*) &LSObject::in, {}, Method::NATIVE},
-		{Type::OBJECT, Type::NUMBER, Type::BOOLEAN, (void*) &in_any}
+		{Type::object, Type::any, Type::boolean, (void*) &LSObject::in},
+		{Type::object, Type::number, Type::boolean, in_any}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("copy", {
-		{Type::OBJECT, {Type::OBJECT}, (void*) &ValueSTD::copy}
+		{Type::object, {Type::object}, ValueSTD::copy}
 	});
-	Type map_fun_type = Type::fun(Type::ANY, {Type::ANY});
+	auto map_fun_type = Type::fun_object(Type::any, {Type::any});
 	auto map_fun = &LSObject::ls_map<LSFunction*>;
 	method("map", {
-		{Type::OBJECT, {Type::OBJECT, map_fun_type}, (void*) map_fun, Method::NATIVE}
+		{Type::tmp_object, {Type::object, map_fun_type}, (void*) map_fun}
 	});
 	method("keys", {
-		{Type::STRING_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_keys, Method::NATIVE}
+		{Type::array(Type::string), {Type::object}, (void*) &LSObject::ls_get_keys}
 	});
 	method("values", {
-		{Type::PTR_ARRAY, {Type::OBJECT}, (void*) &LSObject::ls_get_values, Method::NATIVE}
+		{Type::array(Type::any), {Type::object}, (void*) &LSObject::ls_get_values}
+	});
+
+	/** Internal **/
+	method("add_field", {
+		{Type::void_, {Type::object, Type::i8_ptr, Type::any}, (void*) &LSObject::addField}
 	});
 }
 
-Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::ANY, {args[0], c.insn_to_any(args[1])}, (void*) +[](LSValue* x, LSValue* y) {
-		return x->in(y);
-	});
+Compiler::value ObjectSTD::in_any(Compiler& c, std::vector<Compiler::value> args, int) {
+	return c.insn_call(Type::any, {args[0], c.insn_to_any(args[1])}, "Value.operatorin");
+}
+
+LSValue* ObjectSTD::object_new(LSClass* clazz) {
+	return new LSObject(clazz);
 }
 
 }

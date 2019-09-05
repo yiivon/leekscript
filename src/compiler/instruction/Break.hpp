@@ -10,20 +10,19 @@ namespace ls {
 class Break : public Instruction {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 	int deepness;
 
 	Break();
-	virtual ~Break();
 
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Instruction* clone() const override;
+	virtual std::unique_ptr<Instruction> clone() const override;
 };
 
 }

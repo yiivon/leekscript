@@ -1,14 +1,11 @@
 #include "Number.hpp"
-#include "../../vm/VM.hpp"
 #include <limits.h>
 #include "../../vm/value/LSNumber.hpp"
-#include "../../type/RawType.hpp"
-
-using namespace std;
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-Number::Number(std::string value, std::shared_ptr<Token> token) : token(token), value(value) {
+Number::Number(std::string value, Token* token) : token(token), value(value) {
 	constant = true;
 }
 
@@ -18,7 +15,7 @@ Number::~Number() {
 	}
 }
 
-void Number::print(ostream& os, int, bool debug, bool condensed) const {
+void Number::print(std::ostream& os, int, bool debug, bool condensed) const {
 	os << value;
 	if (debug) {
 		os << " " << type;
@@ -29,7 +26,7 @@ Location Number::location() const {
 	return token->location;
 }
 
-void Number::analyse(SemanticAnalyser*) {
+void Number::analyze(SemanticAnalyzer*) {
 
 	// Get the base
 	base = 10;
@@ -70,7 +67,7 @@ void Number::analyse(SemanticAnalyser*) {
 			assert(false && "No support for mpf numbers yet");
 			// LCOV_EXCL_STOP
 		} else {
-			type = Type::REAL;
+			type = Type::real;
 		}
 	} else {
 		if (!mpz_value_initialized) {
@@ -78,30 +75,30 @@ void Number::analyse(SemanticAnalyser*) {
 			mpz_value_initialized = true;
 		}
 		if (!mp_number and !long_number and mpz_fits_sint_p(mpz_value)) {
-			type = Type::INTEGER;
+			type = Type::integer;
 			int_value = mpz_get_si(mpz_value);
 			double_value = int_value;
 		} else if (!mp_number and mpz_fits_slong_p(mpz_value)) {
-			type = Type::LONG;
+			type = Type::long_;
 			long_value = mpz_get_si(mpz_value);
 			double_value = long_value;
 		} else {
-			type = Type::MPZ;
+			type = Type::tmp_mpz_ptr;
 		}
 	}
 	if (pointer) {
-		type = Type::ANY;
+		type = Type::any;
 	}
 	// TODO ?
 	// type.constant = true;
 }
 
 bool Number::is_zero() const {
-	if (type == Type::ANY or type == Type::REAL) {
+	if (type->is_any() or type->is_real()) {
 		return double_value == 0;
-	} else if (type == Type::LONG) {
+	} else if (type->is_long()) {
 		return long_value == 0;
-	} else if (type.is_mpz()) {
+	} else if (type->is_mpz_ptr()) {
 		return mpz_cmp_ui(mpz_value, 0) == 0;
 	} else {
 		return int_value == 0;
@@ -109,24 +106,27 @@ bool Number::is_zero() const {
 }
 
 Compiler::value Number::compile(Compiler& c) const {
-	if (type == Type::ANY) {
+	if (type->is_any()) {
 		return c.insn_to_any(c.new_real(double_value));
 	}
-	if (type == Type::LONG) {
+	if (type->is_long()) {
 		return c.new_long(long_value);
 	}
-	if (type == Type::REAL) {
+	if (type->is_real()) {
 		return c.new_real(double_value);
 	}
-	if (type.is_mpz()) {
-		return c.new_mpz_init(mpz_value);
+	if (type == Type::tmp_mpz_ptr) {
+		auto s = c.new_const_string(clean_value);
+		auto r = c.create_entry("m", Type::tmp_mpz);
+		c.insn_call(Type::void_, {r, s, c.new_integer(base)}, "Number.mpz_init_str");
+		c.increment_mpz_created();
+		return r;
 	}
 	return c.new_integer(int_value);
 }
 
-Value* Number::clone() const {
-	auto n = new Number(value, token);
-	return n;
+std::unique_ptr<Value> Number::clone() const {
+	return std::make_unique<Number>(value, token);
 }
 
 }

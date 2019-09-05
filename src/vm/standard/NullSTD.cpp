@@ -3,8 +3,8 @@
 
 namespace ls {
 
-NullSTD::NullSTD() : Module("Null") {
-	LSNull::clazz = clazz;
+NullSTD::NullSTD(VM* vm) : Module(vm, "Null") {
+	LSNull::clazz = clazz.get();
 }
 
 }

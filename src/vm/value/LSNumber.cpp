@@ -1,16 +1,12 @@
 #include <cmath>
 #include <sstream>
-
 #include "LSNumber.hpp"
 #include "LSNull.hpp"
 #include "LSFunction.hpp"
 #include "LSBoolean.hpp"
-#include "../VM.hpp"
 #include "LSString.hpp"
 #include "LSClass.hpp"
 #include "LSClosure.hpp"
-
-using namespace std;
 
 namespace ls {
 
@@ -21,6 +17,8 @@ LSNumber* LSNumber::get(NUMBER_TYPE i) {
 }
 
 std::string LSNumber::print(double d) {
+	// We don't want to print "-0" numbers
+	if (d == -0.0) d = 0.0;
 	std::string s;
 	size_t len = snprintf(0, 0, "%.10f", d);
 	size_t oldsize = s.size();
@@ -31,7 +29,7 @@ std::string LSNumber::print(double d) {
 	// remove nul terminator
 	s.pop_back();
 	// remove trailing zeros
-	s.erase(s.find_last_not_of('0') + 1, string::npos);
+	s.erase(s.find_last_not_of('0') + 1, std::string::npos);
 	// remove trailing point
 	if (s.back() == L'.') {
 		s.pop_back();
@@ -261,7 +259,6 @@ LSValue* LSNumber::mul(LSValue* v) {
 	return new LSString(r);
 }
 
-void fake_ex_destru_mul(void*) {}
 LSValue* LSNumber::mul_eq(LSValue* v) {
 	if (v->type == NUMBER) {
 		auto number = static_cast<LSNumber*>(v);
@@ -283,7 +280,7 @@ LSValue* LSNumber::div(LSValue* v) {
 		auto number = static_cast<LSNumber*>(v);
 		if (refs == 0) {
 			value /= number->value;
-			if (number->refs == 0) delete number;
+			LSValue::delete_temporary(v);
 			return this;
 		}
 		if (number->refs == 0) {
@@ -299,13 +296,12 @@ LSValue* LSNumber::div(LSValue* v) {
 	}
 	auto boolean = static_cast<LSBoolean*>(v);
 	if (boolean->value) {
+		LSValue::delete_temporary(v);
 		return this;
 	}
-	if (refs == 0) {
-		value = NAN;
-		return this;
-	}
-	return LSNumber::get(NAN);
+	LSValue::delete_temporary(this);
+	LSValue::delete_temporary(v);
+	throw vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO);
 }
 
 LSValue* LSNumber::div_eq(LSValue* v) {
@@ -446,6 +442,12 @@ LSValue* LSNumber::mod(LSValue* v) {
 		LSValue::delete_temporary(v);
 		throw vm::ExceptionObj(vm::Exception::NO_SUCH_OPERATOR);
 	}
+	auto boolean = static_cast<LSBoolean*>(v);
+	if (not boolean->value) {
+		LSValue::delete_temporary(this);
+		LSValue::delete_temporary(v);
+		throw vm::ExceptionObj(vm::Exception::DIVISION_BY_ZERO);
+	}
 	if (refs == 0) {
 		value = 0;
 		return this;
@@ -530,7 +532,7 @@ bool LSNumber::eq(const LSValue* v) const {
 		auto number = static_cast<const LSNumber*>(v);
 		return this->value == number->value;
 	}
-	return false;
+	return v->type == BOOLEAN and static_cast<const LSBoolean*>(v)->value == this->value;
 }
 
 bool LSNumber::lt(const LSValue* v) const {
@@ -553,13 +555,13 @@ bool LSNumber::isInteger() const {
 	return value == (int)value;
 }
 
-string LSNumber::toString() const {
+std::string LSNumber::toString() const {
 
 	if (isInteger()) return std::to_string((int)value);
 
 	return LSNumber::print(value);
 }
-string LSNumber::json() const {
+std::string LSNumber::json() const {
 	return toString();
 }
 

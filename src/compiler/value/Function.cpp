@@ -1,5 +1,5 @@
 #include "Function.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
+#include "../semantic/SemanticAnalyzer.hpp"
 #include "../instruction/ExpressionInstruction.hpp"
 #include "../../vm/value/LSFunction.hpp"
 #include "../../vm/value/LSClosure.hpp"
@@ -7,122 +7,110 @@
 #include "../../vm/Program.hpp"
 #include "../../vm/Exception.hpp"
 #include "llvm/IR/Verifier.h"
-#include "../../type/RawType.hpp"
 #include <string>
+#include <fstream>
 #include "../../vm/LSValue.hpp"
+#include "../semantic/Callable.hpp"
+#include "../instruction/VariableDeclaration.hpp"
+#include "../../colors.h"
+#include "../../vm/Context.hpp"
+#include "../../vm/Module.hpp"
+#include "../resolver/File.hpp"
+#include "../semantic/FunctionVersion.hpp"
+#include "../semantic/Variable.hpp"
+#include "../../util/Util.hpp"
+#include "../../type/Function_type.hpp"
 
 namespace ls {
 
 int Function::id_counter = 0;
 
-Function::Function() {
-	body = nullptr;
+Function::Function(Token* token) : token(token) {
 	parent = nullptr;
-	pos = 0;
 	constant = true;
 	function_added = false;
 }
 
 Function::~Function() {
-	delete body;
-	for (auto value : defaultValues) {
-		delete value;
-	}
 	if (default_version != nullptr) {
-		if (default_version->function != nullptr) {
-			delete default_version->function;
-		}
 		delete default_version;
 		default_version = nullptr;
 	}
 	for (const auto& version : versions) {
-		delete version.second->function;
-		delete version.second->body;
 		delete version.second;
-	}
-	if (compiler != nullptr && handle_created) {
-		compiler->removeModule(function_handle);
 	}
 }
 
 void Function::addArgument(Token* name, Value* defaultValue) {
-	arguments.push_back(std::unique_ptr<Token> { name });
-	defaultValues.push_back(defaultValue);
+	arguments.push_back(name);
+	defaultValues.emplace_back(defaultValue);
+	if (defaultValue) default_values_count++;
 }
 
-Type Function::getReturnType() {
-	if (current_version->type.return_type()._types.size() == 0) {
-		if (!placeholder_type) {
-			placeholder_type = Type::generate_new_placeholder_type();
-		}
-		return { placeholder_type };
-	} else {
-		return current_version->type.return_type();
-	}
-}
-
-void Function::print_version(std::ostream& os, int indent, bool debug, const Version* version) const {
-	if (version == nullptr) {
-		os << "nullptr!!";
-		return;
+void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
+	for (const auto& capture : captures) {
+		os << "[" << capture << " = any(" << capture->parent << ")] ";
 	}
 	if (captures.size() > 0) {
 		os << "[";
 		for (unsigned c = 0; c < captures.size(); ++c) {
 			if (c > 0) os << ", ";
-			os << captures[c]->name << " " << captures[c]->type();
+			os << captures[c] << " " << captures[c]->type;
 		}
 		os << "] ";
 	}
-	if (arguments.size() != 1) {
-		os << "(";
-	}
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		if (i > 0) os << ", ";
-		os << arguments.at(i)->content;
-		if (debug)
-			os << " " << version->type.arguments().at(i);
-
-		if (defaultValues.at(i) != nullptr) {
-			os << " = ";
-			defaultValues.at(i)->print(os);
-		}
-	}
-	if (arguments.size() != 1) {
-		os << ")";
-	}
-	os << " => ";
-	version->body->print(os, indent, debug, true);
-
-	if (debug) {
-		os << " [" << versions.size() << " versions, " << std::boolalpha << has_version << "]";
-		os << "<";
+	if (versions.size() > 0) {
+		// std::cout << "print version " << versions.begin()->second->type << std::endl;
 		int i = 0;
 		for (const auto& v : versions) {
-			if (i > 0) os << ", ";
-			if (v.second == version) os << "$";
-			os << v.first << " => " << v.second->type.return_type();
-			i++;
+			if (i++ > 0) os << std::endl << tabs(indent);
+			v.second->print(os, indent, debug, condensed);
 		}
-		os << ">";
 	}
-	if (debug) {
-		//os << " " << type;
-	}
-}
-
-void Function::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	if (has_version && versions.size() == 1) {
-		// std::cout << "print version " << versions.begin()->second->type << std::endl;
-		print_version(os, indent, debug, versions.begin()->second);
-	} else {
+	if (default_version and (generate_default_version or is_main_function or versions.size() == 0)) {
+		if (versions.size() > 0) os << std::endl << tabs(indent);
 		// std::cout << "print default version" << std::endl;
-		print_version(os, indent, debug, default_version);
+		default_version->print(os, indent, debug, condensed);
 	}
 }
 
 Location Function::location() const {
-	return body->location();
+	return default_version->body->location();
+}
+
+void Function::create_default_version(SemanticAnalyzer* analyzer) {
+	if (default_version) return;
+
+	default_version = new FunctionVersion(std::unique_ptr<Block>(body));
+	default_version->parent = this;
+
+	std::vector<const Type*> args;
+	for (unsigned int i = 0; i < arguments.size(); ++i) {
+		if (defaultValues[i] != nullptr) {
+			defaultValues[i]->analyze(analyzer);
+		}
+		if (!default_version->placeholder_type) {
+			default_version->placeholder_type = Type::generate_new_placeholder_type();
+		}
+		args.push_back(default_version->placeholder_type);
+	}
+	type = Type::fun(Type::any, args, this);
+
+	default_version->type = Type::fun(default_version->getReturnType(), args, this);
+}
+
+void Function::pre_analyze(SemanticAnalyzer* analyzer) {
+	// std::cout << "Function " << name << "::pre_analyze" << std::endl;
+	if (is_main_function) {
+		parent = this;
+	} else {
+		parent = analyzer->current_function()->parent;
+	}
+
+	create_default_version(analyzer);
+
+	current_version = default_version;
+	default_version->pre_analyze(analyzer, default_version->type->arguments());
 }
 
 /*
@@ -151,442 +139,208 @@ let r2 = f(12)			// version with number, recompiler f with a [a = int] version, 
 r2(12)
 r2('hello')
  */
-void Function::analyse(SemanticAnalyser* analyser) {
-
-	parent = analyser->current_function();
+void Function::analyze(SemanticAnalyzer* analyzer) {
 
 	if (!function_added) {
-		analyser->add_function(this);
+		analyzer->add_function(this);
 		function_added = true;
 	}
-	std::vector<Type> args;
-	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		if (defaultValues[i] != nullptr) {
-			defaultValues[i]->analyse(analyser);
-		}
-		args.push_back(Type::ANY);
-		// args.push_back(Type::generate_new_placeholder_type());
+	create_default_version(analyzer);
+	if (is_main_function) {
+		default_version->analyze_global_functions(analyzer);
 	}
-	type = Type::fun({}, args, this);
-
-	if (!default_version) {
-		default_version = new Function::Version();
-		current_version = default_version;
-		default_version->body = body;
-		if (captures.size()) {
-			default_version->function = new LSClosure(nullptr);
-		} else {
-			default_version->function = new LSFunction(nullptr);
-		}
-		default_version->function->refs = 1;
-		default_version->function->native = true;
+	pre_analyze(analyzer);
+	if (is_main_function) {
+		analyse_default_method(analyzer);
 	}
-	analyzed = true;
-
-	// auto return_type = req_type.getReturnType();
-	analyse_body(analyser, type.arguments(), default_version);
-
-	// Re-analyse each version
-	for (auto v : versions) {
-		analyse_body(analyser, v.first, v.second);
-	}
-
-	type = default_version->type;
-
-	update_function_args(analyser);
-
 	// std::cout << "Function type: " << type << std::endl;
 }
 
-bool Function::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int level) {
-	// std::cout << "Function " << this << " ::will_take " << args << " level " << level << std::endl;
-	if (!analyzed) {
-		analyse(analyser);
-	}
-	if (level == 1) {
-		if (versions.find(args) == versions.end()) {
-			for (const auto& t : args) {
-				if (t.is_placeholder()) return false;
-			}
-			auto version = new Function::Version();
-			version->body = (Block*) body->clone();
-			if (captures.size()) {
-				version->function = new LSClosure(nullptr);
-			} else {
-				version->function = new LSFunction(nullptr);
-			}
-			version->function->refs = 1;
-			version->function->native = true;
-			versions.insert({args, version});
-
-			analyse_body(analyser, args, version);
-
-			// std::cout << "created version type : " << version->type << std::endl;
-			update_function_args(analyser);
-			return true;
-		}
-		return false;
-	} else {
-		auto v = current_version ? current_version : default_version;
-		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
-			if (auto f = dynamic_cast<Function*>(ei->value)) {
-
-				analyser->enter_function(this);
-				for (unsigned i = 0; i < arguments.size(); ++i) {
-					analyser->add_parameter(arguments[i].get(), v->type.argument(i));
-				}
-				f->will_take(analyser, args, level - 1);
-
-				analyser->leave_function();
-
-				if (captures.size()) {
-					v->type = Type::closure(f->versions[args]->type, v->type.arguments(), this);
-				} else {
-					v->type = Type::fun(f->versions[args]->type, v->type.arguments(), this);
-				}
-
-				// std::cout << "Sub function type: " << f->versions.begin()->second->type << std::endl;
-				// std::cout << "Main function type: " << v->type << std::endl;
-
-				// analyse_body(analyser, args, v, Type::UNKNOWN);
-			}
-		}
-	}
-	return false;
+void Function::analyse_default_method(SemanticAnalyzer* analyzer) {
+	analyzed = true;
+	default_version->analyze(analyzer, type->arguments());
+	type = Type::fun_object(default_version->getReturnType(), default_version->type->arguments());
 }
 
-void Function::set_version(const std::vector<Type>& args, int level) {
+void Function::create_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args) {
+	// std::cout << "Function::create_version(" << args << ")" << std::endl;
+	auto version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
+	version->parent = this;
+	versions.insert({args, version});
+
+	version->pre_analyze(analyzer, args);
+	version->analyze(analyzer, args);
+}
+
+const Type* Function::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+	// std::cout << "Function " << " ::will_take " << args << " level " << level << std::endl;
 	if (level == 1) {
+		auto version = args;
+		// Fill with default arguments
+		for (size_t i = version.size(); i < arguments.size(); ++i) {
+			if (defaultValues.at(i)) {
+				version.push_back(defaultValues.at(i)->type);
+			}
+		}
+		auto v = versions.find(version);
+		if (v == versions.end()) {
+			for (const auto& t : version) {
+				if (t->placeholder) return type;
+			}
+			create_version(analyzer, version);
+			return versions.at(version)->type;
+		}
+		return v->second->type;
+	} else {
+		auto v = current_version ? current_version : default_version;
+		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0].get())) {
+			if (auto f = dynamic_cast<Function*>(ei->value.get())) {
+
+				analyzer->enter_function(v);
+				auto ret = f->will_take(analyzer, args, level - 1);
+				analyzer->leave_function();
+
+				if (captures.size()) {
+					v->type = Type::closure(f->version_type(args), v->type->arguments(), this);
+				} else {
+					v->type = Type::fun(f->version_type(args), v->type->arguments(), this)->pointer();
+				}
+				return ret;
+			}
+		}
+	}
+	return default_version->type;
+}
+
+void Function::set_version(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int level) {
+	// std::cout << "Function::set_version " << args << " " << level << std::endl;
+	if (level == 1) {
+		for (const auto& t : args) {
+			if (t->placeholder) return;
+		}
 		version = args;
+		// Fill with defaultValues
+		for (size_t i = version.size(); i < arguments.size(); ++i) {
+			if (defaultValues.at(i)) {
+				version.push_back(defaultValues.at(i)->type);
+			}
+		}
 		has_version = true;
 	} else {
 		auto v = current_version ? current_version : default_version;
-		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0])) {
-			if (auto f = dynamic_cast<Function*>(ei->value)) {
-				f->set_version(args, level - 1);
+		if (auto ei = dynamic_cast<ExpressionInstruction*>(v->body->instructions[0].get())) {
+			if (auto f = dynamic_cast<Function*>(ei->value.get())) {
+				f->set_version(analyzer, args, level - 1);
 			}
 		}
 	}
 }
 
-void Function::analyse_body(SemanticAnalyser* analyser, std::vector<Type> args, Version* version) {
-
-	// std::cout << "Function::analyse_body(" << args << ", " << req_type << ")" << std::endl;
-
-	captures.clear();
-	analyser->enter_function(this);
-	current_version = version;
-
-	std::vector<Type> arg_types;
-	for (unsigned i = 0; i < arguments.size(); ++i) {
-		Type type = i < args.size() ? args.at(i) : (i < defaultValues.size() ? defaultValues.at(i)->type : Type::ANY);
-		analyser->add_parameter(arguments.at(i).get(), type);
-		arg_types.push_back(type);
-	}
-	version->body->analyse(analyser);
-	if (captures.size()) {
-		version->type = Type::closure(version->body->type, arg_types, this);
-	} else {
-		version->type = Type::fun(version->body->type, arg_types, this);
-	}
-	Type return_type;
-	for (const auto& t : version->body->type._types) {
-		if (dynamic_cast<const Placeholder_type*>(t.get()) == nullptr) {
-			return_type += t;
+const Type* Function::version_type(std::vector<const Type*> version) const {
+	// std::cout << "Function " << this << " ::version_type(" << version << ") " << std::endl;
+	// Add default values types if needed
+	for (size_t i = version.size(); i < arguments.size(); ++i) {
+		if (defaultValues.at(i)) {
+			version.push_back(defaultValues.at(i)->type);
 		}
 	}
-	version->body->type = return_type;
-	if (captures.size()) {
-		version->type = Type::closure(return_type, arg_types, this);
-	} else {
-		version->type = Type::fun(return_type, arg_types, this);
-	}
-	version->body->analyse(analyser);
-
-	if (version->type.return_type() == Type::MPZ) {
-		// version->type.setReturnType(Type::MPZ_TMP);
-	}
-	vars = analyser->get_local_vars();
-	analyser->leave_function();
-
-	// cout << "function analysed body : " << version->type << endl;
-}
-
-int Function::capture(std::shared_ptr<SemanticVar> var) {
-	// std::cout << "Function::capture " << var->name << std::endl;
-
-	// Function become a closure
-	if (!default_version->function->closure()) {
-		delete default_version->function;
-		default_version->function = new LSClosure(nullptr);
-		default_version->function->refs = 1;
-		default_version->function->native = true;
-	}
-	default_version->type = Type::closure(default_version->type.return_type(), default_version->type.arguments());
-	for (auto& version : versions) {
-		if (!version.second->function->closure()) {
-			delete version.second->function;
-			version.second->function = new LSClosure(nullptr);
-			version.second->function->refs = 1;
-			version.second->function->native = true;
-		}
-		version.second->type = Type::closure(version.second->type.return_type(), version.second->type.arguments());
-	}
-	type = Type::closure(type.return_type(), type.arguments());
-
-	for (size_t i = 0; i < captures.size(); ++i) {
-		if (captures[i]->name == var->name)
-			return i;
-	}
-	var = std::make_shared<SemanticVar>(*var);
-	captures.push_back(var);
-
-	if (var->function != parent) {
-		auto new_var = std::make_shared<SemanticVar>(*var);
-		new_var->index = parent->capture(new_var);
-		var->scope = VarScope::CAPTURE;
-		var->parent_index = new_var->index;
-	}
-	return captures.size() - 1;
-}
-
-void Function::update_function_args(SemanticAnalyser* analyser) {
-	auto ls_fun = default_version->function;
-	ls_fun->args.clear();
-	for (unsigned int i = 0; i < arguments.size(); ++i) {
-		auto clazz = type.argument(i).clazz();
-		if (clazz.size()) {
-			ls_fun->args.push_back(analyser->vm->internal_vars.at(clazz)->lsvalue);
-		} else {
-			ls_fun->args.push_back(analyser->vm->internal_vars.at("Value")->lsvalue);
-		}
-	}
-	auto return_class_name = type.return_type().clazz();
-	if (return_class_name.size()) {
-		ls_fun->return_type = analyser->vm->internal_vars.at(return_class_name)->lsvalue;
-	} else {
-		ls_fun->return_type = analyser->vm->internal_vars.at("Value")->lsvalue;
-	}
-}
-
-Type Function::version_type(std::vector<Type> version) const {
 	if (versions.find(version) != versions.end()) {
 		return versions.at(version)->type;
 	}
 	return type;
 }
 
-void Function::must_return(SemanticAnalyser*, const Type& type) {
-	// std::cout << "Function::must_return " << type << std::endl;
-	if (type == Type::ANY) {
-		generate_default_version = true;
+void Function::must_return_any(SemanticAnalyzer* analyzer) {
+	// std::cout << "Function " << name << " ::must_return_any()" << std::endl;
+	generate_default_version = true;
+	if (!analyzed) {
+		analyse_default_method(analyzer);
 	}
-	return_type = type;
+}
+
+Call Function::get_callable(SemanticAnalyzer*, int argument_count) const {
+	Call call { new Callable() };
+	int flags = default_version->body->throws ? Module::THROWS : 0;
+	call.add_version(new CallableVersion { "<default>", default_version->type, default_version, {}, {}, false, false, false, false, flags });
+	for (const auto& version : versions) {
+		int flags = version.second->body->throws ? Module::THROWS : 0;
+		call.add_version(new CallableVersion { "<version>", version.second->type, version.second, {}, {}, false, false, false, false, flags });
+	}
+	return call;
 }
 
 Compiler::value Function::compile(Compiler& c) const {
-
 	// std::cout << "Function::compile() " << this << " version " << version << " " << has_version << std::endl;
-	
-	((Function*) this)->compiled = true;
 	((Function*) this)->compiler = &c;
-
-	if (!is_main_function && !has_version && !generate_default_version) {
-		// std::cout << "/!\\ No version! (no custom version + no default version generated)" << std::endl;
-		// std::cout << "versions = " << versions.size() << std::endl;
-	}
-
-	// Compile default version
-	// std::cout << "generate_default_version " << generate_default_version << std::endl;
-	if (is_main_function || generate_default_version) {
-		compile_version_internal(c, type.arguments(), default_version);
-	}
-
-	// Add captures (for sub functions only)
-	for (auto& version : ((Function*) this)->versions) {
-		compile_version_internal(c, version.first, version.second);
-	}
-
 	if (has_version) {
 		return compile_version(c, version);
-	} else {
-		// Return default version
-		return c.new_function(default_version->function, default_version->type);
 	}
+	// std::cout << "Function compile " << generate_default_version << std::endl;
+	if (is_main_function or generate_default_version) {
+		return default_version->compile(c);
+	}
+	// Create a null pointer of the correct function type
+	// std::cout << "compile null function" << std::endl;
+	return c.new_null_pointer(default_version->type->pointer());
 }
 
-Compiler::value Function::compile_version(Compiler& c, std::vector<Type> args) const {
-	// std::cout << "Function::compile_version(" << args << ")" << std::endl;
-	if (!compiled) {
-		compile(c);
+Compiler::value Function::compile_version(Compiler& c, std::vector<const Type*> args) const {
+	// std::cout << "Function " << name << "::compile_version(" << args << ")" << std::endl;
+	// Fill with default arguments
+	auto full_args = args;
+	for (size_t i = version.size(); i < arguments.size(); ++i) {
+		if (defaultValues.at(i)) {
+			full_args.push_back(defaultValues.at(i)->type);
+		}
 	}
-	if (versions.find(args) == versions.end()) {
-		// std::cout << "/!\\ Version " << args << " not found!" << std::endl;
-		return c.new_pointer(LSNull::get(), Type::NULLL);
+	if (versions.find(full_args) == versions.end()) {
+		std::cout << "/!\\ Version " << args << " not found!" << std::endl;
+		assert(false);
 	}
-	return c.new_function(versions.at(args)->function, versions.at(args)->type);
+	auto version = versions.at(full_args);
+	// Compile version if needed
+	return version->compile(c);
 }
 
-llvm::BasicBlock* Function::get_landing_pad(const Compiler& c) {
-	// std::cout << "get_landing_pad " << current_version->type << " " << current_version->landing_pad << std::endl;
-	if (current_version->landing_pad == nullptr) {
-		current_version->catch_block = llvm::BasicBlock::Create(Compiler::context, "catch", c.F);
-		auto savedIP = Compiler::builder.saveAndClearIP();
-		current_version->landing_pad = llvm::BasicBlock::Create(Compiler::context, "lpad", c.F);
-		c.builder.SetInsertPoint(current_version->landing_pad);
-		auto catchAllSelector = llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(Compiler::context));
-		auto landingPadInst = c.builder.CreateLandingPad(llvm::StructType::get(llvm::Type::getInt8PtrTy(Compiler::context), llvm::Type::getInt32Ty(Compiler::context)), 1);
-		auto LPadExn = c.builder.CreateExtractValue(landingPadInst, 0);
-		current_version->exception_slot = c.CreateEntryBlockAlloca("exn.slot", llvm::Type::getInt64Ty(Compiler::context));
-		c.builder.CreateStore(LPadExn, current_version->exception_slot);
-		landingPadInst->addClause(catchAllSelector);
-		c.builder.CreateBr(current_version->catch_block);
-		c.builder.restoreIP(savedIP);
-		// std::cout << "Landing pad of " << current_version->type << " created! " << current_version->landing_pad << std::endl;
-	}
-	return current_version->landing_pad;
+Compiler::value Function::compile_default_version(Compiler& c) const {
+	// std::cout << "Function " << name << "::compile_default_version " << std::endl;
+	return default_version->compile(c, false);
 }
 
-void fake_ex_destru_fun(void*) {}
-void Function::compile_version_internal(Compiler& c, std::vector<Type>, Version* version) const {
-	// std::cout << "Function::compile_version_internal(" << version->type << ")" << std::endl;
-	((Function*) this)->current_version = version;
-
-	const int id = id_counter++;
-
-	auto ls_fun = version->function;
-
-	Compiler::value jit_fun;
-	if (!is_main_function) {
-		jit_fun = c.new_function(ls_fun, version->type);
-		for (const auto& cap : captures) {
-			Compiler::value jit_cap;
-			if (cap->scope == VarScope::LOCAL) {
-				auto f = dynamic_cast<Function*>(cap->value);
-				if (cap->has_version && f) {
-					jit_cap = f->compile_version(c, cap->version);
-				} else {
-					jit_cap = c.insn_load(c.get_var(cap->name));
-				}
-			} else if (cap->scope == VarScope::CAPTURE) {
-				jit_cap = c.insn_get_capture(cap->parent_index, cap->initial_type);
+void Function::compile_captures(Compiler& c) const {
+	if (captures_compiled) return;
+	((Function*) this)->captures_compiled = true;
+	// std::cout << "Function::compile_captures" << std::endl;
+	for (const auto& capture : captures) {
+		if (capture->parent->val.v) {
+			// std::cout << "Convert capture " << capture << " " << (void*) capture << " " << (int)capture->scope << " parent " << capture->parent << " " << capture->parent->val.v << " " << capture->parent->val.t << " " << (void*) capture->parent << std::endl;
+			if (capture->parent->type->is_polymorphic()) {
+				capture->val = capture->parent->val;
+				// c.insn_inc_refs(c.insn_load(capture->val));
 			} else {
-				int offset = c.is_current_function_closure() ? 1 : 0;
-				jit_cap = {c.F->arg_begin() + offset + cap->index, cap->initial_type};
-			}
-			if (!cap->initial_type.is_polymorphic()) {
-				jit_cap = c.insn_to_any({jit_cap.v, cap->initial_type});
-			}
-			c.function_add_capture(jit_fun, jit_cap);
-		}
-	}
-
-	// System internal variables (for main function only)
-	if (is_main_function) {
-		for (auto var : c.vm->internal_vars) {
-			auto name = var.first;
-			auto variable = var.second;
-			auto val = c.new_pointer(variable->lsvalue, variable->type());
-			c.vm->internals.insert({name, val});
-		}
-	}
-
-	((Function*) this)->module = std::make_shared<llvm::Module>("jit_" + name, Compiler::context);
-	module->setDataLayout(((Compiler&) c).getTargetMachine().createDataLayout());
-	auto fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
-	fpm->add(llvm::createInstructionCombiningPass());
-	fpm->add(llvm::createReassociatePass());
-	fpm->add(llvm::createGVNPass());
-	fpm->add(llvm::createCFGSimplificationPass());
-	fpm->doInitialization();
-
-	std::vector<llvm::Type*> args;
-	if (captures.size()) {
-		args.push_back(Type::ANY.llvm_type()); // first arg is the function pointer
-	}
-	for (auto& t : version->type.arguments()) {
-		args.push_back(t.llvm_type());
-	}
-	auto llvm_return_type = version->type.return_type().llvm_type();
-	auto function_type = llvm::FunctionType::get(llvm_return_type, args, false);
-	auto llvm_function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "fun_" + name + std::to_string(id), module.get());
-
-	auto f = llvm::Function::Create(llvm::FunctionType::get(llvm::Type::getInt32Ty(c.context), true), llvm::Function::ExternalLinkage, "__gxx_personality_v0", module.get());
-	auto Int8PtrTy = llvm::PointerType::get(llvm::Type::getInt8Ty(c.context), c.DL.getAllocaAddrSpace());
-	auto personality = llvm::ConstantExpr::getBitCast(f, Int8PtrTy);
-	llvm_function->setPersonalityFn(personality);
-
-	((Function*) this)->block = llvm::BasicBlock::Create(Compiler::context, "entry_" + name, llvm_function);
-	Compiler::builder.SetInsertPoint(block);
-
-	c.enter_function(llvm_function, captures.size() > 0, (Function*) this);
-
-	// Create arguments
-	unsigned index = 0;
-	int offset = captures.size() ? -1 : 0;
-	for (auto &arg : llvm_function->args()) {
-		if (captures.size() && index == 0) {
-			arg.setName("__fun_ptr");
-		} else {
-			if (offset + index < arguments.size()) {
-				const auto name = arguments.at(offset + index)->content;
-				const auto type = version->type.arguments().at(offset + index);
-				arg.setName(name);
-				auto var = c.create_entry(name, type);
-				c.insn_store(var, {&arg, type});
-				c.arguments.top()[name] = var;
+				capture->val = c.create_entry(capture->name, Type::any);
+				auto value = c.insn_convert(c.insn_load(capture->parent->val), Type::any);
+				c.insn_inc_refs(value);
+				c.insn_store(capture->val, value);
 			}
 		}
-		index++;
 	}
-
-	// Compile body
-	auto res = version->body->compile(c);
-	if (res.v) {
-		c.insn_return(res);
-	} else {
-		c.insn_return_void();
-	}
-
-	// Catch block
-	if (current_version->landing_pad != nullptr) {
-		// std::cout << "Create catch block " << current_version->type << std::endl;
-		c.builder.SetInsertPoint(current_version->catch_block);
-		c.delete_function_variables();
-		c.insn_call({}, {{c.builder.CreateLoad(current_version->exception_slot), Type::LONG}}, +[](void* ex) {
-			__cxa_throw((ex + 32), (void*) &typeid(vm::ExceptionObj), &fake_ex_destru_fun);
-		});
-		c.builder.CreateRetVoid();
-	}
-
-	if (!is_main_function) {
-		c.leave_function();
-		// Create a function : 1 op
-		c.inc_ops(1);
-	} else {
-		c.instructions_debug << "}" << std::endl;
-	}
-
-	verifyFunction(*llvm_function);
-	fpm->run(*llvm_function);
-
-	// JIT the module containing the anonymous expression, keeping a handle so we can free it later.
-	((Function*) this)->function_handle = c.addModule(module);
-	((Function*) this)->handle_created = true;
-	// Search the JIT for the "fun" symbol.
-	auto ExprSymbol = c.findSymbol("fun_" + name + std::to_string(id));
-	assert(ExprSymbol && "Function not found");
-	// Get the symbol's address and cast it to the right type (takes no arguments, returns a double) so we can call it as a native function.
-	ls_fun->function = (void*) cantFail(ExprSymbol.getAddress());
-	version->function = ls_fun;
-	// std::cout << "Function '" << name << "' compiled: " << ls_fun->function << std::endl;
 }
 
-Value* Function::clone() const {
-	auto f = new Function();
+void Function::export_context(const Compiler& c) const {
+	int deepness = c.get_current_function_blocks();
+	for (const auto& variable : c.fun->body->variables) {
+		c.export_context_variable(variable.second->name, c.insn_load(variable.second->val));
+	}
+}
+
+std::unique_ptr<Value> Function::clone() const {
+	auto f = std::make_unique<Function>(token);
 	f->lambda = lambda;
 	f->name = name;
-	f->body = (Block*) body->clone();
+	f->default_version = new FunctionVersion(unique_static_cast<Block>(default_version->body->clone()));
+	f->default_version->parent = f.get();
+	f->default_version->type = default_version->type;
 	for (const auto& a : arguments) {
 		f->arguments.push_back(a);
 	}
@@ -597,17 +351,12 @@ Value* Function::clone() const {
 			f->defaultValues.push_back(nullptr);
 		}
 	}
+	f->default_values_count = default_values_count;
 	for (const auto& v : versions) {
-		auto v2 = new Version();
-		if (captures.size()) {
-			v2->function = new LSClosure(nullptr);
-		} else {
-			v2->function = new LSFunction(nullptr);
-		}
-		v2->function->refs = 1;
-		v2->function->native = true;
-		v2->body = (Block*) v.second->body->clone();
+		auto v2 = new FunctionVersion(unique_static_cast<Block>(v.second->body->clone()));
+		v2->parent = f.get();
 		v2->type = v.second->type;
+		v2->recursive = v.second->recursive;
 		f->versions.insert({v.first, v2});
 	}
 	return f;

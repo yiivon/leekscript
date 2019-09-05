@@ -14,6 +14,8 @@ namespace ls {
 class LSClosure : public LSFunction {
 public:
 
+	static LSClosure* constructor(void* f);
+
 	std::vector<LSValue*> captures;
 	std::vector<bool> captures_native; // TODO check if necessary
 
@@ -23,6 +25,7 @@ public:
 
 	void add_capture(LSValue* value);
 	LSValue* get_capture(int index);
+	LSValue** get_capture_l(int index);
 };
 
 template <class R, class ...A> R call(LSClosure* function, A... args) {

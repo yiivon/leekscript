@@ -1,15 +1,28 @@
 #include "ClassSTD.hpp"
 #include "../value/LSClass.hpp"
+#include "../../type/Type.hpp"
 
 namespace ls {
 
-ClassSTD::ClassSTD() : Module("Class") {
+ClassSTD::ClassSTD(VM* vm) : Module(vm, "Class") {
 
-	LSClass::clazz = clazz;
+	LSClass::clazz = clazz.get();
 
-	field("name", Type::STRING);
+	field("name", Type::string);
 
+	constructor_({
+		{Type::clazz(), {Type::i8_ptr}, (void*) LSClass::constructor},
+	});
 
+	/** Internal **/
+	method("add_field", {
+		{Type::void_, {Type::clazz(), Type::i8_ptr, Type::any}, (void*) add_field}
+	});
+}
+
+void ClassSTD::add_field(LSClass* clazz, char* field_name, LSValue* default_value) {
+	clazz->addField(field_name, Type::any, nullptr);
+	clazz->fields.at(field_name).default_value = default_value;
 }
 
 }

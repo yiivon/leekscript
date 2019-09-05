@@ -9,7 +9,7 @@ namespace ls {
 class Operator {
 public:
 
-	std::unique_ptr<Token> token;
+	Token* token;
 	TokenType type;
 	std::string character;
 	int priority;

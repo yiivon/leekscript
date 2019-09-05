@@ -25,6 +25,8 @@ public:
 	static u_int32_t iterator_get(iterator* it);
 	static int iterator_key(LSString::iterator* it);
 	static bool iterator_end(iterator* it);
+	static LSString* constructor_1();
+	static LSString* constructor_2(char* s);
 
 	LSString();
 	LSString(char);
@@ -55,7 +57,7 @@ public:
 	 */
 	bool to_bool() const override;
 	bool ls_not() const override;
- 	LSValue* ls_tilde() override;
+	LSValue* ls_tilde() override;
 
 	virtual LSValue* add(LSValue* v) override;
 	virtual LSValue* add_eq(LSValue* v) override;

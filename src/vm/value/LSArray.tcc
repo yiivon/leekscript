@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include "../LSValue.hpp"
-#include "../VM.hpp"
 #include "LSNull.hpp"
 #include "LSNumber.hpp"
 #include "LSBoolean.hpp"
@@ -17,6 +16,13 @@ namespace ls {
 
 template <class T>
 LSValue* LSArray<T>::clazz;
+
+template <class T>
+LSArray<T>* LSArray<T>::constructor(int capacity) {
+	auto array = new LSArray<T>();
+	array->reserve(capacity);
+	return array;
+}
 
 template <>
 inline LSArray<LSValue*>::~LSArray() {
@@ -67,6 +73,11 @@ LSArray<T>::LSArray(std::initializer_list<T> values_list) : LSArray<T>() {
 
 template <class T>
 LSArray<T>::LSArray(const std::vector<T>& vec) : LSValue(LSValue::ARRAY), std::vector<T>(vec) {}
+
+template <class T>
+LSArray<T>::LSArray(size_t size) : LSValue(LSValue::ARRAY) {
+	this->reserve(size);
+}
 
 template <>
 inline LSArray<LSValue*>::LSArray(const LSArray<LSValue*>& other) : LSValue(other), std::vector<LSValue*>() {
@@ -389,9 +400,19 @@ LSArray<T>* LSArray<T>::ls_sort() {
 
 template <class T>
 template <class F>
+LSArray<T>* LSArray<T>::ls_sort_fun(F function) {
+	std::sort(this->begin(), this->end(), [&](T a, T b) {
+		return ls::call<bool>(function, a, b);
+	});
+	return this;
+}
+
+template <class T>
+template <class F>
 void LSArray<T>::ls_iter(F function) {
 	for (auto v : *this) {
-		ls::call<void>(function, v);
+		auto r = ls::call<LSValue*>(function, v);
+		ls::release(r); // TODO not good for primitive type
 	}
 	if (refs == 0) {
 		delete this;
@@ -526,6 +547,25 @@ LSArray<T>* LSArray<T>::ls_random(int n) {
 }
 
 template <typename T>
+LSArray<LSValue*>* LSArray<T>::to_any_array() const {
+	auto result = new LSArray<LSValue*>();
+	result->reserve(this->size());
+	for (const auto& e : *this) {
+		result->emplace_back(ls::convert<LSValue*>(e));
+	}
+	return result;
+}
+template <typename T>
+LSArray<double>* LSArray<T>::to_real_array() const {
+	auto result = new LSArray<double>();
+	result->reserve(this->size());
+	for (const auto& e : *this) {
+		result->emplace_back(ls::convert<double>(e));
+	}
+	return result;
+}
+
+template <typename T>
 inline LSArray<T>* LSArray<T>::ls_reverse() {
 	if (refs == 0) {
 		for (size_t i = 0, j = this->size(); i < j; ++i, --j) {
@@ -606,24 +646,6 @@ LSArray<T>* LSArray<T>::ls_insert(T value, int pos) {
 	}
 	this->insert(this->begin() + pos, value);
 	return this;
-}
-
-template <class T>
-template <class F>
-LSArray<LSValue*>* LSArray<T>::ls_partition(F function) {
-	auto array_true = new LSArray<T>();
-	auto array_false = new LSArray<T>();
-	for (const auto& v : *this) {
-		if (ls::call<bool>(function, v)) {
-			array_true->push_clone(v);
-		} else {
-			array_false->push_clone(v);
-		}
-	}
-	LSValue::delete_temporary(this);
-	array_true->refs = 1;
-	array_false->refs = 1;
-	return new LSArray<LSValue*> {array_true, array_false};
 }
 
 template <class T>
@@ -708,6 +730,9 @@ LSString* LSArray<T>::ls_join(LSString* glue) {
 
 template <>
 inline LSArray<LSValue*>* LSArray<LSValue*>::ls_fill(LSValue* element, int size) {
+	for (auto v : *this) {
+		LSValue::delete_ref(v);
+	}
 	this->clear();
 	this->reserve(size);
 	for (int i = 0; i < size; i++) {
@@ -851,7 +876,9 @@ bool LSArray<T>::to_bool() const {
 
 template <class T>
 bool LSArray<T>::ls_not() const {
-	return this->size() == 0;
+	auto r = this->size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 template <class T>
@@ -1038,6 +1065,76 @@ inline LSValue* LSArray<int>::add(LSValue* v) {
 	}
 }
 
+
+template <>
+inline LSValue* LSArray<char>::add(LSValue* v) {
+	if (v->type == ARRAY) {
+		if (auto array = dynamic_cast<LSArray<LSValue*>*>(v)) {
+			auto ret = new LSArray<LSValue*>();
+			ret->reserve(this->size() + array->size());
+			for (auto v : *this) {
+				ret->push_inc(LSNumber::get(v));
+			}
+			if (array->refs == 0) {
+				for (auto v : *array) {
+					ret->push_back(v);
+				}
+				array->clear();
+				delete array;
+			} else {
+				for (auto v : *array) {
+					ret->push_clone(v);
+				}
+			}
+			if (refs == 0) delete this;
+			return ret;
+		}
+		if (auto array = dynamic_cast<LSArray<int>*>(v)) {
+			if (refs == 0) {
+				return ls_push_all_int(array);
+			}
+			return ((LSArray<int>*) this->clone())->ls_push_all_int(array);
+		}
+		if (auto array = dynamic_cast<LSArray<double>*>(v)) {
+			auto ret = new LSArray<double>();
+			ret->reserve(this->size() + array->size());
+			ret->insert(ret->end(), this->begin(), this->end());
+			ret->insert(ret->end(), array->begin(), array->end());
+			if (refs == 0) delete this;
+			if (array->refs == 0) delete array;
+			return ret;
+		}
+	}
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		if (number->value == (int) number->value) {
+			if (refs == 0) {
+				this->push_back(number->value);
+				if (number->refs == 0) delete number;
+				return this;
+			}
+			auto r = (LSArray<int>*) this->clone();
+			r->push_back(number->value);
+			if (number->refs == 0) delete number;
+			return r;
+		}
+		auto ret = new LSArray<double>();
+		ret->insert(ret->end(), this->begin(), this->end());
+		ret->push_back(number->value);
+		if (refs == 0) delete this;
+		if (number->refs == 0) delete number;
+		return ret;
+	} else {
+		auto r = new LSArray<LSValue*>();
+		r->reserve(this->size() + 1);
+		for (auto v : *this) {
+			r->push_inc(LSNumber::get(v));
+		}
+		r->push_move(v);
+		if (refs == 0) delete this;
+		return r;
+	}
+}
+
 template <>
 inline LSValue* LSArray<LSValue*>::add_eq(LSValue* v) {
 	if (v->type == ARRAY) {
@@ -1103,6 +1200,24 @@ inline LSValue* LSArray<int>::add_eq(LSValue* v) {
 	}
 	auto set = dynamic_cast<LSSet<int>*>(v);
 	return add_set(set);
+}
+
+template <>
+inline LSValue* LSArray<char>::add_eq(LSValue* v) {
+	if (auto number = dynamic_cast<LSNumber*>(v)) {
+		this->push_back(number->value);
+		LSValue::delete_temporary(number);
+		return this;
+	}
+	if (auto array = dynamic_cast<LSArray<char>*>(v)) {
+		this->reserve(this->size() + array->size());
+		this->insert(this->end(), array->begin(), array->end());
+		LSValue::delete_temporary(v);
+		return this;
+	}
+	// auto set = dynamic_cast<LSSet<int>*>(v);
+	// return add_set(set);
+	return this;
 }
 
 template <class T>
@@ -1294,7 +1409,6 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 		auto b = static_cast<const LSBoolean*>(key);
 		index = (int) b->value;
 	} else {
-		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	}
@@ -1303,7 +1417,6 @@ LSValue* LSArray<T>::at(const LSValue* key) const {
 	try {
 		res = ls::convert<LSValue*>(ls::clone(((std::vector<T>*) this)->at(index)));
 	} catch (std::exception const & e) {
-		LSValue::delete_temporary(this);
 		LSValue::delete_temporary(key);
 		ex = true;
 	}
@@ -1336,6 +1449,17 @@ std::ostream& LSArray<T>::dump(std::ostream& os, int) const {
 	for (auto i = this->begin(); i != this->end(); i++) {
 		if (i != this->begin()) os << ", ";
 		os << (*i);
+	}
+	os << "]";
+	return os;
+}
+
+template <>
+inline std::ostream& LSArray<char>::dump(std::ostream& os, int level) const {
+	os << "[";
+	for (auto i = this->begin(); i != this->end(); i++) {
+		if (i != this->begin()) os << ", ";
+		os << std::boolalpha << (bool) (*i);
 	}
 	os << "]";
 	return os;

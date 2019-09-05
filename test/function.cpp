@@ -19,10 +19,10 @@ void Test::test_functions() {
 	code("let v = global_fun(5) function global_fun(x) { return x + 12 } v").equals("17");
 
 	section("Can't call a value");
-	code("null()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"null"});
-	code("12()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"12"});
-	code("'hello'()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"'hello'"});
-	code("[1, 2, 3]()").semantic_error(ls::SemanticError::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
+	code("null()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"null"});
+	code("12()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"12"});
+	code("'hello'()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"'hello'"});
+	code("[1, 2, 3]()").error(ls::Error::Type::CANNOT_CALL_VALUE, {"[1, 2, 3]"});
 
 	section("Simple returns");
 	code("1; 2").equals("2");
@@ -32,6 +32,7 @@ void Test::test_functions() {
 	code("let x = '1' return x; 2").equals("'1'");
 	code("{ return 12; 'salut' }").equals("12");
 	code("{ { return 12; 'salut' } 'salut' }").equals("12");
+	code("var a = 2 var b = 'salut' return a + b").equals("'2salut'");
 
 	section("Functions / Lambdas");
 	code("let f = x -> x f(12)").equals("12");
@@ -44,8 +45,7 @@ void Test::test_functions() {
 	code("( -> 12)()").equals("12");
 	code("let f = x -> x f(5) + f(7)").equals("12");
 	code("[-> 12][0]()").equals("12");
-	// TODO
-	DISABLED_code("[-> 12, 'toto'][0]()").equals("12");
+	code("[-> 12, 'toto'][0]()").equals("12");
 	code("(x -> x + 12.12)(1.01)").almost(13.13);
 	code("(x -> x + 12)(1.01)").almost(13.01);
 	code("[x -> x ** 2][0](12)").equals("144");
@@ -60,9 +60,8 @@ void Test::test_functions() {
 	code("let f = x -> -> 'salut' f(5)()").equals("'salut'");
 	code("let f = x -> [x, x, x] f(44)").equals("[44, 44, 44]");
 	code("let f = function(x) { let r = x ** 2 return r + 1 } f(10)").equals("101");
-	// TODO bad types
-	DISABLED_code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
-	DISABLED_code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
+	code("let f = function(x) { if (x < 10) {return true} return 12 } [f(5), f(20)]").equals("[true, 12]");
+	code("let f = x -> { let y = { if x == 0 { return 'error' } 1/x } '' + y } [f(-2), f(0), f(2)]").equals("['-0.5', 'error', '0.5']");
 	code("let f = i -> { [1 2 3][i] } f(1)").equals("2");
 	code("let f = i -> { [1 2 3][i] } 42").equals("42");
 	code("let f = a, i -> a[i] f([1 2 3], 1)").equals("2");
@@ -72,6 +71,8 @@ void Test::test_functions() {
 	code("let f = b => {b = !b if b { 2 } else { 3 }} f(false)").equals("2");
 	code("(x -> y -> x + 1)(1)(2)").equals("2");
 	code("let f = x, y -> { x += '+' y += '.' } var a = 'A', b = 'B' f(a, b) [a, b]").equals("['A+', 'B.']");
+	code("let f = -> 12m f()").equals("12");
+	code("let f = x => x f(12m)").equals("12");
 
 	section("Function call without commas");
 	code("let f = x, y -> x + y f(12 7)").equals("19");
@@ -86,9 +87,10 @@ void Test::test_functions() {
 	code("let a = 12 let f = -> -> -> a f()()()").equals("12");
 	code("let a = 12 let f = -> -> -> -> -> a f()()()()()").equals("12");
 	DISABLED_code("let a = 12 let f = -> -> {let b = 5; -> -> -> a + b} f()()()()()").equals("17");
-	code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
+	DISABLED_code("let a = 'a' let f = -> -> {let b = 'b'; -> -> -> a + b} f()()()()()").equals("'ab'");
+	DISABLED_code("let f = x -> y -> x + y let g = f(5) g(12)").equals("17");
 	code("let a = 12 let f = x -> y -> x + y + a f(5)(2)").equals("19");
-	code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
+	DISABLED_code("let f = x -> y -> x + y let g = f('a') g('b')").equals("'ab'");
 	code("let f = x -> y -> x + y f(5)(12)").equals("17");
 	code("let f = x -> y -> x + y f('a')('b')").equals("'ab'");
 	code("let f = x -> x (-> f(12))()").equals("12");
@@ -98,19 +100,27 @@ void Test::test_functions() {
 	code("var g = x => { var y = 2; return x + y } g(10)").equals("12");
 	code("let a = 12, b = 13, c = 14 let f = x -> x + a + b + c f(5)").equals("44");
 	DISABLED_code("let f = x -> y -> x + y let g1 = f(5) let g2 = f('a') [g1(12) g1('b') g2(12) g2('b')]").equals("[]");
+	code("var a = 2 a++ let f = x => x + a print(f(10)) a += 5 print(f(10))").output("13\n18\n");
+	DISABLED_code("function g(a) { a++ let f = x => x + a a += 5 f(10) } g(10)").equals("26");
+	DISABLED_code("let f = -> 12 let g = -> f g()()").equals("12");
 
 	section("Recursive");
 	code("let fact = x -> if x == 1 { 1 } else { fact(x - 1) * x } fact(8)").equals("40320");
-	DISABLED_code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30m)").equals("265252859812191058636308480000000");
+	code("let fact = x -> if x == 1 { 1m } else { fact(x - 1) * x } fact(30)").equals("265252859812191058636308480000000");
 	code("let fact = x -> if x > 1 { fact(x - 1) * x } else { 1 } fact(10)").equals("3628800");
 	code("let fib = n -> if n <= 1 { n } else { fib(n - 1) + fib(n - 2) } fib(25)").equals("75025");
 	code("let fact = x -> if x > 1 x * fact(x - 1) else x fact(5)").equals("120");
 	code("let test = x -> if x > 0 { test(x - 1) } else { 77 } test(4)").equals("77");
+	code("let fact = (x, a) -> { if x == 0 then return a end return fact(x - 1, x * a) } fact(10, 1)").equals("3628800");
+	code("let fact = (x, a) -> { if x == 0m then return a end return fact(x - 1, x * a) } fact(10m, 1m)").equals("3628800");
 
 	section("Functions in array");
 	code("var a = [12, x -> x + 7] a[1](12)").equals("19");
 	code("var a = [12, x -> x + '!'] a[1](12)").equals("'12!'");
 	code("let hl = [1, 'text', x -> x + 1] hl[2](hl[1]) + hl[2](hl[0])").equals("'text12'");
+	code("var a = [] a.push(x -> 12)").equals("[<function>]");
+	DISABLED_code("var a = [] a.push(x -> 12) a[0]").equals("<function>");
 
 	section("Multiple versions of a function");
 	code("let f = x -> x f(5) f('a')").equals("'a'");
@@ -125,28 +135,37 @@ void Test::test_functions() {
 	code("!(x -> x)").equals("false");
 
 	section("Function.operator ~");
-	code("~(x -> x)").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
+	code("~(x -> x)").error(ls::Error::NO_SUCH_OPERATOR, {"~", "x => x"});
 
 	section("Function.operator ++x");
-	code("++(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("++(x -> x)").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator --x");
-	code("--(x -> x)").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("--(x -> x)").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator x++");
-	code("(x -> x)++").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("(x -> x)++").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Function.operator x--");
-	code("(x -> x)--").semantic_error(ls::SemanticError::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
+	code("(x -> x)--").error(ls::Error::CANT_MODIFY_CONSTANT_VALUE, { "x => x" });
 
 	section("Operator ~ ");
-	DISABLED_code("let a = 10 a ~ x -> x ** 2").equals("100");
-	DISABLED_code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
-	DISABLED_code("3 ~ x -> x ^ x").equals("27");
-	DISABLED_code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
+	code("let a = 10 a ~ x -> x ** 2").equals("100");
+	code("let a = 10.5 a ~ x -> x * 5").equals("52.5");
+	code("3 ~ x -> x ** x").equals("27");
+	code("1993 ~ Number.isPrime").equals("true");
+	code("5l ~ x -> x ** x").equals("3125");
+	code("true ~ x -> !x").equals("false");
+	code("[1, 2, 3] ~ x -> x + 4").equals("[1, 2, 3, 4]");
+	code("['a', 'b', 'c'] ~ x -> x.size()").equals("3");
+	code("['a', 'b', 'c'] ~ Array.size").equals("3");
+	code("(~)(5, x => x + 1000)").equals("1005");
+	code("(~)(5l, x => x * 1000)").equals("5000");
+	code("(~)([], x => x + 'a')").equals("['a']");
+	code("let f = x => x.cos(); (~)(Number.pi, f)").equals("-1");
 
 	section("Operator []");
-	code("let f = x -> x f[2] = 5").semantic_error(ls::SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
+	code("let f = x -> x f[2] = 5").error(ls::Error::Type::VALUE_MUST_BE_A_CONTAINER, {"f"});
 
 	section("Function operators");
 	code("(+)(1, 2)").equals("3");
@@ -167,6 +186,14 @@ void Test::test_functions() {
 	code("\\(72, 7)").equals("10");
 	code("(\\)(72, 7)").equals("10");
 	code("['', **(2, 11)]").equals("['', 2048]");
+	code("(<)(1, 2)").equals("true");
+	code("(>)(1, 2)").equals("false");
+	code("(<)('a', 'b')").equals("true");
+	code("(>)('a', 'b')").equals("false");
+	code("(<=)(1, 1)").equals("true");
+	code("(<=)(1, 2)").equals("true");
+	code("(>=)(5, 5)").equals("true");
+	code("(>=)(5, 6)").equals("false");
 	code("let p = +; p(1, 2)").equals("3");
 	code("let p = +; p('test', 2)").equals("'test2'");
 	code("let p = -; p(9, 2)").equals("7");
@@ -177,6 +204,10 @@ void Test::test_functions() {
 	code("let p = % p(48, 5)").equals("3");
 	code("let p = ** p(2, 11)").equals("2048");
 	code("let p = \\ p(72, 7)").equals("10");
+	code("let p = <; p('a', 'b')").equals("true");
+	code("let p = >; p('a', 'b')").equals("false");
+	code("let p = <=; p('a', 'b')").equals("true");
+	code("let p = >=; p('a', 'b')").equals("false");
 	code("+").equals("<function>");
 	code("+.class").equals("<class Function>");
 	code("let p = +; p.class").equals("<class Function>");
@@ -196,30 +227,12 @@ void Test::test_functions() {
 	code("String.size").equals("<function>");
 	code("Number.cos").equals("<function>");
 
-	section("Function reflexion");
-	code("(x -> 12).return").equals("<class Number>");
-	code("(x -> x).args").equals("[<class Value>]");
-	code("Array.size((x, y, z -> x + y * z).args)").equals("3");
-	DISABLED_code("let f = x, y -> x f(12, 'salut') f.args").equals("[<class Number>, <class String>]");
-	code("+.args").equals("[<class Value>, <class Value>]");
-	code("+.return").equals("<class Value>");
-	code("-.args").equals("[<class Value>, <class Value>]");
-	code("*.args").equals("[<class Value>, <class Value>]");
-	code("×.args").equals("[<class Value>, <class Value>]");
-	code("/.args").equals("[<class Value>, <class Value>]");
-	code("÷.args").equals("[<class Value>, <class Value>]");
-	code("%.args").equals("[<class Value>, <class Value>]");
-	code("**.args").equals("[<class Value>, <class Value>]");
-	// TODO manage multiple versions of functions
-	DISABLED_code("let f = x -> x f(12) f('salut') f.args").equals("[null]");
-
 	section("Check argument count");
-	code("(x -> x)()").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
-	code("let f = x, y -> x + y f(5)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
-	code("let add = +; add(5, 12, 13)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
-	// TODO not the expected error
-	DISABLED_code("Number.abs(12, 12)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "12", "12"});
-	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").semantic_error(ls::SemanticError::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
+	code("(x -> x)()").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"x => x", "1", "0"});
+	code("let f = x, y -> x + y f(5)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"f", "2", "1"});
+	code("let add = +; add(5, 12, 13)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"add", "2", "3"});
+	code("Number.abs(12, 12)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"Number.abs", "1", "2"});
+	code("let siftUp = (c, pq) -> pq; let pqInsert = (p, v, pq) -> siftUp(0, pq); pqInsert(1, 2)").error(ls::Error::Type::WRONG_ARGUMENT_COUNT, {"pqInsert", "3", "2"});
 
 	section("Void functions");
 	code("(x -> System.print(x))(43)").equals("(void)");
@@ -239,7 +252,7 @@ void Test::test_functions() {
 	code("function f(x = 10) { x } f()").equals("10");
 	code("let add = (x, y = 1) -> x + y add(5)").equals("6");
 	code("let add = (x, y = 1) -> x + y add(5, 3)").equals("8");
-	code("let add = (x, y = 1) -> x + y add()").semantic_error(ls::SemanticError::WRONG_ARGUMENT_COUNT, {"add", "2", "1"});
+	code("let add = (x, y = 1) -> x + y add()").error(ls::Error::WRONG_ARGUMENT_COUNT, {"add", "2", "1"});
 	code("let f = (x = 'a', y = 'b') -> x + y f()").equals("'ab'");
 	code("let f = (x = 'a', y = 'b') -> x + y f(100, 12)").equals("112");
 	code("let f = (x = 'a', y = 'b') -> x + y f(100)").equals("'100b'");
@@ -254,13 +267,13 @@ void Test::test_functions() {
 	code("let f = (x = [1, 2, 3]) -> x.size() f('bonjour')").equals("7");
 
 	section("Default arguments : expert");
-	code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
+	DISABLED_code("let f = (x = (y = 'abcd') -> y.size()) -> x f()").equals("<function>");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f([])").equals("[]");
 	code("let f = (x = (y = 'abcd') -> y.size()) -> x f(2)").equals("2");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
-	DISABLED_code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()()").equals("'AABB'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f()(4)").equals("'AA4'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)()").equals("'5BB'");
+	code("let f = (x = 'AA') -> (y = 'BB') -> x + y f(5)(4)").equals("9");
 
 	section("Not compiled functions");
 	code("var dumb = function(x) { }").equals("(void)");
@@ -268,5 +281,5 @@ void Test::test_functions() {
 	code("var dumb = function(x) { } var dumber = function(y) { let z = y dumb(z) }").equals("(void)");
 
 	section("Weird");
-	DISABLED_code("1 / 5; (-> 0)()").works();
+	code("1 / 5; (-> 0)()").works();
 }

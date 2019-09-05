@@ -4,11 +4,13 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSObject::object_class;
+
+LSObject* LSObject::constructor() {
+	return new LSObject();
+}
 
 LSObject::LSObject() : LSValue(OBJECT) {
 	clazz = nullptr;
@@ -18,7 +20,7 @@ LSObject::LSObject() : LSValue(OBJECT) {
 LSObject::LSObject(LSClass* clazz) : LSObject() {
 	this->clazz = clazz;
 	for (auto f : clazz->fields) {
-		this->addField(f.first, f.second.default_value->clone());
+		this->addField(f.first.c_str(), f.second.default_value->clone());
 	}
 }
 
@@ -28,7 +30,7 @@ LSObject::~LSObject() {
 	}
 }
 
-void LSObject::addField(string name, LSValue* var) {
+void LSObject::addField(const char* name, LSValue* var) {
 	this->values.insert({name, var->move_inc()});
 }
 
@@ -82,7 +84,9 @@ bool LSObject::to_bool() const {
 }
 
 bool LSObject::ls_not() const {
-	return values.size() == 0;
+	auto r = values.size() == 0;
+	LSValue::delete_temporary(this);
+	return r;
 }
 
 bool LSObject::eq(const LSValue* v) const {
@@ -148,15 +152,16 @@ bool LSObject::in(const LSValue* key) const {
 }
 
 LSValue* LSObject::attr(const std::string& key) const {
-	try {
-		auto v = values.at(key);
+	auto i = values.find(key);
+	if (i != values.end()) {
+		auto& v = i->second;
 		if (refs == 0) {
 			v->refs++;
 			LSValue::delete_temporary(this);
 			v->refs--;
 		}
 		return v;
-	} catch (exception& e) {
+	} else {
 		return LSValue::attr(key);
 	}
 }
@@ -167,7 +172,7 @@ LSValue** LSObject::attrL(const std::string& key) {
 	}
 	try {
 		return &values.at(key);
-	} catch (exception& e) {
+	} catch (std::exception& e) {
 		values.insert({key, LSNull::get()});
 		return &values[key];
 	}

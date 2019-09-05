@@ -1,12 +1,10 @@
-#include "../../compiler/instruction/Instruction.hpp"
+#include "Instruction.hpp"
 
 namespace ls {
 
-Instruction::~Instruction() {}
+void Instruction::pre_analyze(SemanticAnalyzer*) {}
 
-Compiler::value Instruction::compile(Compiler&) const {
-	assert(false && "Dont compile default instruction");
-}
+Compiler::value Instruction::compile_end(Compiler&) const {}
 
 std::string Instruction::tabs(int indent) const {
 	return std::string(indent * 4, ' ');

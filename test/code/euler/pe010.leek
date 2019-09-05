@@ -1,4 +1,5 @@
 var N = 2000000
+// TODO use only []
 var numbers = [0]
 numbers.fill(1, N + 1)
 numbers[1] = 0

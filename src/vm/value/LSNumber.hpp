@@ -4,8 +4,6 @@
 #define LSNUMBER_H_
 
 #include <iostream>
-#include <gmp.h>
-#include <gmpxx.h>
 #include "../LSValue.hpp"
 #include "LSClosure.hpp"
 

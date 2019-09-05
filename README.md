@@ -48,7 +48,6 @@ Option | Effect
 -a -A --assembly  | Print assembly of LeekScript code
 -p -P --pseudo-code  | Print JIT pseudo code
 -l -L --legacy | Use legacy mode  (LeekScript v1)
--i -I --log-instructions | Display clear low-level instructions
 
 Tests, coverage, Valgrind, benchmark, doc
 ------------------
@@ -63,11 +62,11 @@ make doc
 
 Libraries used
 --------------
-* [LLVM](https://llvm.org/)
+* [LLVM](https://llvm.org/) Version 8.0.0
 * [GNU MP](https://gmplib.org/), by Torbjörn Granlund, under GPL license
 * [JSON for modern C++](https://github.com/nlohmann/json), by Niels Lohmann, under MIT license
 
 License
 -------
 
-Distributed under the GPL3 license. Copyright (c) 2016-2017, Pierre Lauprêtre
+Distributed under the GPL3 license. Copyright (c) 2016-2019, Pierre Lauprêtre

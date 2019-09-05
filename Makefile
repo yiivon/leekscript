@@ -1,6 +1,6 @@
-SRC_DIR := src/vm src/vm/value src/vm/standard src/vm/legacy src/doc \
-src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic \
-src/compiler/value src/compiler/instruction src/type src/util lib
+SRC_DIR := src/vm src/vm/value src/vm/standard src/doc \
+src/compiler src/compiler/lexical src/compiler/syntaxic src/compiler/semantic src/compiler/resolver src/compiler/error \
+src/compiler/value src/compiler/instruction src/type src/util
 TEST_DIR := test
 
 SRC := $(foreach d,$(SRC_DIR),$(wildcard $(d)/*.cpp))
@@ -27,20 +27,28 @@ OBJ_PROFILE := $(patsubst %.cpp,build/profile/%.o,$(SRC))
 OBJ_SANITIZED := $(patsubst %.cpp,build/sanitized/%.o,$(SRC))
 
 COMPILER := g++
-OPTIM := -O0
-FLAGS := -std=c++17 -g3 -Wall -Wno-pmf-conversions
+OPTIM := -O0 -Wall
+DEBUG := -g3
+FLAGS := -std=c++17 -Wno-pmf-conversions
 SANITIZE_FLAGS := -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=float-divide-by-zero # -fsanitize=float-cast-overflow
-LIBS := -lm -lgmp `llvm-config --ldflags --libs core orcjit`
+LIBS := -lm -lgmp -lstdc++fs `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
 MAKEFLAGS += --jobs=$(shell nproc)
 
 CLOC_EXCLUDED := .git,lib,build,doxygen
 
 .PHONY: test
 
+all: FLAGS += -DDEBUG_LEAKS
 all: build/leekscript
 
 clang: COMPILER=clang++
 clang: all
+
+ninja:
+	@mkdir -p build/default
+	gyp leekscript.gyp --depth=. -f ninja -Goutput_dir=build --generator-output default
+	ninja -v -C build/default leekscript-test
+	build/default/leekscript-test
 
 # Main build task, default build
 build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
@@ -50,7 +58,7 @@ build/leekscript: $(BUILD_DIR) $(OBJ) $(OBJ_TOPLEVEL)
 	@echo "---------------"
 
 build/default/%.o: %.cpp
-	$(COMPILER) -c $(OPTIM) $(FLAGS) -o $@ $<
+	$(COMPILER) -c $(OPTIM) $(FLAGS) $(DEBUG) -o $@ $<
 	@$(COMPILER) $(FLAGS) -MM -MT $@ $*.cpp -MF build/deps/$*.d
 
 build/shared/%.o: %.cpp
@@ -105,8 +113,14 @@ build/leekscript-coverage: $(BUILD_DIR) $(OBJ_COVERAGE) $(OBJ_TEST)
 	@echo "--------------------------"
 
 # Run tests
+test: FLAGS += -DDEBUG_LEAKS
 test: build/leekscript-test
 	@build/leekscript-test
+
+opti: FLAGS += -DNDEBUG
+opti: OPTIM := -O2
+opti: DEBUG :=
+opti: test
 
 # Benchmark
 benchmark-dir:
@@ -140,12 +154,12 @@ valgrind: build/leekscript-test
 # Build a leekscript docker image, compile, run tests and run cpp-coveralls
 # (coverage results are sent to coveralls.io).
 travis:
-	docker build -t leekscript .
+	docker build -t leekscript --file tool/Dockerfile .
 	docker run -e COVERALLS_REPO_TOKEN="$$COVERALLS_REPO_TOKEN" -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
 	    leekscript /bin/bash -c "cd leekscript; make build/leekscript-coverage && build/leekscript-coverage \
 	    && cpp-coveralls -i src/ --gcov-options='-rp'"
 travis-pr:
-	docker build -t leekscript .
+	docker build -t leekscript tool
 	docker run -e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
 	    leekscript /bin/bash -c "cd leekscript; make test"
 
@@ -185,9 +199,11 @@ sanitized: build/leekscript-sanitized
 
 # callgrind profiling, results displayed by kcachegrind
 # `apt install kcachegrind`
+callgrind: FLAGS += -DNDEBUG -w
+callgrind: OPTIM := -O3
 callgrind: build/leekscript-test
-	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/profile/callgrind.out build/leekscript-test
-	kcachegrind build/profile/callgrind.out
+	valgrind --tool=callgrind --dump-instr=yes --callgrind-out-file=build/callgrind.out build/leekscript-test
+	kcachegrind build/callgrind.out
 
 # Clean every build files by destroying the build/ folder.
 clean:

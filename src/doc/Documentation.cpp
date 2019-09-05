@@ -18,7 +18,6 @@
 #include "../vm/standard/JsonSTD.hpp"
 #include "../vm/standard/NullSTD.hpp"
 #include "../vm/standard/ValueSTD.hpp"
-using namespace std;
 
 namespace ls {
 
@@ -26,24 +25,24 @@ Documentation::Documentation() {}
 
 Documentation::~Documentation() {}
 
-void Documentation::generate(ostream& os, std::string lang) {
+void Documentation::generate(VM* vm, std::ostream& os, std::string lang) {
 
-	vector<Module*> modules;
+	std::vector<Module*> modules;
 
-	modules.push_back(new NullSTD());
-	modules.push_back(new BooleanSTD());
-	modules.push_back(new NumberSTD());
-	modules.push_back(new ArraySTD());
-	modules.push_back(new MapSTD());
-	modules.push_back(new ObjectSTD());
-	modules.push_back(new StringSTD());
-	modules.push_back(new IntervalSTD());
-	modules.push_back(new SetSTD());
-	modules.push_back(new SystemSTD());
-	modules.push_back(new ClassSTD());
-	modules.push_back(new FunctionSTD());
-	modules.push_back(new JsonSTD());
-	modules.push_back(new ValueSTD());
+	modules.push_back(new NullSTD(vm));
+	modules.push_back(new BooleanSTD(vm));
+	modules.push_back(new NumberSTD(vm));
+	modules.push_back(new ArraySTD(vm));
+	modules.push_back(new MapSTD(vm));
+	modules.push_back(new ObjectSTD(vm));
+	modules.push_back(new StringSTD(vm));
+	modules.push_back(new IntervalSTD(vm));
+	modules.push_back(new SetSTD(vm));
+	modules.push_back(new SystemSTD(vm));
+	modules.push_back(new ClassSTD(vm));
+	modules.push_back(new FunctionSTD(vm));
+	modules.push_back(new JsonSTD(vm));
+	modules.push_back(new ValueSTD(vm));
 
 	os << "{";
 
@@ -51,7 +50,7 @@ void Documentation::generate(ostream& os, std::string lang) {
 		if (m > 0) os << ",";
 
 		Module* mod = modules[m];
-		string file = "src/doc/" + mod->name + "_" + lang + ".json";
+		std::string file = "src/doc/" + mod->name + "_" + lang + ".json";
 
 		mod->generate_doc(os, file);
 	}
@@ -59,7 +58,6 @@ void Documentation::generate(ostream& os, std::string lang) {
 	os << "}\n";
 
 	for (const auto& m : modules) {
-		delete m->clazz;
 		delete m;
 	}
 }

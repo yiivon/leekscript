@@ -2,7 +2,6 @@
 #define CLASSDECLARATION_HPP
 
 #include <vector>
-
 #include "Instruction.hpp"
 #include "VariableDeclaration.hpp"
 #include "../lexical/Ident.hpp"
@@ -14,23 +13,22 @@ class LSClass;
 class ClassDeclaration : public Instruction {
 public:
 
-	std::shared_ptr<Token> token;
+	Token* token;
 	std::string name;
-	std::vector<VariableDeclaration*> fields;
-	std::shared_ptr<SemanticVar> var;
-	LSClass* ls_class;
+	std::vector<std::unique_ptr<VariableDeclaration>> fields;
+	Variable* var;
 
-	ClassDeclaration(std::shared_ptr<Token> token);
-	virtual ~ClassDeclaration();
+	ClassDeclaration(Token* token);
 
-	virtual void print(std::ostream&, int indent, bool debug) const override;
+	virtual void print(std::ostream&, int indent, bool debug, bool condensed) const override;
 	virtual Location location() const override;
 
-	virtual void analyse(SemanticAnalyser*, const Type& req_type) override;
+	virtual void pre_analyze(SemanticAnalyzer* analyzer) override;
+	virtual void analyze(SemanticAnalyzer*, const Type* req_type) override;
 
 	virtual Compiler::value compile(Compiler&) const override;
 
-	virtual Instruction* clone() const override;
+	virtual std::unique_ptr<Instruction> clone() const override;
 };
 
 }

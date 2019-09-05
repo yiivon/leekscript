@@ -2,23 +2,15 @@
 #include "../../vm/value/LSNull.hpp"
 #include "../../vm/value/LSString.hpp"
 #include "../../vm/value/LSObject.hpp"
-
-using namespace std;
+#include "../../type/Type.hpp"
 
 namespace ls {
 
 Object::Object() {
-	type = Type::OBJECT;
-	type.temporary = true;
+	type = Type::tmp_object;
 }
 
-Object::~Object() {
-	for (auto ex : values) {
-		delete ex;
-	}
-}
-
-void Object::print(ostream& os, int indent, bool debug, bool condensed) const {
+void Object::print(std::ostream& os, int indent, bool debug, bool condensed) const {
 	os << "{";
 	for (unsigned i = 0; i < keys.size(); ++i) {
 		os << keys.at(i)->content;
@@ -35,31 +27,33 @@ void Object::print(ostream& os, int indent, bool debug, bool condensed) const {
 }
 
 Location Object::location() const {
-	return {{0, 0, 0}, {0, 0, 0}}; // TODO
+	return {nullptr, {0, 0, 0}, {0, 0, 0}}; // TODO
 }
 
-void Object::analyse(SemanticAnalyser* analyser) {
+void Object::pre_analyze(SemanticAnalyzer* analyzer) {
 	for (auto& value : values) {
-		value->analyse(analyser);
+		value->pre_analyze(analyzer);
+	}
+}
+
+void Object::analyze(SemanticAnalyzer* analyzer) {
+	for (auto& value : values) {
+		value->analyze(analyzer);
 	}
 }
 
 Compiler::value Object::compile(Compiler& c) const {
-
 	auto object = c.new_object();
-
 	for (unsigned i = 0; i < keys.size(); ++i) {
-		auto k = c.new_pointer((void*) &keys.at(i)->content, Type::FUNCTION);
+		auto k = c.new_const_string(keys.at(i)->content);
 		auto v = c.insn_to_any(values[i]->compile(c));
-		c.insn_call({}, {object, k, v}, +[](LSObject* o, std::string* k, LSValue* v) {
-			o->addField(*k, v);
-		});
+		c.insn_call(Type::void_, {object, k, v}, "Object.add_field");
 	}
 	return object;
 }
 
-Value* Object::clone() const {
-	auto o = new Object();
+std::unique_ptr<Value> Object::clone() const {
+	auto o = std::make_unique<Object>();
 	for (const auto& k : keys) {
 		o->keys.push_back(k);
 	}

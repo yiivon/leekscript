@@ -6,8 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
-#include "../../lib/json.hpp"
-#include "../type/Type.hpp"
+#include "../util/json.hpp"
 #include "../constants.h"
 
 namespace ls {
@@ -23,6 +22,7 @@ class LSFunction;
 class LSObject;
 class LSClass;
 class Context;
+class Type;
 
 typedef u_int8_t LSValueType;
 
@@ -41,13 +41,14 @@ public:
 	static LSValueType CLOSURE;
 	static LSValueType OBJECT;
 	static LSValueType CLASS;
+	static LSValueType MPZ;
 	static LSClass* ValueClass;
 
 	static int obj_count;
 	static int obj_deleted;
 	#if DEBUG_LEAKS
-		static std::map<void*, LSValue*>& objs() {
-			static std::map<void*, LSValue*> objs;
+		static std::unordered_map<void*, LSValue*>& objs() {
+			static std::unordered_map<void*, LSValue*> objs;
 			return objs;
 		}
 	#endif
@@ -56,7 +57,7 @@ public:
 	int refs = 0;
 	bool native = false;
 
-	LSValue(LSValueType type);
+	LSValue(LSValueType type, int refs = 0, bool native = false);
 	LSValue(const LSValue& other);
 	virtual ~LSValue() = 0;
 
@@ -148,10 +149,12 @@ public:
 
 	static void free(const LSValue*);
 	static void delete_ref(LSValue* value);
+	static void delete_ref2(LSValue* value);
 	static void delete_temporary(const LSValue* const value);
 	static void delete_not_temporary(LSValue* value);
 };
 
+template <> LSValue* LSValue::get(char v);
 template <> LSValue* LSValue::get(int v);
 template <> LSValue* LSValue::get(double v);
 
@@ -194,6 +197,13 @@ inline void LSValue::delete_ref(LSValue* value) {
 		delete value;
 	}
 }
+inline void LSValue::delete_ref2(LSValue* value) {
+	if (value->native) return;
+	if (value->refs == 0) return;
+	if (--value->refs == 0) {
+		delete value;
+	}
+}
 
 inline void LSValue::delete_temporary(const LSValue* const value) {
 	if (value->refs == 0) {
@@ -202,6 +212,7 @@ inline void LSValue::delete_temporary(const LSValue* const value) {
 }
 
 inline void LSValue::free(const LSValue* value) {
+	if (value->native) return;
 	delete value;
 }
 
@@ -258,7 +269,15 @@ namespace ls {
 		return v2->operator == (v1);
 	}
 	template <>
+	inline bool equals(char v1, ls::LSValue* v2) {
+		return v2->operator == (v1);
+	}
+	template <>
 	inline bool equals(ls::LSValue* v1, int v2) {
+		return v1->operator == (v2);
+	}
+	template <>
+	inline bool equals(ls::LSValue* v1, char v2) {
 		return v1->operator == (v2);
 	}
 	template <>
@@ -368,6 +387,9 @@ namespace ls {
 	template <> inline int convert(double v) { return v; }
 	template <> inline double convert(int v) { return v; }
 
+	template <> inline LSValue* convert(char v) {
+		return LSValue::get(v);
+	}
 	template <> inline LSValue* convert(int v) {
 		return LSValue::get(v);
 	}

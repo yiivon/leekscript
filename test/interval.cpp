@@ -1,4 +1,5 @@
 #include "Test.hpp"
+#include "../src/type/Type.hpp"
 
 void Test::test_intervals() {
 
@@ -10,8 +11,11 @@ void Test::test_intervals() {
 	code("[0..44.523]").equals("[0..44]");
 	code("[0l..544l]").equals("[0..544]");
 	code("[45.73..248l]").equals("[45..248]");
-	// TODO intervals with mpz
-	DISABLED_code("[15m..50m]").equals("[15..50]");
+	code("[15m..50m]").equals("[15..50]");
+	code("[-50m..-15m]").equals("[-50..-15]");
+	code("[0..15m]").equals("[0..15]");
+	// TODO Backlog Interval with mpz bounds
+	// code("[0..100000000000000m]").equals("[0..100000000000000]");
 
 	section("Interval.operator !");
 	code("![1..1000]").equals("false");
@@ -30,24 +34,26 @@ void Test::test_intervals() {
 	code("'a' in [[1..1000], ''][0]").equals("false");
 	code("500 in [[1..1000], ''][0]").equals("true");
 	code("1500 in [[1..1000], ''][0]").equals("false");
-	code("500★ in [[1..1000], ''][0]").equals("true");
+	code("500$ in [[1..1000], ''][0]").equals("true");
 
 	section("Interval.operator ==");
 	code("[1..1000] == [1..1000]").equals("true");
 	code("[1..1000] == [1..500]").equals("false");
 	code("[1..1000] == 12").equals("false");
-	// TODO
-	DISABLED_code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9 10]").equals("true");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9 10 11]").equals("false");
+	code("[1..10] == [1 2 3 4 5 6 7 8 9]").equals("false");
+	code("[1..3] == [1 2 3]").equals("true");
+	code("[1..3] == ['a', 'b', 'c']").equals("false");
 
 	section("Interval.operator []");
 	code("[0..1000][500]").equals("500");
 	code("[1..1000][500]").equals("501");
 	code("[1000..2000][12]").equals("1012");
 	code("[-100..0][5]").equals("-95");
-	// Leak
-	DISABLED_code("['', [10..20]][1][5]").equals("15");
-	DISABLED_code("['', [10..20]][1][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
-	code("[1..10]['hello']").semantic_error( ls::SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "[1..10]", ls::Type::STRING_TMP.to_string()});
+	code("['', [10..20]][1][5]").equals("15");
+	code("['', [10..20]][1][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
+	code("[1..10]['hello']").error( ls::Error::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, {"'hello'", "[1..10]", ls::Type::tmp_string->to_string()});
 	code("let i = ['', [10..20]][1] i['hello']").exception(ls::vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
 	code("[1..10][50]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("[1..10][-10]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
@@ -68,10 +74,12 @@ void Test::test_intervals() {
 	code("|[1..100]|").equals("100");
 
 	section("Interval.operator ~~");
-	// TODO crash
-	DISABLED_code("[1..10] ~~ x -> x.isPrime()").equals("[]");
-	// TODO
-	DISABLED_code("[1..10] ~~ isPrime").equals("");
+	code("[1..10] ~~ x -> x ** 2").equals("[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]");
+	code("[1..5] ~~ x -> x.sqrt()").equals("[1, 1.41421, 1.73205, 2, 2.23607]");
+	code("[1..10] ~~ x -> x.isPrime()").equals("[false, true, true, false, true, false, true, false, false, false]");
+	code("[-10..-5] ~~ x -> x + '!'").equals("['-10!', '-9!', '-8!', '-7!', '-6!', '-5!']");
+	code("[15..18] ~~ (x -> x ** 2) ~~ x -> x.sqrt()").equals("[15, 16, 17, 18]");
+	code("[1..10] ~~ Number.isPrime").equals("[false, true, true, false, true, false, true, false, false, false]");
 
 	section("Iteration");
 	code("for k, i in [1..0] { System.print(k + ' => ' + i) }").output("");
@@ -90,12 +98,21 @@ void Test::test_intervals() {
 	code("[1..100].filter(x -> x > 50 and x < 53)").equals("[51, 52]");
 	code("[1..Number.sqrt(1989)].filter(x -> 1989 % x == 0)").equals("[1, 3, 9, 13, 17, 39]");
 	code("[1..1989.sqrt()].filter(x -> !(1989 % x)).max()").equals("39");
-	code("let divisors = n -> [1..n.sqrt()].filter(x -> !(n % x)) divisors(1989)").equals("[1, 3, 9, 13, 17, 39]");
+	// code("let divisors = n -> [1..n.sqrt()].filter(x -> !(n % x)) divisors(1989)").equals("[1, 3, 9, 13, 17, 39]");
 	code("[0..10].filter(-> true)").equals("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]");
 	code("[-5..5].filter(-> true)").equals("[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]");
 	code("[1..10000].filter(x -> x.isPrime() && (x + 256).isPrime()).size()").equals("197");
-	// TODO
-	DISABLED_code("[1..10000].filter(isPrime)").equals("");
+	code("[1..1000000].filter(x -> x.isPrime()).size()").equals("78498");
+	code("[1..10000].filter(isPrime).size()").equals("1229");
+
+	section("Interval.map");
+	code("[1..10].map(x -> x + 5)").equals("[6, 7, 8, 9, 10, 11, 12, 13, 14, 15]");
+	code("[1..10].map(x -> x ** 2)").equals("[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]");
+	code("[1..5].map(x -> x.sqrt())").equals("[1, 1.41421, 1.73205, 2, 2.23607]");
+	code("[1..10].map(x -> x.isPrime())").equals("[false, true, true, false, true, false, true, false, false, false]");
+	code("[-10..-5].map(x -> x + '!')").equals("['-10!', '-9!', '-8!', '-7!', '-6!', '-5!']");
+	code("[15..18].map(x -> x ** 2).map(x -> x.sqrt())").equals("[15, 16, 17, 18]");
+	code("[1..10].map(System.print)").output("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n");
 
 	section("Interval.sum");
 	code("[1..0].sum()").equals("0");
@@ -105,8 +122,7 @@ void Test::test_intervals() {
 	code("[1..10].sum()").equals("55");
 	code("[1..10000].sum()").equals("50005000");
 	code("[-100..100].sum()").equals("0");
-	// TODO crash
-	DISABLED_code("[-100..0].sum() + [0..200].sum()").equals("15050");
+	code("[-100..0].sum() + [0..200].sum()").equals("15050");
 	code("[-100..200].sum()").equals("15050");
 
 	section("Interval.product");

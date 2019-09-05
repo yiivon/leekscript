@@ -1,4 +1,5 @@
 #include "Test.hpp"
+#include "../src/type/Type.hpp"
 
 void Test::test_map() {
 
@@ -36,8 +37,8 @@ void Test::test_map() {
 
 	section("Map.operator <");
 	code("['a': 1, 'b': 2] < ['a': 1, 'b': 3]").equals("true");
-	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("true");
-	code("[1: 1, 2: 0.5] < [1: 1, 2: true]").equals("true");
+	code("[1: 1, 2: 0] < [1: 1, 2: true]").equals("false");
+	code("[1: 1, 2: 0.5] < [1: 1, 2: true]").equals("false");
 	code("[1: 1, 2: 'a'] < [1: 1.5, 2: 5.5]").equals("true");
 	for (size_t i = 0; i < maps.size(); ++i)
 		for (size_t j = 0; j < maps.size(); ++j)
@@ -62,8 +63,8 @@ void Test::test_map() {
 	code("let m = ['salut': 12] m['salut'] = 13 m['salut']").equals("13");
 	code("let m = ['salut': 'yo'] m['salut'] = 'ya' m['salut']").equals("'ya'");
 	code("let m = [5: 12] m[5.7]").equals("12");
-	code("let m = [5: 12] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
-	code("let m = [5.7: 'hello'] m['salut']").semantic_error(ls::SemanticError::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::STRING_TMP.to_string()});
+	code("let m = [5: 12] m['salut']").error(ls::Error::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::tmp_string->to_string()});
+	code("let m = [5.7: 'hello'] m['salut']").error(ls::Error::INVALID_MAP_KEY, {"'salut'", "m", ls::Type::tmp_string->to_string()});
 	code("var m = [1: 'a', 2: 'b'] m[2] = 'B' m").equals("[1: 'a', 2: 'B']");
 	code("var m = [1: 'a', 2: 'b'] m[3]").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);
 	code("var m = [1: 2, 3: 4] m[5] = 6 m").equals("[1: 2, 3: 4, 5: 6]");
@@ -79,6 +80,7 @@ void Test::test_map() {
 	code("var m = [1.5: 'a', 2.5: 'b'] m[2.5] = 'c' m").equals("[1.5: 'a', 2.5: 'c']");
 	code("['', [1: 2][1]]").equals("['', 2]");
 	code("['', [1: 2.5][1]]").equals("['', 2.5]");
+	code("var m = [:] var ns = '01234566' m[ns] = 1").equals("1");
 
 	section("Map.operator [] left-value");
 	code("var m = [1: 2] m[1]++ m").equals("[1: 3]");
@@ -99,11 +101,24 @@ void Test::test_map() {
 	code("var m = ptr([2.5: 'a']) m['toto'] = 'b' m").exception(ls::vm::Exception::NO_SUCH_OPERATOR);
 
 	/*
+	 * Iteration
+	 */
+	section("Map iteration");
+	code("for k, v in [:] { System.print(k + ' ' + v) }").output("");
+	code("for k, v in [1:2] { System.print(k + ' ' + v) }").output("1 2\n");
+	code("for k, v in [1:2,3:4] { System.print(k + ' ' + v) }").output("1 2\n3 4\n");
+	code("for k, v in [1:2,3:4,5:6] { System.print(k + ' ' + v) }").output("1 2\n3 4\n5 6\n");
+	code("for k, v in ['a':'b'] { System.print(k + ' ' + v) }").output("a b\n");
+	code("for k, v in ['a':'b','c':'d'] { System.print(k + ' ' + v) }").output("a b\nc d\n");
+	code("for k, v in ['a':'b','c':'d','e':'f'] { System.print(k + ' ' + v) }").output("a b\nc d\ne f\n");
+
+	/*
 	 * Methods
 	 */
 	section("Map.size()");
 	code("let x = [1 : 1 1 : 2 1 : 3] x.size()").equals("1");
 	code("let x = [1 : 1 1 : 2 2 : '3'] x.size()").equals("2");
+	code("size([1 : 1 2 : '3'])").equals("2");
 
 	section("Map.insert()");
 	code("var x = [1 : 1] x.insert(2, 2)").equals("true");
@@ -111,6 +126,8 @@ void Test::test_map() {
 	code("var x = [1 : 'a'] x.insert(2, 3) x").equals("[1: 'a', 2: 3]");
 	code("var x = ['a' : 1] x.insert(2, 3) x").equals("[2: 3, 'a': 1]");
 	code("var x = ['a' : 1] x.insert('a', 3)").equals("false");
+	code("var x = ['a' : 1.5] x.insert('b', 3.2) x").equals("['a': 1.5, 'b': 3.2]");
+	code("var x = ['a' : 1.5] x.insert('a', 3.2)").equals("false");
 
 	section("Map.clear()");
 	code("var x = [:] x.clear()").equals("[:]");
@@ -126,12 +143,33 @@ void Test::test_map() {
 	code("var x = ['a' : 'a'] x.erase('b') x").equals("['a': 'a']");
 	code("var x = ['a' : 1] x.erase(3.14) x").equals("['a': 1]");
 
+	section("Map.foldLeft()");
+	code("[:].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("0");
+	code("[1: 2, 3: 4].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("4006");
+	code("[1: 2.5, 3: 4.7].foldLeft((r, k, v) => r + k * 10000 + v, 0)").equals("40007.2");
+	code("[1: 'b', 3: 'd'].foldLeft((r, k, v) => r + k * 1000 + v, 0)").equals("'1000b3000d'");
+	code("['a': 2, 'c': 4].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa2cccccccccc4'");
+	code("['a': 2.5, 'c': 4.7].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa2.5cccccccccc4.7'");
+	code("['a': [55], 'c': [77]].foldLeft((r, k, v) => r + k * 10 + v, 0)").equals("'0aaaaaaaaaa[55]cccccccccc[77]'");
+
+	section("Map.foldRight()");
+	code("[:].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("0");
+	code("[1: 2, 3: 4].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("4006");
+	code("[1: 2.5, 3: 4.7].foldRight((k, v, r) => r + k * 10000 + v, 0)").equals("40007.2");
+	code("[1: 'b', 3: 'd'].foldRight((k, v, r) => r + k * 1000 + v, 0)").equals("'3000d1000b'");
+	code("['a': 2, 'c': 4].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc4aaaaaaaaaa2'");
+	code("['a': 2.5, 'c': 4.7].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc4.7aaaaaaaaaa2.5'");
+	code("['a': [55], 'c': [77]].foldRight((k, v, r) => r + k * 10 + v, 0)").equals("'0cccccccccc[77]aaaaaaaaaa[55]'");
+
 	section("Map.look()");
 	code("let x = [1: 1] x.look(1, 0)").equals("1");
 	code("let x = ['a': 'a'] x.look('a', 'b')").equals("'a'");
 	code("let x = ['a': 'a'] x.look('b', 'b')").equals("'b'");
-	DISABLED_code("let x = ['a': 1] x.look(3.14, 'a')").semantic_error( ls::SemanticError::METHOD_NOT_FOUND, {ls::Type::CONST_PTR_INT_MAP.to_string() + ".look(" + ls::Type::REAL.to_string() + ", " + ls::Type::STRING_TMP.to_string() + ")"});
+	code("let x = ['a': 1] x.look(3.14, 'a')").error(ls::Error::METHOD_NOT_FOUND, {ls::Type::const_map(ls::Type::any, ls::Type::integer)->to_string() + ".look(" + ls::Type::real->to_string() + ", " + ls::Type::tmp_string->to_string() + ")"});
 	code("[1 : 1].look(1, 0)").equals("1");
+	code("[1 : 'a'].look(2, 10)").equals("10");
+	code("[1 : 'a'].look(2, 5.5)").equals("5.5");
+	code("['a' : 'a'].look(2, 5.5)").equals("5.5");
 
 	section("Map.values()");
 	code("let m = [5: 1, 7: 2, -21: 3] m.values()").equals("[3, 1, 2]");
@@ -147,14 +185,12 @@ void Test::test_map() {
 	section("Map.iter");
 	code("[1: 2, 3: 4].iter((k, v) -> System.print(k + ' ' + v))").output("1 2\n3 4\n");
 	code("[1: 2.5, 3: 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("1 2.5\n3 4.5\n");
-	DISABLED_code("[1: 'a', 3: 'b'].iter((k, v) -> System.print(k + ' ' + v))").output("1 a\n3 b\n");
-	DISABLED_code("['a': 2, 'b': 4].iter((k, v) -> System.print(k + ' ' + v))").output("a 2\nb 4\n");
-	DISABLED_code("['a': 2.5, 'b': 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("a 2.5\nb 4.5\n");
-	DISABLED_code("['a': 'b', 'c': 'd'].iter((k, v) -> System.print(k + ' ' + v))").output("a b\nc d\n");
-	// TODO doesn't work, missing capture by reference
-	DISABLED_code("var s = 0 [1: 2, 3: 4, 5: 6].iter((k, v) -> s += k) s").equals("9");
-	// TODO crashing
-	DISABLED_code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
+	code("[1: 'a', 3: 'b'].iter((k, v) -> System.print(k + ' ' + v))").output("1 a\n3 b\n");
+	code("['a': 2, 'b': 4].iter((k, v) -> System.print(k + ' ' + v))").output("a 2\nb 4\n");
+	code("['a': 2.5, 'b': 4.5].iter((k, v) -> System.print(k + ' ' + v))").output("a 2.5\nb 4.5\n");
+	code("['a': 'b', 'c': 'd'].iter((k, v) -> System.print(k + ' ' + v))").output("a b\nc d\n");
+	code("var s = 0 [1: 2, 3: 4, 5: 6].iter((k, v) -> s += k) s").equals("9");
+	code("var s = 0 [:].iter((k, v) -> s += v) s").equals("0");
 
 	section("Map.max()");
 	code("[:].max()").exception(ls::vm::Exception::ARRAY_OUT_OF_BOUNDS);

@@ -2,82 +2,74 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-
 #include "Module.hpp"
 #include "LSValue.hpp"
 #include "value/LSClass.hpp"
 #include "value/LSNumber.hpp"
-
-using namespace std;
+#include "../compiler/semantic/Callable.hpp"
+#include "../compiler/semantic/CallableVersion.hpp"
+#include "VM.hpp"
+#include "../type/Type.hpp"
 
 namespace ls {
 
-bool Method::NATIVE = true;
+int Module::THROWS = 1;
+int Module::LEGACY = 2;
+int Module::DEFAULT = 4;
+int Module::NO_RETURN = 8;
+int Module::EMPTY_VARIABLE = 16;
 
-Module::Module(std::string name) : name(name) {
-	clazz = new LSClass(name);
+bool Module::STORE_ARRAY_SIZE = true;
+
+Module::Module(VM* vm, std::string name) : vm(vm), name(name) {
+	clazz = std::make_unique<LSClass>(name);
 	if (name != "Value") {
 		clazz->parent = LSValue::ValueClass;
 	}
 }
 
-Module::~Module() {
-	//delete clazz;
+void Module::operator_(std::string name, std::initializer_list<CallableVersion> impl, std::vector<const Type*> templates) {
+	clazz->addOperator(name, impl, templates, vm->legacy);
 }
-
-void Module::operator_(std::string name, std::initializer_list<LSClass::Operator> impl) {
-	vector<LSClass::Operator> operators = impl;
-	clazz->addOperator(name, operators);
-}
-
-void Module::field(std::string name, Type type) {
+void Module::field(std::string name, const Type* type) {
 	clazz->addField(name, type, nullptr);
 }
-
-void Module::field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
+void Module::field(std::string name, const Type* type, std::function<Compiler::value(Compiler&, Compiler::value)> fun) {
 	clazz->addField(name, type, fun);
 }
-void Module::field(std::string name, Type type, void* fun) {
+void Module::field(std::string name, const Type* type, void* fun) {
 	clazz->addField(name, type, fun);
 }
-
-void Module::static_field(std::string name, Type type, std::function<Compiler::value(Compiler&)> fun) {
-	clazz->addStaticField(ModuleStaticField(name, type, fun));
+void Module::static_field(std::string name, const Type* type, std::function<Compiler::value(Compiler&)> fun) {
+	clazz->addStaticField({name, type, fun});
 }
-void Module::static_field(std::string name, Type type, void* fun) {
-	clazz->addStaticField(ModuleStaticField(name, type, fun));
+void Module::static_field(std::string name, const Type* type, void* addr) {
+	clazz->addStaticField({name, type, addr, true});
 }
-
-void Module::method(std::string name, Method::Option opt, initializer_list<MethodConstructor> methodsConstr) {
-	std::vector<Method> inst;
-	std::vector<StaticMethod> st;
-	for (auto constr : methodsConstr) {
-		if (opt == Method::Static || opt == Method::Both) {
-			st.emplace_back(constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
-		}
-		if (opt == Method::Instantiate || opt == Method::Both) {
-			assert(constr.args.size() > 0); // must be at least one argument to be the object used in instance
-			auto obj_type = constr.args[0];
-			constr.args.erase(constr.args.begin());
-			inst.emplace_back(obj_type, constr.return_type, constr.args, constr.addr, constr.native, constr.mutators);
-		}
-	}
-	if (!inst.empty()) {
-		clazz->addMethod(name, inst);
-	}
-	if (!st.empty()) {
-		clazz->addStaticMethod(name, st);
-	}
+void Module::static_field_fun(std::string name, const Type* type, void* fun) {
+	clazz->addStaticField({name, type, fun, nullptr});
+}
+void Module::constructor_(std::initializer_list<CallableVersion> methods) {
+	clazz->addMethod("new", methods);
+}
+void Module::method(std::string name, std::initializer_list<CallableVersion> methods, std::vector<const Type*> templates, bool legacy) {
+	clazz->addMethod(name, methods, templates, vm->legacy);
+}
+void Template::operator_(std::string name, std::initializer_list<CallableVersion> impl) {
+	module->clazz->addOperator(name, impl, templates, module->vm->legacy);
+}
+void Template::method(std::string name, std::initializer_list<CallableVersion> methods) {
+	module->method(name, methods, templates, module->vm->legacy);
 }
 
 void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
-	ifstream f;
+	std::ifstream f;
 	f.open(translation_file);
 	if (!f.good()) {
 		return; // no file
 	}
-	stringstream j;
+	std::stringstream j;
 	j << f.rdbuf();
 	std::string str = j.str();
 	f.close();
@@ -93,7 +85,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 		assert(false); // LCOV_EXCL_LINE
 	}
 
-	map<std::string, Json> translation_map;
+	std::map<std::string, Json> translation_map;
 
 	for (Json::iterator it = translation.begin(); it != translation.end(); ++it) {
 		translation_map.insert({it.key(), it.value()});
@@ -111,7 +103,7 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 		if (e > 0) os << ",";
 		os << "\"" << f.first << "\":{\"type\":";
-		a.type.toJson(os);
+		a.type->toJson(os);
 		//os << ",\"value\":\"" << a.value << "\"";
 		os << ",\"desc\":\"" << desc << "\"";
 		os << "}";
@@ -121,10 +113,10 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 	os << "},\"methods\":{";
 	e = 0;
 	for (auto& m : clazz->methods) {
-		std::vector<Method>& impl = m.second;
+		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0]->type->toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];
@@ -140,11 +132,11 @@ void Module::generate_doc(std::ostream& os, std::string translation_file) {
 
 	os << "},\"static_methods\":{";
 	e = 0;
-	for (auto& m : clazz->static_methods) {
+	for (auto& m : clazz->methods) {
 		auto& impl = m.second;
 		if (e > 0) os << ",";
 		os << "\"" << m.first << "\":{\"type\":";
-		impl[0].type.toJson(os);
+		impl.versions[0]->type->toJson(os);
 
 		if (translation_map.find(m.first) != translation_map.end()) {
 			Json json = translation_map[m.first];

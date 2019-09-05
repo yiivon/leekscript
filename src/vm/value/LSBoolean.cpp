@@ -4,18 +4,13 @@
 #include "LSString.hpp"
 #include "LSNumber.hpp"
 
-using namespace std;
-
 namespace ls {
 
 LSValue* LSBoolean::clazz;
 LSBoolean* LSBoolean::false_val;
 LSBoolean* LSBoolean::true_val;
 
-LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN), value(value) {
-	refs = 1;
-	native = true;
-}
+LSBoolean::LSBoolean(bool value) : LSValue(BOOLEAN, 1, true), value(value) {}
 
 LSBoolean::~LSBoolean() {}
 
@@ -93,7 +88,7 @@ bool LSBoolean::eq(const LSValue* v) const {
 		auto boolean = static_cast<const LSBoolean*>(v);
 		return boolean->value == this->value;
 	}
-	return false;
+	return v->type == NUMBER and static_cast<const LSNumber*>(v)->value == this->value;
 }
 
 bool LSBoolean::lt(const LSValue* v) const {
@@ -125,7 +120,7 @@ std::ostream& LSBoolean::dump(std::ostream& os, int) const {
 	return os;
 }
 
-string LSBoolean::json() const {
+std::string LSBoolean::json() const {
 	return value ? "true" : "false";
 }
 

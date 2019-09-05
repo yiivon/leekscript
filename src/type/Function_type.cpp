@@ -1,4 +1,5 @@
 #include "Function_type.hpp"
+#include "Function_object_type.hpp"
 #include "../colors.h"
 #include "Type.hpp"
 #include "Placeholder_type.hpp"
@@ -7,68 +8,80 @@
 
 namespace ls {
 
-Function_type::Function_type(const Type& ret, const std::vector<Type>& args, bool closure, const Function* function) : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("lsfunction"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN, // native
-	Type::LONG.pointer() // pointer to the function
-}) }), _return_type(ret), _arguments(args), _closure(closure), _function(function) {}
+Function_type::Function_type(const Type* ret, const std::vector<const Type*>& args, const Value* function) : Type(true), _return_type(ret), _arguments(args), _function(function) {}
 
-bool Function_type::operator == (const Base_type* type) const {
+bool Function_type::operator == (const Type* type) const {
 	if (auto fun = dynamic_cast<const Function_type*>(type)) {
 		return _return_type == fun->_return_type && _arguments == fun->_arguments;
 	}
 	return false;
 }
-bool Function_type::compatible(const Base_type* type) const {
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		if (_closure != fun->_closure or _arguments.size() < fun->_arguments.size()) return false;
-		return _return_type.compatible(fun->_return_type);
+int Function_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1; }
+	if (auto fun = dynamic_cast<const Function_type*>(type->folded)) {
+		if (_arguments.size() > fun->_arguments.size()) return -1;
+		int d = 0;
+		for (size_t i = 0; i < _arguments.size(); ++i) {
+			d += _arguments.at(i)->distance(fun->_arguments.at(i)->not_temporary());
+		}
+		if (d == 0) {
+			return _return_type->distance(fun->_return_type);
+		} else {
+			return d;
+		}
 	}
-	return false;
-}
-bool Function_type::castable(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type) != nullptr) { return true; }
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		if (_closure != fun->_closure or _arguments.size() > fun->_arguments.size()) return false;
-		return fun->_return_type.castable(_return_type);
-	}
-	return false;
-}
-int Function_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1; }
-	if (auto fun = dynamic_cast<const Function_type*>(type)) {
-		if (_closure != fun->_closure or _arguments.size() > fun->_arguments.size()) return -1;
-		return fun->_return_type.distance(_return_type);
+	if (auto fun = dynamic_cast<const Function_object_type*>(type->folded)) {
+		if (_arguments.size() > fun->arguments().size()) return -1;
+		int d = 0;
+		for (size_t i = 0; i < _arguments.size(); ++i) {
+			d += _arguments.at(i)->distance(fun->arguments().at(i)->not_temporary());
+		}
+		int d2 = fun->closure() ? 1 : 0;
+		if (d == 0) {
+			return d2 + _return_type->distance(fun->return_type());
+		} else {
+			return d;
+		}
 	}
 	return -1;
 }
-Type Function_type::return_type() const {
+const Type* Function_type::return_type() const {
 	return _return_type;
 }
-std::vector<Type> Function_type::arguments() const {
+const std::vector<const Type*>& Function_type::arguments() const {
 	return _arguments;
 }
-Type Function_type::argument(size_t i) const {
+const Type* Function_type::argument(size_t i) const {
 	// assert(i < _arguments.size() && "Wrong argument() index");
 	if (i < _arguments.size()) {
 		return _arguments[i];
 	}
-	return Type::ANY;
+	return Type::any;
 }
-std::string Function_type::clazz() const {
+llvm::Type* Function_type::llvm(const Compiler& c) const {
+	if (llvm_type) return llvm_type;
+	std::vector<llvm::Type*> llvm_types;
+	for (const auto& a : _arguments) {
+		llvm_types.push_back(a->llvm(c));
+	}
+	((Function_type*) this)->llvm_type = llvm::FunctionType::get(_return_type->llvm(c), llvm_types, false);
+	return llvm_type;
+}
+std::string Function_type::class_name() const {
 	return "Function";
 }
 std::ostream& Function_type::print(std::ostream& os) const {
-	os << BLUE_BOLD << (_closure ? "closure(" : "fun(") << END_COLOR;
+	os << BLUE_BOLD << "fun(" << END_COLOR;
 	for (unsigned t = 0; t < _arguments.size(); ++t) {
 		if (t > 0) os << ", ";
 		os << _arguments[t];
 	}
 	os << BLUE_BOLD << ") => " << _return_type;
 	return os;
+}
+Type* Function_type::clone() const {
+	return new Function_type { _return_type, _arguments, _function };
 }
 
 }

@@ -20,14 +20,15 @@ let S =
 "05886116467109405077541002256983155200055935729725" +
 "71636269561882670428252483600823257530420752963450"
 
-var N = []
+// TODO : declare [] only, will work with advanced assignments
+var N = [0].clear()
 for var s in S.split('') {
 	N += String.code(s) - String.code('0')
 }
 
-var max = 1.pow(1)
+var max = 1l
 for var i = 0; i < N.size() - 12; ++i {
-	var prod = N[i : i + 12].foldLeft((x, y -> x × y), 1)
+	var prod = N[i : i + 12].foldLeft((x, y -> x × y), 1.0)
 	var prod_int = String.number('' + prod)
 	if max < prod_int {
 		max = prod_int

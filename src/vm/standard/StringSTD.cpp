@@ -2,13 +2,14 @@
 #include <vector>
 #include <math.h>
 #include <string.h>
-#include "../../../lib/utf8.h"
+#include "../../util/utf8.h"
 #include "StringSTD.hpp"
 #include "ValueSTD.hpp"
 #include "../value/LSNumber.hpp"
 #include "../value/LSArray.hpp"
-
-using namespace std;
+#include "../VM.hpp"
+#include "../../type/Type.hpp"
+#include "../../compiler/semantic/Variable.hpp"
 
 namespace ls {
 
@@ -28,130 +29,205 @@ LSValue* string_begin_code_ptr(const LSString*);
 int string_code(const LSString*, int pos);
 long string_number(const LSString*);
 
-LSString* plus_mpz(LSString* s, __mpz_struct mpz) {
+LSString* plus_any(LSString* s, LSValue* v) {
+	return (LSString*) s->add(v);
+}
+
+LSString* plus_mpz(LSString* s, __mpz_struct* mpz) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &mpz);
+	mpz_get_str(buff, 10, mpz);
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
 	return res;
 }
 
-LSString* plus_mpz_tmp(LSString* s, __mpz_struct mpz) {
+LSString* plus_mpz_tmp(LSString* s, __mpz_struct* mpz) {
 	char buff[1000];
-	mpz_get_str(buff, 10, &mpz);
+	mpz_get_str(buff, 10, mpz);
 	LSString* res = new LSString(*s + buff);
 	LSValue::delete_temporary(s);
-	mpz_clear(&mpz);
-	//VM::current()->mpz_deleted++;
+	mpz_clear(mpz);
+	VM::current()->mpz_deleted++;
 	return res;
 }
 
-StringSTD::StringSTD() : Module("String") {
+void iterator_begin(LSString* str, LSString::iterator* it) {
+	auto i = LSString::iterator_begin(str);
+	it->buffer = i.buffer;
+	it->index = 0;
+	it->pos = 0;
+	it->next_pos = 0;
+	it->character = 0;
+}
+LSString* iterator_get(unsigned int c, LSString* previous) {
+	if (previous != nullptr) {
+		LSValue::delete_ref(previous);
+	}
+	char dest[5];
+	u8_toutf8(dest, 5, &c, 1);
+	auto s = new LSString(dest);
+	s->refs = 1;
+	return s;
+}
 
-	LSString::string_class = clazz;
+StringSTD::StringSTD(VM* vm) : Module(vm, "String") {
+
+	LSString::string_class = clazz.get();
+
+	/*
+	 * Constructor
+	 */
+	constructor_({
+		{Type::tmp_string, {}, (void*) &LSString::constructor_1},
+		{Type::tmp_string, {Type::i8_ptr}, (void*) &LSString::constructor_2},
+	});
 
 	/*
 	 * Operators
 	 */
 	operator_("+", {
-		{Type::STRING, Type::MPZ, Type::STRING, (void*) &plus_mpz, {}, Method::NATIVE},
-		{Type::STRING, Type::MPZ_TMP, Type::STRING, (void*) &plus_mpz_tmp, {}, Method::NATIVE},
-		{Type::STRING, Type::REAL, Type::STRING, (void*) &StringSTD::add_real, {}, Method::NATIVE},
-		{Type::STRING, Type::INTEGER, Type::STRING, (void*) &StringSTD::add_int, {}, Method::NATIVE},
-		{Type::STRING, Type::BOOLEAN, Type::STRING, (void*) &StringSTD::add_bool, {}, Method::NATIVE},
+		{Type::string, Type::any, Type::tmp_string, (void*) plus_any},
+		{Type::string, Type::mpz_ptr, Type::tmp_string, (void*) plus_mpz},
+		{Type::string, Type::tmp_mpz_ptr, Type::tmp_string, (void*) plus_mpz_tmp},
+		{Type::string, Type::real, Type::tmp_string, (void*) add_real},
+		{Type::string, Type::integer, Type::tmp_string, (void*) add_int},
+		{Type::string, Type::boolean, Type::tmp_string, (void*) add_bool},
 	});
+
+	auto aeT = Type::template_("T");
+	template_(aeT).
+	operator_("+=", {
+		{Type::string, aeT, Type::string, add_eq, 0, {}, true},
+	});
+
 	operator_("<", {
-		{Type::STRING, Type::STRING, Type::BOOLEAN, (void*) &StringSTD::lt}
+		{Type::string, Type::string, Type::boolean, lt}
 	});
 	operator_("/", {
-		{Type::STRING, Type::STRING, Type::STRING_ARRAY, (void*) &StringSTD::div}
+		{Type::string, Type::string, Type::tmp_array(Type::string), div}
 	});
 
 	/*
 	 * Methods
 	 */
 	method("copy", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &ValueSTD::copy}
+		{Type::string, {Type::const_string}, ValueSTD::copy}
 	});
 	method("charAt", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_charAt, Method::NATIVE},
+		{Type::string, {Type::const_string, Type::const_integer}, (void*) string_charAt},
 	});
 	method("contains", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_contains, Method::NATIVE},
+		{Type::boolean, {Type::string, Type::const_string}, (void*) string_contains},
 	});
 	method("endsWith", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_endsWith, Method::NATIVE},
+		{Type::boolean, {Type::string, Type::string}, (void*) string_endsWith},
 	});
-	Type fold_fun_type = Type::fun(Type::ANY, {Type::ANY, Type::STRING});
-	Type fold_clo_type = Type::closure(Type::ANY, {Type::ANY, Type::STRING});
+	auto fold_fun_type = Type::fun(Type::any, {Type::any, Type::string});
+	auto fold_clo_type = Type::closure(Type::any, {Type::any, Type::string});
 	method("fold", {
-		{Type::ANY, {Type::CONST_STRING, fold_fun_type, Type::ANY}, (void*) fold_fun},
-		{Type::ANY, {Type::CONST_STRING, fold_clo_type, Type::ANY}, (void*) fold_clo},
+		{Type::any, {Type::string, fold_fun_type, Type::any}, fold_fun},
+		{Type::any, {Type::string, fold_clo_type, Type::any}, fold_fun},
 	});
 	method("indexOf", {
-		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_indexOf, Method::NATIVE},
+		{Type::integer, {Type::string, Type::string}, (void*) string_indexOf},
 	});
 	method("isPermutation", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_ANY}, (void*) &LSString::is_permutation, Method::NATIVE},
+		{Type::boolean, {Type::string, Type::const_any}, (void*) &LSString::is_permutation},
 	});
 	method("isPalindrome", {
-		{Type::BOOLEAN, {Type::CONST_STRING}, (void*) &LSString::is_palindrome, Method::NATIVE},
+		{Type::boolean, {Type::string}, (void*) &LSString::is_palindrome},
+	});
+	method("left", {
+		{Type::tmp_string, {Type::string, Type::integer}, (void*) string_left},
+		{Type::tmp_string, {Type::tmp_string, Type::integer}, (void*) string_left_tmp},
 	});
 	method("length", {
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_length, Method::NATIVE},
+		{Type::integer, {Type::string}, (void*) string_length},
 	});
 	method("lines", {
-		{Type::STRING_ARRAY, {Type::CONST_STRING}, (void*) &LSString::ls_lines, Method::NATIVE},
+		{Type::tmp_array(Type::string), {Type::string}, (void*) &LSString::ls_lines},
 	});
 	method("size", {
-		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::ls_size_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::ls_size, Method::NATIVE},
+		{Type::any, {Type::string}, (void*) &LSString::ls_size_ptr},
+		{Type::integer, {Type::string}, (void*) &LSString::ls_size},
 	});
 	method("replace", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_STRING, Type::CONST_STRING}, (void*) &StringSTD::replace, Method::NATIVE},
+		{Type::tmp_string, {Type::string, Type::string, Type::string}, (void*) replace},
+		{Type::tmp_string, {Type::string, Type::string, Type::string}, (void*) v1_replace, LEGACY},
 	});
 	method("reverse", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::ls_tilde, Method::NATIVE},
+		{Type::tmp_string, {Type::string}, (void*) &LSString::ls_tilde},
+	});
+	method("right", {
+		{Type::tmp_string, {Type::string, Type::integer}, (void*) string_right},
+		{Type::tmp_string, {Type::tmp_string, Type::integer}, (void*) string_right_tmp},
 	});
 	method("substring", {
-		{Type::STRING, {Type::CONST_STRING, Type::CONST_INTEGER, Type::CONST_INTEGER}, (void*) &string_substring, Method::NATIVE},
+		{Type::tmp_string, {Type::string, Type::const_integer, Type::const_integer}, (void*) string_substring},
 	});
 	method("toArray", {
-		{Type::PTR_ARRAY, {Type::CONST_STRING}, (void*) &string_toArray, Method::NATIVE},
+		{Type::tmp_array(Type::any), {Type::string}, (void*) string_toArray},
 	});
 	method("toLower", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toLower, Method::NATIVE},
+		{Type::tmp_string, {Type::string}, (void*) string_toLower},
 	});
 	method("toUpper", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &string_toUpper, Method::NATIVE},
+		{Type::tmp_string, {Type::string}, (void*) string_toUpper},
 	});
 	method("split", {
-		{Type::STRING_ARRAY, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_split, Method::NATIVE},
-		{Type::STRING_ARRAY, {Type::CONST_ANY, Type::CONST_ANY}, (void*) &string_split, Method::NATIVE},
+		{Type::tmp_array(Type::string), {Type::string, Type::string}, (void*) string_split},
+		{Type::tmp_array(Type::string), {Type::const_any, Type::const_any}, (void*) string_split},
 	});
 	method("startsWith", {
-		{Type::BOOLEAN, {Type::CONST_STRING, Type::CONST_STRING}, (void*) &string_startsWith, Method::NATIVE},
+		{Type::boolean, {Type::string, Type::string}, (void*) string_startsWith},
 	});
 	method("code", {
-		{Type::ANY, {Type::CONST_ANY}, (void*) &string_begin_code_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_ANY}, (void*) &string_begin_code, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING, Type::CONST_INTEGER}, (void*) &string_code, Method::NATIVE},
+		{Type::any, {Type::const_any}, (void*) string_begin_code_ptr},
+		{Type::integer, {Type::string}, (void*) string_begin_code},
+		{Type::integer, {Type::const_any}, (void*) string_begin_code},
+		{Type::integer, {Type::string, Type::const_integer}, (void*) string_code},
 	});
 	method("number", {
-		{Type::LONG, {Type::CONST_STRING}, (void*) &string_number, Method::NATIVE},
-		{Type::LONG, {Type::CONST_ANY}, (void*) &string_number, Method::NATIVE},
+		{Type::long_, {Type::string}, (void*) string_number},
+		{Type::long_, {Type::const_any}, (void*) string_number},
 	});
 	auto map_fun = &LSString::ls_map<LSFunction*>;
 	method("map", {
-		{Type::STRING, {Type::CONST_STRING, Type::fun(Type::STRING, {Type::STRING})}, (void*) map_fun, Method::NATIVE},
+		{Type::tmp_string, {Type::string, Type::fun_object(Type::string, {Type::string})}, (void*) map_fun},
 	});
 	method("sort", {
-		{Type::STRING, {Type::CONST_STRING}, (void*) &LSString::sort, Method::NATIVE},
+		{Type::tmp_string, {Type::string}, (void*) &LSString::sort},
 	});
 	method("wordCount", {
-		{Type::ANY, {Type::CONST_STRING}, (void*) &LSString::word_count_ptr, Method::NATIVE},
-		{Type::INTEGER, {Type::CONST_STRING}, (void*) &LSString::word_count, Method::NATIVE},
+		{Type::any, {Type::string}, (void*) &LSString::word_count_ptr},
+		{Type::integer, {Type::string}, (void*) &LSString::word_count},
+	});
+
+	/** Internal **/
+	method("to_bool", {
+		{Type::boolean, {Type::string}, (void*) &LSString::to_bool}
+	});
+	method("codePointAt", {
+		{Type::tmp_string, {Type::string, Type::integer}, (void*) &LSString::codePointAt}
+	});
+	method("isize", {
+		{Type::integer, {Type::string}, (void*) &LSString::int_size}
+	});
+	method("iterator_begin", {
+		{Type::void_, {Type::string, Type::i8_ptr}, (void*) iterator_begin}
+	});
+	method("iterator_end", {
+		{Type::void_, {Type::i8_ptr}, (void*) &LSString::iterator_end}
+	});
+	method("iterator_get", {
+		{Type::integer, {Type::i8_ptr}, (void*) &LSString::iterator_get},
+		{Type::tmp_string, {Type::integer, Type::string}, (void*) iterator_get},
+	});
+	method("iterator_key", {
+		{Type::integer, {Type::i8_ptr}, (void*) &LSString::iterator_key}
+	});
+	method("iterator_next", {
+		{Type::void_, {Type::i8_ptr}, (void*) &LSString::iterator_next}
 	});
 }
 
@@ -166,6 +242,14 @@ LSString* StringSTD::add_int(LSString* s, int i) {
 		return s;
 	} else {
 		return new LSString(*s + std::to_string(i));
+	}
+}
+LSString* StringSTD::add_int_r(int i, LSString* s) {
+	if (s->refs == 0) {
+		s->insert(0, std::to_string(i));
+		return s;
+	} else {
+		return new LSString(std::to_string(i) + *s);
 	}
 }
 
@@ -187,19 +271,20 @@ LSString* StringSTD::add_real(LSString* s, double i) {
 	}
 }
 
-Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args) {
-	auto res = c.insn_call(Type::BOOLEAN, args, +[](LSValue* a, LSValue* b) {
-		return a->lt(b);
-	});
+Compiler::value StringSTD::add_eq(Compiler& c, std::vector<Compiler::value> args, int) {
+	args[1] = c.insn_to_any(args[1]);
+	return c.insn_call(Type::any, args, "Value.operator+=");
+}
+
+Compiler::value StringSTD::lt(Compiler& c, std::vector<Compiler::value> args, int) {
+	auto res = c.insn_call(Type::boolean, args, "Value.operator<");
 	c.insn_delete_temporary(args[0]);
 	c.insn_delete_temporary(args[1]);
 	return res;
 }
 
-Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args) {
-	return c.insn_call(Type::STRING_ARRAY, args, +[](LSValue* a, LSValue* b) {
-		return a->div(b);
-	});
+Compiler::value StringSTD::div(Compiler& c, std::vector<Compiler::value> args, int) {
+	return c.insn_call(Type::tmp_array(Type::string), args, "Value.operator/");
 }
 
 /*
@@ -212,7 +297,7 @@ LSValue* string_charAt(LSString* string, int index) {
 }
 
 bool string_contains(LSString* haystack, LSString* needle) {
-	bool r = haystack->find(*needle) != string::npos;
+	bool r = haystack->find(*needle) != std::string::npos;
 	LSValue::delete_temporary(haystack);
 	LSValue::delete_temporary(needle);
 	return r;
@@ -249,19 +334,39 @@ int string_length(LSString* string) {
 LSString* StringSTD::replace(LSString* string, LSString* from, LSString* to) {
 	std::string str(*string);
 	size_t start_pos = 0;
-	while((start_pos = str.find(*from, start_pos)) != std::string::npos) {
+	while ((start_pos = str.find(*from, start_pos)) != std::string::npos) {
 		str.replace(start_pos, from->length(), *to);
 		start_pos += to->length();
 	}
-	if (string->refs == 0) {
-		delete string;
+	if (string->refs == 0) { delete string; }
+	if (from->refs == 0) { delete from; }
+	if (to->refs == 0) { delete to; }
+	return new LSString(str);
+}
+
+LSValue* StringSTD::v1_replace(LSString* string, LSString* from, LSString* to) {
+	std::string str(*string);
+	size_t start_pos = 0;
+	// Replace \\ by \ (like Java does)
+	std::string f = *from;
+	while ((start_pos = f.find("\\\\", start_pos)) != std::string::npos) {
+		f.replace(start_pos, 2, "\\");
+		start_pos += 1;
 	}
-	if (from->refs == 0) {
-		delete from;
+	start_pos = 0;
+	std::string t = *to;
+	while ((start_pos = t.find("\\\\", start_pos)) != std::string::npos) {
+		t.replace(start_pos, 2, "\\");
+		start_pos += 1;
 	}
-	if (to->refs == 0) {
-		delete to;
+	start_pos = 0;
+	while ((start_pos = str.find(f, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from->length(), t);
+		start_pos += t.size();
 	}
+	if (string->refs == 0) { delete string; }
+	if (from->refs == 0) { delete from; }
+	if (to->refs == 0) { delete to; }
 	return new LSString(str);
 }
 
@@ -328,7 +433,7 @@ LSValue* string_toArray(const LSString* string) {
 }
 
 LSValue* string_toLower(LSString* s) {
-	string new_s = string(*s);
+	std::string new_s = std::string(*s);
 	for (auto& c : new_s) c = tolower(c);
 	if (s->refs == 0) {
 		delete s;
@@ -337,7 +442,7 @@ LSValue* string_toLower(LSString* s) {
 }
 
 LSValue* string_toUpper(LSString* s) {
-	string new_s = string(*s);
+	std::string new_s = std::string(*s);
 	for (auto& c : new_s) c = toupper(c);
 	if (s->refs == 0) {
 		delete s;
@@ -369,14 +474,40 @@ long string_number(const LSString* s) {
 	return r;
 }
 
-Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args) {
-	auto f = &LSString::ls_foldLeft<LSFunction*>;
-	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
+Compiler::value StringSTD::fold_fun(Compiler& c, std::vector<Compiler::value> args, int) {
+	auto function = args[1];
+	auto result = Variable::new_temporary("r", args[2].t);
+	result->create_entry(c);
+	c.add_temporary_variable(result);
+	c.insn_store(result->val, c.insn_move_inc(args[2]));
+	auto v = Variable::new_temporary("v", args[0].t->element());
+	v->create_entry(c);
+	c.add_temporary_variable(v);
+	c.insn_foreach(args[0], Type::void_, v, nullptr, [&](Compiler::value v, Compiler::value k) -> Compiler::value {
+		auto r = c.insn_call(function, {c.insn_load(result->val), v});
+		c.insn_delete(c.insn_load(result->val));
+		c.insn_store(result->val, c.insn_move_inc(r));
+		return {};
+	});
+	return c.insn_load(result->val);
 }
 
-Compiler::value StringSTD::fold_clo(Compiler& c, std::vector<Compiler::value> args) {
-	auto f = &LSString::ls_foldLeft<LSClosure*>;
-	return c.insn_call(Type::ANY, {args[0], args[1], c.insn_to_any(args[2])}, (void*) f);
+LSValue* StringSTD::string_right(LSString* string, int pos) {
+	auto r = new LSString(string->substr(string->size() - std::min(string->size(), (size_t) std::max(0, pos))));
+	LSValue::delete_temporary(string);
+	return r;
+}
+LSValue* StringSTD::string_right_tmp(LSString* string, int pos) {
+	return &string->operator = (string->substr(string->size() - std::min(string->size(), (size_t) std::max(0, pos))));
+}
+
+LSValue* StringSTD::string_left(LSString* string, int pos) {
+	auto r = new LSString(string->substr(0, std::max(0, pos)));
+	LSValue::delete_temporary(string);
+	return r;
+}
+LSValue* StringSTD::string_left_tmp(LSString* string, int pos) {
+	return &string->operator = (string->substr(0, std::max(0, pos)));
 }
 
 }

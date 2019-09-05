@@ -4,38 +4,31 @@
 #include "../../vm/value/LSArray.hpp"
 #include "../../vm/value/LSMap.hpp"
 #include "../../vm/value/LSInterval.hpp"
-#include "../semantic/SemanticAnalyser.hpp"
-#include "../semantic/SemanticError.hpp"
-#include "../../type/RawType.hpp"
-
-using namespace std;
+#include "../semantic/SemanticAnalyzer.hpp"
+#include "../error/Error.hpp"
+#include "../semantic/Callable.hpp"
+#include "../semantic/CallableVersion.hpp"
 
 namespace ls {
 
 ArrayAccess::ArrayAccess() {
-	array = nullptr;
-	key = nullptr;
-	key2 = nullptr;
-	type = Type::ANY;
+	type = Type::any;
+	throws = true;
 }
 
-ArrayAccess::~ArrayAccess() {
-	delete array;
-	delete key;
-	if (key2 != nullptr) {
-		delete key2;
-	}
+bool ArrayAccess::isLeftValue() const {
+	return key2 == nullptr; // Range access is not left-value (yet)
 }
 
 void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed) const {
-	array->print(os, indent, debug);
+	array->print(os, indent, debug, condensed);
 	os << "[";
 	if (key != nullptr) {
-		key->print(os, indent, debug);
+		key->print(os, indent, debug, condensed);
 	}
 	if (key2 != nullptr) {
 		os << ":";
-		key2->print(os, indent, debug);
+		key2->print(os, indent, debug, condensed);
 	}
 	os << "]";
 	if (debug) {
@@ -44,114 +37,131 @@ void ArrayAccess::print(std::ostream& os, int indent, bool debug, bool condensed
 }
 
 Location ArrayAccess::location() const {
-	return {array->location().start, close_bracket->location.end};
+	return {close_bracket->location.file, array->location().start, close_bracket->location.end};
 }
 
-void ArrayAccess::analyse(SemanticAnalyser* analyser) {
+Call ArrayAccess::get_callable(SemanticAnalyzer*, int argument_count) const {
+	// std::cout << "Array access get callable " << type << std::endl;
+	if (type->is_function()) {
+		return { new Callable { new CallableVersion { "<aa>", type, this } } };
+	} else {
+		// The array is not homogeneous, so the function inside an array always returns any
+		return { new Callable { new CallableVersion { "<aa>", Type::fun(Type::any, {Type::any}), this, {}, {}, false, true } } };
+	}
+}
 
-	// std::cout << "Analyse AA " << this << " : " << req_type << std::endl;
+void ArrayAccess::pre_analyze(SemanticAnalyzer* analyzer) {
+	array->pre_analyze(analyzer);
+	if (key) key->pre_analyze(analyzer);
+	if (key2) key2->pre_analyze(analyzer);
+}
 
-	array->analyse(analyser);
+void ArrayAccess::analyze(SemanticAnalyzer* analyzer) {
 
-	if (!array->type.is_any() and !array->type.is_placeholder() and !array->type.is_container()) {
-		analyser->add_error({SemanticError::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
+	// std::cout << "Analyze AA " << this << " : " << req_type << std::endl;
+
+	array->analyze(analyzer);
+
+	if (not array->type->can_be_container()) {
+		analyzer->add_error({Error::Type::VALUE_MUST_BE_A_CONTAINER, location(), array->location(), {array->to_string()}});
 		return;
 	}
 	if (key == nullptr) {
 		return;
 	}
 
-	key->analyse(analyser);
+	key->analyze(analyzer);
 	constant = array->constant && key->constant;
 
-	array_element_type = {};
-	if (array->type.is_array() || array->type.is_interval() || array->type.is_map()) {
-		array_element_type = array->type.element().fold();
-		type = array_element_type;
-	}
-	if (array->type.is_map()) {
-		map_key_type = array->type.key();
+	type = array->type->element();
+
+	if (array->type->is_map()) {
+		map_key_type = array->type->key();
 	}
 
 	// Range array access : array[4:12], check if the values are numbers
 	if (key != nullptr and key2 != nullptr) {
 
-		key2->analyse(analyser);
+		key2->analyze(analyzer);
 
-		if (!key->type.is_any() and not key->type.is_number()) {
+		if (!key->type->is_any() and not key->type->is_number()) {
 			std::string k = "<key 1>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key->location(), {k}});
 		}
-		if (!key2->type.is_any() and not key2->type.is_number()) {
+		if (!key2->type->is_any() and not key2->type->is_number()) {
 			std::string k = "<key 2>";
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_RANGE_KEY_MUST_BE_NUMBER, location(), key2->location(), {k}});
 		}
 		type = array->type;
+		type = type->add_temporary();
 
-	} else if (array->type.is_array() or array->type.is_string() or array->type.is_interval()) {
-		if (!key->type.is_any() and not (key->type.is_number() or key->type.is_bool())) {
+	} else if (array->type->is_array() or array->type->is_string() or array->type->is_interval()) {
+		if (not key->type->can_be_numeric()) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
-			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
+			std::string kt = key->type->to_string();
+			analyzer->add_error({Error::Type::ARRAY_ACCESS_KEY_MUST_BE_NUMBER, location(), key->location(), {k, a, kt}});
 		}
-		if (array->type.is_string()) {
-			type = Type::STRING;
+		if (array->type->is_string()) {
+			type = Type::string;
 		}
-	} else if (array->type.is_map()) {
-		if (!key->type.castable(map_key_type)) {
+	} else if (array->type->is_map()) {
+		if (!key->type->castable(map_key_type)) {
 			std::string a = array->to_string();
 			std::string k = key->to_string();
-			std::string kt = key->type.to_string();
-			analyser->add_error({SemanticError::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
+			std::string kt = key->type->to_string();
+			analyzer->add_error({Error::Type::INVALID_MAP_KEY, location(), key->location(), {k, a, kt}});
 		}
 	}
 	// TODO should be temporary
-	// type.temporary = true;
 }
 
-bool ArrayAccess::will_take(SemanticAnalyser* analyser, const std::vector<Type>& args, int) {
+const Type* ArrayAccess::will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& args, int) {
 
 	// std::cout << "ArrayAccess::will_take(" << args << ", " << level << ")" << std::endl;
 
-	if (Array* arr = dynamic_cast<Array*>(array)) {
-		arr->elements_will_take(analyser, args, 1);
+	if (Array* arr = dynamic_cast<Array*>(array.get())) {
+		arr->elements_will_take(analyzer, args, 1);
 	}
-	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array)) {
-		arr->array_access_will_take(analyser, args, 1);
+	if (ArrayAccess* arr = dynamic_cast<ArrayAccess*>(array.get())) {
+		arr->array_access_will_take(analyzer, args, 1);
 	}
+	
+	type = array->type->element();
+	return type;
+}
 
-	type = array->type.element().fold();
-
+bool ArrayAccess::array_access_will_take(SemanticAnalyzer* analyzer, const std::vector<const Type*>& arg_types, int level) {
+	if (auto arr = dynamic_cast<Array*>(array.get())) {
+		arr->elements_will_take(analyzer, arg_types, level);
+	}
+	if (auto arr = dynamic_cast<ArrayAccess*>(array.get())) {
+		arr->array_access_will_take(analyzer, arg_types, level + 1);
+	}
+	type = array->type->element();
 	return false;
 }
 
-bool ArrayAccess::array_access_will_take(SemanticAnalyser* analyser, const std::vector<Type>& arg_types, int level) {
-
-	if (auto arr = dynamic_cast<Array*>(array)) {
-		arr->elements_will_take(analyser, arg_types, level);
-	}
-	if (auto arr = dynamic_cast<ArrayAccess*>(array)) {
-		arr->array_access_will_take(analyser, arg_types, level + 1);
-	}
-
-	type = array->type.element().fold();
-
+bool ArrayAccess::will_store(SemanticAnalyzer* analyzer, const Type* type) {
+	array->elements_will_store(analyzer, type, 1);
+	this->type = array->type->element();
 	return false;
 }
 
-bool ArrayAccess::will_store(SemanticAnalyser* analyser, const Type& type) {
-	array->elements_will_store(analyser, type, 1);
-	this->type = array->type.element().fold();
-	array_element_type = this->type;
-	return false;
+void ArrayAccess::change_value(SemanticAnalyzer* analyzer, Value* value) {
+	array->will_store(analyzer, value->type);
+	if (!type->is_any()) {
+		this->type = array->type->element();
+	}
 }
 
-void ArrayAccess::change_value(SemanticAnalyser* analyser, Value* value) {
-	array->will_store(analyser, value->type);
-	if (!type.is_any()) {
-		this->type = array->type.element().fold();
-		array_element_type = this->type;
+const Type* ArrayAccess::version_type(std::vector<const Type*> version) const {
+	// std::cout << "AA vt " << type << std::endl;
+	if (type->is_function()) {
+		return type;
+	} else {
+		// The array is not homogeneous, so the function inside an array always returns any
+		return Type::fun_object(Type::any, {Type::any});
 	}
 }
 
@@ -160,110 +170,96 @@ Compiler::value ArrayAccess::compile(Compiler& c) const {
 	c.mark_offset(open_bracket->location.start.line);
 
 	((ArrayAccess*) this)->compiled_array = array->compile(c);
+	c.add_temporary_value(compiled_array);
 	array->compile_end(c);
 
 	c.inc_ops(2); // Array access : 2 operations
 
 	if (key2 == nullptr) {
 
-		if (array->type.is_interval()) {
+		if (array->type->is_interval()) {
 
 			auto k = key->compile(c);
+			auto r = c.insn_invoke(Type::integer, {compiled_array, k}, "Interval.atv");
 			key->compile_end(c);
-			return c.insn_call(Type::INTEGER, {compiled_array, k}, +[](LSInterval* interval, int k) {
-				return interval->atv(k);
-			});
+			return r;
 
-		} else if (array->type.is_map()) {
+		} else if (array->type->is_map()) {
 
 			auto k = key->compile(c);
 			key->compile_end(c);
 			k = c.insn_convert(k, map_key_type);
 
-			void* func = nullptr;
-			if (map_key_type == Type::INTEGER) {
-				if (array_element_type == Type::INTEGER) {
-					func = (void*) &LSMap<int, int>::at;
-				} else if (array_element_type == Type::REAL) {
-					func = (void*) &LSMap<int, double>::at;
+			std::string func;
+			if (map_key_type->is_integer()) {
+				if (type->is_integer()) {
+					func = "Map.at.0";
+				} else if (type->is_real()) {
+					func = "Map.at.1";
 				} else {
-					func = (void*) &LSMap<int, LSValue*>::at;
+					func = "Map.at.2";
 				}
-			} else if (map_key_type == Type::REAL) {
-				if (array_element_type == Type::INTEGER) {
-					func = (void*) &LSMap<double, int>::at;
-				} else if (array_element_type == Type::REAL) {
-					func = (void*) &LSMap<double, double>::at;
+			} else if (map_key_type->is_real()) {
+				if (type->is_integer()) {
+					func = "Map.at.3";
+				} else if (type->is_real()) {
+					func = "Map.at.4";
 				} else {
-					func = (void*) &LSMap<double, LSValue*>::at;
+					func = "Map.at.5";
 				}
 			} else {
-				if (array_element_type == Type::INTEGER) {
-					func = (void*) &LSMap<LSValue*, int>::at;
-				} else if (array_element_type == Type::REAL) {
-					func = (void*) &LSMap<LSValue*, double>::at;
+				if (type->is_integer()) {
+					func = "Map.at.6";
+				} else if (type->is_real()) {
+					func = "Map.at.7";
 				} else {
-					func = (void*) &LSMap<LSValue*, LSValue*>::at;
+					func = "Map.at.8";
 				}
 			}
-			auto res = c.insn_invoke(array_element_type, {compiled_array, k}, func);
+			auto res = c.insn_invoke(type, {compiled_array, k}, func);
 			c.insn_delete_temporary(k);
 			c.inc_ops(2);
 			return res;
 
-		} else if (array->type.is_string() or array->type.is_array()) {
+		} else if (array->type->is_string() or array->type->is_array()) {
 
 			auto k = key->compile(c);
-			key->compile_end(c);
-
-			if (k.t.is_polymorphic()) {
-				k = c.insn_invoke(Type::INTEGER, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key_pointer) {
-					auto n = dynamic_cast<LSNumber*>(key_pointer);
-					if (!n) {
-						LSValue::delete_temporary(array);
-						LSValue::delete_temporary(key_pointer);
-						throw vm::ExceptionObj(vm::Exception::ARRAY_KEY_IS_NOT_NUMBER);
-					}
-					int key_int = n->value;
-					LSValue::delete_temporary(key_pointer);
-					return key_int;
-				});
+			if (k.t->is_polymorphic()) {
+				k = c.insn_invoke(Type::integer, {k}, "Array.convert_key");
 			}
-			k = c.to_int(k);
+			auto int_key = c.to_int(k);
+			key->compile_end(c);
 
 			// Check index : k < 0 or k >= size
 			auto array_size = c.insn_array_size(compiled_array);
-			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
-				c.insn_delete_temporary(compiled_array);
+			c.insn_if(c.insn_or(c.insn_lt(int_key, c.new_integer(0)), c.insn_ge(int_key, array_size)), [&]() {
 				c.insn_throw_object(vm::Exception::ARRAY_OUT_OF_BOUNDS);
 			});
 
-			if (array->type.is_string()) {
-				auto e = c.insn_call(Type::STRING, {compiled_array, k}, (void*) &LSString::codePointAt);
+			if (array->type->is_string()) {
+				auto e = c.insn_call(Type::tmp_string, {compiled_array, int_key}, "String.codePointAt");
+				c.insn_delete_temporary(k);
 				return e;
 			} else {
-				auto element_addr = c.insn_array_at(compiled_array, k);
-				auto e = c.insn_load(element_addr);
-				return c.clone(e);
+				auto element_addr = c.insn_array_at(compiled_array, int_key);
+				c.insn_delete_temporary(k);
+				return c.insn_load(element_addr);
 			}
 		} else {
 			// Unknown type, call generic at() operator
 			auto k = c.insn_to_any(key->compile(c));
 			key->compile_end(c);
-			auto e = c.insn_invoke(Type::ANY, {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
-				return array->at(key);
-			});
+			auto e = c.insn_invoke(Type::any, {compiled_array, k}, "Value.at");
 			c.insn_delete_temporary(k);
 			return e;
 		}
 	} else {
 		auto start = key->compile(c);
 		auto end = key2->compile(c);
+		auto r = c.insn_invoke(type, {compiled_array, start, end}, "Value.range");
 		key->compile_end(c);
 		key2->compile_end(c);
-		return c.insn_call(Type::ANY, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
-			return a->range(start, end);
-		});
+		return r;
 	}
 }
 
@@ -271,13 +267,13 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 
 	// Compile the array
 	((ArrayAccess*) this)->compiled_array = [&]() {
-		if (auto la = dynamic_cast<LeftValue*>(array)) {
-			return c.insn_load(la->compile_l(c));
+		if (array->isLeftValue()) {
+			return c.insn_load(static_cast<LeftValue*>(array.get())->compile_l(c));
 		} else {
 			return array->compile(c);
 		}
 	}();
-	array->compile_end(c);
+	c.add_temporary_value(compiled_array);
 
 	if (key2 == nullptr) {
 		// Compile the key
@@ -285,11 +281,7 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 		key->compile_end(c);
 		// Access
 		c.mark_offset(location().start.line);
-		if (array->type.is_array()) {
-
-			// return c.insn_call(Type::POINTER, {compiled_array, k}, +[](LSArray<LSValue*>* array, int key) {
-			// 	return array->atL(LSNumber::get(key));
-			// });
+		if (array->type->is_array()) {
 
 			auto array_size = c.insn_array_size(compiled_array);
 			c.insn_if(c.insn_or(c.insn_lt(k, c.new_integer(0)), c.insn_ge(k, array_size)), [&]() {
@@ -298,70 +290,41 @@ Compiler::value ArrayAccess::compile_l(Compiler& c) const {
 			});
 			return c.insn_array_at(compiled_array, k);
 
-		} else if (array->type.is_map()) {
-
-			if (array->type.not_temporary() == Type::PTR_INT_MAP) {
-				return c.insn_call(Type::INTEGER.pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, int>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::PTR_REAL_MAP) {
-				return c.insn_call(Type::REAL.pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, double>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::REAL_PTR_MAP) {
-				return c.insn_call(Type::ANY.pointer(), {compiled_array, k}, (void*) +[](LSMap<double, LSValue*>* map, double key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::REAL_INT_MAP) {
-				return c.insn_call(Type::INTEGER.pointer(), {compiled_array, k}, (void*) +[](LSMap<double, int>* map, double key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::REAL_REAL_MAP) {
-				return c.insn_call(Type::REAL.pointer(), {compiled_array, k}, (void*) +[](LSMap<double, double>* map, double key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::INT_PTR_MAP) {
-				return c.insn_call(Type::ANY.pointer(), {compiled_array, k}, (void*) +[](LSMap<int, LSValue*>* map, int key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::INT_INT_MAP) {
-				return c.insn_call(Type::INTEGER.pointer(), {compiled_array, k}, (void*) +[](LSMap<int, int>* map, int key) {
-					return map->atL_base(key);
-				});
-			} else if (array->type.not_temporary() == Type::INT_REAL_MAP) {
-				return c.insn_call(Type::REAL.pointer(), {compiled_array, k}, (void*) +[](LSMap<int, double>* map, int key) {
-					return map->atL_base(key);
-				});
+		} else if (array->type->is_map()) {
+			auto f = [&]() { if (array->type->key() == Type::any) {
+				if (array->type->element() == Type::any) return "Map.atL";
+				if (array->type->element() == Type::real) return "Map.atL.1";
+				return "Map.atL.2";
+			} else if (array->type->key() == Type::real) {
+				if (array->type->element() == Type::any) return "Map.atL.3";
+				if (array->type->element() == Type::real) return "Map.atL.4";
+				return "Map.atL.5";
 			} else {
-				return c.insn_call(Type::ANY.pointer(), {compiled_array, k}, (void*) +[](LSMap<LSValue*, LSValue*>* map, LSValue* key) {
-					return map->atL_base(key);
-				});
-			}
+				if (array->type->element() == Type::any) return "Map.atL.6";
+				if (array->type->element() == Type::real) return "Map.atL.7";
+				return "Map.atL.8";
+			}}();
+			return c.insn_call(array->type->element()->pointer(), {compiled_array, k}, f);
 		} else {
 			k = c.insn_to_any(k);
-			return c.insn_invoke(type.pointer(), {compiled_array, k}, (void*) +[](LSValue* array, LSValue* key) {
-				return array->atL(key);
-			});
+			return c.insn_invoke(type->pointer(), {compiled_array, k}, "Value.atl");
 		}
 	} else {
-		auto start = key->compile(c);
-		auto end = key2->compile(c);
-		key->compile_end(c);
-		key2->compile_end(c);
-		c.mark_offset(open_bracket->location.start.line);
-		return c.insn_call(Type::ANY, {compiled_array, start, end}, (void*) +[](LSValue* a, int start, int end) {
-			// TODO
-			a->rangeL(start, end);
-		});
+		// auto start = key->compile(c);
+		// auto end = key2->compile(c);
+		// key->compile_end(c);
+		// key2->compile_end(c);
+		// c.mark_offset(open_bracket->location.start.line);
+		assert(false);
 	}
 }
 
 void ArrayAccess::compile_end(Compiler& c) const {
-	c.insn_delete_temporary(compiled_array);
+	c.pop_temporary_value();
 }
 
-Value* ArrayAccess::clone() const {
-	auto aa = new ArrayAccess();
+std::unique_ptr<Value> ArrayAccess::clone() const {
+	auto aa = std::make_unique<ArrayAccess>();
 	aa->array = array->clone();
 	aa->key = key->clone();
 	aa->key2 = key2 ? key2->clone() : nullptr;

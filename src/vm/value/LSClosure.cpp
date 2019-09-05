@@ -4,8 +4,15 @@
 #include "LSNumber.hpp"
 #include "LSArray.hpp"
 #include "../LSValue.hpp"
+#include "../../vm/VM.hpp"
 
 namespace ls {
+
+LSClosure* LSClosure::constructor(void* f) {
+	auto c = new LSClosure(f);
+	VM::current()->function_created.push_back(c);
+	return c;
+}
 
 LSClosure::LSClosure(void* function) : LSFunction(function) {
 	type = CLOSURE;
@@ -13,8 +20,9 @@ LSClosure::LSClosure(void* function) : LSFunction(function) {
 
 LSClosure::~LSClosure() {
 	for (size_t i = 0; i < captures.size(); ++i) {
-		if (!captures_native[i] and captures[i] != this)
+		if (!captures_native[i] and captures[i] != this) {
 			LSValue::delete_ref(captures[i]);
+		}
 	}
 }
 
@@ -32,6 +40,9 @@ void LSClosure::add_capture(LSValue* value) {
 
 LSValue* LSClosure::get_capture(int index) {
 	return captures[index];
+}
+LSValue** LSClosure::get_capture_l(int index) {
+	return &captures[index];
 }
 
 }

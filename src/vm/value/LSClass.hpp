@@ -4,73 +4,60 @@
 #include <string>
 #include <map>
 #include "../LSValue.hpp"
-#include "../../type/Type.hpp"
 #include "../../compiler/Compiler.hpp"
 #include "../TypeMutator.hpp"
+#include "../../compiler/semantic/Callable.hpp"
 
 namespace ls {
 
 class Method;
-class StaticMethod;
 class ModuleStaticField;
+class Type;
 
 class LSClass : public LSValue {
 public:
 
-	class Operator {
-	public:
-		Type object_type;
-		Type operand_type;
-		Type return_type;
-		void* addr;
-		std::vector<TypeMutator*> mutators;
-		bool native;
-		bool v1_addr;
-		bool v2_addr;
-
-		Operator(Type object_type, Type operand, Type return_type, void* addr, std::initializer_list<TypeMutator*> mutators = {}, bool native = false, bool v1_addr = false, bool v2_addr = false)
-		: object_type(object_type), operand_type(operand), return_type(return_type), addr(addr), mutators(mutators), native(native), v1_addr(v1_addr), v2_addr(v2_addr) {}
-		static bool NATIVE;
-	};
-
 	class field {
 	public:
 		std::string name;
-		Type type;
-		std::function<Compiler::value(Compiler&, Compiler::value)> fun;
-		void* native_fun;
-		LSValue* default_value;
-		field(std::string name, Type type) : name(name), type(type), fun(nullptr), default_value(nullptr) {}
-		field(std::string name, Type type, std::function<Compiler::value(Compiler&, Compiler::value)> fun, LSValue* default_value) : name(name), type(type), fun(fun), default_value(default_value) {}
-		field(std::string name, Type type, void* fun, LSValue* default_value) : name(name), type(type), native_fun(fun), default_value(default_value) {}
+		const Type* type;
+		std::function<Compiler::value(Compiler&, Compiler::value)> fun = nullptr;
+		std::function<Compiler::value(Compiler&)> static_fun = nullptr;
+		void* native_fun = nullptr;
+		void* addr = nullptr;
+		LSValue* default_value = nullptr;
+		LSValue* value = nullptr;
+		field(std::string name, const Type* type) : name(name), type(type), fun(nullptr), default_value(nullptr) {}
+		field(std::string name, const Type* type, std::function<Compiler::value(Compiler&, Compiler::value)> fun, LSValue* default_value) : name(name), type(type), fun(fun), default_value(default_value) {}
+		field(std::string name, const Type* type, std::function<Compiler::value(Compiler&)> static_fun) : name(name), type(type), static_fun(static_fun) {}
+		field(std::string name, const Type* type, void* fun, LSValue* default_value) : name(name), type(type), native_fun(fun), default_value(default_value) {}
+		field(std::string name, const Type* type, void* addr, bool) : name(name), type(type), addr(addr) {}
+		field(std::string name, const Type* type, LSValue* value) : name(name), type(type), value(value) {}
 	};
 
 	LSClass* parent;
 	std::string name;
-
-	std::map<std::string, field> fields;
-	std::map<std::string, std::vector<Method>> methods;
-	std::map<std::string, std::vector<StaticMethod>> static_methods;
-	std::map<std::string, ModuleStaticField> static_fields;
-	std::map<std::string, std::vector<Operator>> operators;
+	std::unordered_map<std::string, field> fields;
+	std::unordered_map<std::string, field> static_fields;
+	std::unordered_map<std::string, Callable> methods;
+	std::unordered_map<std::string, std::vector<CallableVersion>> operators;
+	std::unordered_map<std::string, Callable*> operators_callables;
 
 	static LSValue* clazz;
+	static LSClass* constructor(char* name);
 
 	LSClass(std::string);
 
 	virtual ~LSClass();
 
-	void addMethod(std::string&, std::vector<Method>);
-	void addField(std::string, Type, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
-	void addField(std::string, Type, void* fun);
-	void addStaticField(ModuleStaticField f);
-	void addOperator(std::string name, std::vector<Operator>);
+	void addMethod(std::string, std::initializer_list<CallableVersion>, std::vector<const Type*> templates = {}, bool legacy = false);
+	void addField(std::string, const Type*, std::function<Compiler::value(Compiler&, Compiler::value)> fun);
+	void addField(std::string, const Type*, void* fun);
+	void addStaticField(field f);
+	void addOperator(std::string name, std::initializer_list<CallableVersion>, std::vector<const Type*> templates = {}, bool legacy = false);
 
-	Method* getMethod(SemanticAnalyser* analyser, std::string&, Type obj_type, std::vector<Type>);
-	void addStaticMethod(std::string& name, std::vector<StaticMethod> method);
 	LSFunction* getDefaultMethod(const std::string& name);
-	StaticMethod* getStaticMethod(SemanticAnalyser* analyser, std::string&, std::vector<Type>);
-	const Operator* getOperator(std::string& name, Type& object_type, Type& operand_type);
+	const Callable* getOperator(SemanticAnalyzer* analyzer, std::string& name);
 
 	bool to_bool() const override;
 	virtual bool ls_not() const override;

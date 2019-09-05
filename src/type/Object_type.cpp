@@ -6,28 +6,32 @@
 
 namespace ls {
 
-Object_type::Object_type() : Pointer_type(Type { std::make_shared<const Struct_type>(std::string("object"), std::initializer_list<Type> {
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // ?
-	Type::INTEGER, // refs
-	Type::BOOLEAN // native
-}) }) {}
+Object_type::Object_type(bool native) : Pointer_type(Type::structure("object", {
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // ?
+	Type::integer, // refs
+	Type::boolean // native
+}), native) {}
 
-bool Object_type::operator == (const Base_type* type) const {
+bool Object_type::operator == (const Type* type) const {
 	return dynamic_cast<const Object_type*>(type);
 }
-int Object_type::distance(const Base_type* type) const {
-	if (dynamic_cast<const Any_type*>(type)) { return 1; }
-	if (dynamic_cast<const Object_type*>(type)) { return 0; }
+int Object_type::distance(const Type* type) const {
+	if (not temporary and type->temporary) return -1;
+	if (dynamic_cast<const Any_type*>(type->folded)) { return 1; }
+	if (dynamic_cast<const Object_type*>(type->folded)) { return 0; }
 	return -1;
 }
-std::string Object_type::clazz() const {
+std::string Object_type::class_name() const {
 	return "Object";
 }
 std::ostream& Object_type::print(std::ostream& os) const {
 	os << BLUE_BOLD << "object" << END_COLOR;
 	return os;
+}
+Type* Object_type::clone() const {
+	return new Object_type {};
 }
 
 }
